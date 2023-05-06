@@ -9,6 +9,8 @@ license = "MIT"
     python = "^3.11"
     typer = "*"
     loguru = "*"
+    gym = {extras = ["atari"], version = "^0.26.2"}
+    atari-py = "^0.3.0"
 
     [tool.poetry.dev-dependencies]
     black = "*"

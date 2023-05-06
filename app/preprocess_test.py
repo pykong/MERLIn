@@ -19,6 +19,11 @@ env = gym.make("PongDeterministic-v4")
 state = env.reset()
 
 print("Original state shape:", state[0].shape)
+processed_state = preprocess_state(state)
+print("Processed state shape:", processed_state.shape)
 
+
+next_state, reward, done, truncated, info = env.step(1)
+print("Original state shape:", state[0].shape)
 processed_state = preprocess_state(state)
 print("Processed state shape:", processed_state.shape)

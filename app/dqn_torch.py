@@ -14,6 +14,7 @@ np.random.seed(0)
 
 
 # Hyperparameters
+MAX_EPISODES = 20_000
 GAMMA = 0.99
 LEARNING_RATE = 0.001
 MEMORY_SIZE = 100000
@@ -105,20 +106,20 @@ def main():
     episode_rewards = []
     episode_lengths = []
     win_count = 0
-    episode = 0
 
     with open("training_metrics.log", "w") as log_file:
         log_file.write("episode,avg_reward,win_rate,avg_episode_length,epsilon\n")
 
-        while True:
+        for episode in range(MAX_EPISODES):
+            print(f"episode: {episode}")
             state = preprocess_state(env.reset()[0])
             done = False
 
             episode_reward = 0
             episode_length = 0
 
+            # run episode
             while not done:
-                episode += 1
                 action = dqn.act(state, epsilon)
                 next_state, reward, done, truncated, info = env.step(action)
                 next_state = preprocess_state(next_state)
@@ -135,27 +136,26 @@ def main():
                     )
                     dqn.update(states, actions, rewards, next_states, dones)
 
-                total_steps += 1
+            total_steps += 1
+            if total_steps % MODEL_SAVE_INTERVAL == 0:
+                torch.save(dqn.state_dict(), f"pong_model_{total_steps}.pth")
 
-                episode_rewards.append(episode_reward)
-                episode_lengths.append(episode_length)
-                if episode_reward > 0:
-                    win_count += 1
-                epsilon = max(EPSILON_MIN, epsilon * EPSILON_DECAY)
+            episode_rewards.append(episode_reward)
+            episode_lengths.append(episode_length)
+            if episode_reward > 0:
+                win_count += 1
+            epsilon = max(EPSILON_MIN, epsilon * EPSILON_DECAY)
 
-                if episode % LOG_INTERVAL == 0:
-                    avg_reward = np.mean(episode_rewards[-LOG_INTERVAL:])
-                    avg_episode_length = np.mean(episode_lengths[-LOG_INTERVAL:])
-                    win_rate = (win_count / LOG_INTERVAL) * 100
+            if episode % LOG_INTERVAL == 0:
+                avg_reward = np.mean(episode_rewards[-LOG_INTERVAL:])
+                avg_episode_length = np.mean(episode_lengths[-LOG_INTERVAL:])
+                win_rate = (win_count / LOG_INTERVAL) * 100
 
-                    log_message = f"{episode},{avg_reward:.2f},{win_rate:.2f},{avg_episode_length:.2f},{epsilon:.4f}"
+                log_message = f"{episode},{avg_reward:.2f},{win_rate:.2f},{avg_episode_length:.2f},{epsilon:.4f}"
 
-                    logger.info(log_message)
-                    log_file.write(log_message + "\n")
-                    win_count = 0
-
-                if total_steps % MODEL_SAVE_INTERVAL == 0:
-                    torch.save(dqn.state_dict(), f"pong_model_{total_steps}.pth")
+                logger.info(log_message)
+                log_file.write(log_message + "\n")
+                win_count = 0
 
 
 if __name__ == "__main__":

@@ -5,6 +5,8 @@ import gym
 # Create the Pong environment
 env = gym.make("PongNoFrameskip-v4", render_mode="human")
 
+env.metadata["render_fps"] = 30
+
 # Reset the environment to start a new game
 state = env.reset()
 

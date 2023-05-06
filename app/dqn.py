@@ -21,6 +21,7 @@ BATCH_SIZE = 64
 EPSILON_DECAY = 0.999
 EPSILON_MIN = 0.1
 MODEL_SAVE_INTERVAL = 1000
+LOG_INTERVAL = 10
 
 
 class DQN:
@@ -82,28 +83,59 @@ def main():
     epsilon = 1.0
 
     total_steps = 0
-    episode = 0
-    while True:
-        episode += 1
-        state = preprocess_state(env.reset()[0])
-        done = False
-        episode_reward = 0
-        while not done:
-            action = dqn.act(state, epsilon)
-            next_state, reward, done, truncated, info = env.step(action)
-            next_state = preprocess_state(next_state)
-            memory.append((state, action, reward, next_state, done))
-            state = next_state
-            episode_reward += reward
+    episode_rewards = []
+    episode_lengths = []
+    win_count = 0
 
-            if len(memory) >= BATCH_SIZE:
-                minibatch = random.sample(memory, BATCH_SIZE)
-                states, actions, rewards, next_states, dones = map(
-                    np.array, zip(*minibatch)
-                )
-                dqn.update(states, actions, rewards, next_states, dones)
+    with open("training_metrics.log", "w") as log_file:
+        log_file.write("episode,avg_reward,win_rate,avg_episode_length,epsilon\n")
 
-            total_steps += 1
+        episode = 0
+        while True:
+            episode += 1
+            state = preprocess_state(env.reset()[0])
+            done = False
+
+            episode_reward = 0
+            episode_length = 0
+
+            while not done:
+                action = dqn.act(state, epsilon)
+                next_state, reward, done, truncated, info = env.step(action)
+                next_state = preprocess_state(next_state)
+                memory.append((state, action, reward, next_state, done))
+                state = next_state
+
+                episode_reward += reward
+                episode_length += 1
+
+                if len(memory) >= BATCH_SIZE:
+                    minibatch = random.sample(memory, BATCH_SIZE)
+                    states, actions, rewards, next_states, dones = map(
+                        np.array, zip(*minibatch)
+                    )
+                    dqn.update(states, actions, rewards, next_states, dones)
+
+                total_steps += 1
+
+                episode_rewards.append(episode_reward)
+                episode_lengths.append(episode_length)
+                if episode_reward > 0:
+                    win_count += 1
+                epsilon = max(EPSILON_MIN, epsilon * EPSILON_DECAY)
+
+                if episode % LOG_INTERVAL == 0:
+                    avg_reward = np.mean(episode_rewards[-LOG_INTERVAL:])
+                    avg_episode_length = np.mean(episode_lengths[-LOG_INTERVAL:])
+                    win_rate = (win_count / LOG_INTERVAL) * 100
+
+                    log_message = f"{episode},{avg_reward:.2f},{win_rate:.2f},{avg_episode_length:.2f},{epsilon:.4f}"
+                    print(log_message)
+                    log_file.write(log_message + "\n")
+                    win_count = 0
+
+                if total_steps % MODEL_SAVE_INTERVAL == 0:
+                    dqn.model.save(f"pong_model_{total_steps}.h5")
 
 
 if __name__ == "__main__":

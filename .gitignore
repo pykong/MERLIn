@@ -155,3 +155,4 @@ dmypy.json
 # Custom/project specific
 roms/
 *.h5
+*.pth

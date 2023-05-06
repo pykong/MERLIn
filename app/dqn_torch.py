@@ -7,6 +7,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from loguru import logger
 
 # Set random seeds for reproducibility
 np.random.seed(0)
@@ -104,13 +105,12 @@ def main():
     episode_rewards = []
     episode_lengths = []
     win_count = 0
+    episode = 0
 
     with open("training_metrics.log", "w") as log_file:
         log_file.write("episode,avg_reward,win_rate,avg_episode_length,epsilon\n")
 
-        episode = 0
         while True:
-            episode += 1
             state = preprocess_state(env.reset()[0])
             done = False
 
@@ -118,6 +118,7 @@ def main():
             episode_length = 0
 
             while not done:
+                episode += 1
                 action = dqn.act(state, epsilon)
                 next_state, reward, done, truncated, info = env.step(action)
                 next_state = preprocess_state(next_state)
@@ -148,7 +149,8 @@ def main():
                     win_rate = (win_count / LOG_INTERVAL) * 100
 
                     log_message = f"{episode},{avg_reward:.2f},{win_rate:.2f},{avg_episode_length:.2f},{epsilon:.4f}"
-                    print(log_message)
+
+                    logger.info(log_message)
                     log_file.write(log_message + "\n")
                     win_count = 0
 

@@ -1,0 +1,33 @@
+{
+    "editor.wordWrapColumn": 88,
+    "git.ignoreLimitWarning": true,
+    "[python]": {
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.fixAll": true,
+            "source.organizeImports": true
+        }
+    },
+    "[markdown]": {
+        "editor.quickSuggestions": {
+            "comments": "on",
+            "strings": "on",
+            "other": "on"
+        }
+    },
+    "prettier.prettierPath": "${workspaceFolder}/.prettierrc",
+    "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+    "python.linting.flake8Enabled": false,
+    "python.terminal.activateEnvInCurrentTerminal": true,
+    "python.formatting.provider": "black",
+    "python.formatting.blackPath": "${workspaceFolder}/.venv/bin/black",
+    "python.testing.pytestEnabled": true,
+    "python.testing.pytestPath": "${workspaceFolder}/.venv/bin/pytest",
+    "ruff.path": ["${workspaceFolder}/.venv/bin/ruff"],
+    "ruff.organizeImports": true,
+    "markdownlint.config": {
+        "default": true,
+        "MD025": false,
+        "MD033": false
+    }
+}

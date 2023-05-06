@@ -1,0 +1,57 @@
+[tool.poetry]
+name = "..."
+version = "0.1.0"
+description = "..."
+authors = ["Ben Felder <...@...>"]
+license = "MIT"
+
+    [tool.poetry.dependencies]
+    python = "^3.11"
+    typer = "*"
+    loguru = "*"
+
+    [tool.poetry.dev-dependencies]
+    black = "*"
+    ruff = "*"
+    mypy = "*"
+    deptry = "*"
+    vulture = "*"
+    pytest = "*"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+# https://black.readthedocs.io/en/stable/usage_and_configuration/the_basics.html#configuration-format
+line-length = 88
+target_version = ["py311"]
+
+[tool.ruff]
+# https://pypi.org/project/ruff/
+line-length = 88
+target-version = "py311"
+ignore = ["E402","F841","F401","E302","E305"]
+src = ["app"]
+
+    [tool.ruff.isort]
+    # https://beta.ruff.rs/docs/settings/#isort
+    # https://beta.ruff.rs/docs/faq/#how-does-ruffs-import-sorting-compare-to-isort
+    known-local-folder = ["app"]
+    known-third-party = ["app"]
+
+[tool.mypy]
+# https://mypy.readthedocs.io/en/stable/config_file.html#example-pyproject-toml
+# disallow_untyped_calls = true
+# disallow_untyped_decorators = true
+# disallow_untyped_defs = true
+disallow_any_generics = true
+disallow_incomplete_defs = true
+disallow_subclassing_any = true
+ignore_missing_imports = true
+strict_equality = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unreachable = true
+warn_unused_configs = true
+warn_unused_ignores = true

@@ -6,11 +6,14 @@ authors = ["Ben Felder <...@...>"]
 license = "MIT"
 
     [tool.poetry.dependencies]
-    python = "^3.11"
+    python = ">=3.11,<3.12"
     typer = "*"
     loguru = "*"
     gym = {extras = ["atari"], version = "*"}
     autorom = {extras = ["accept-rom-license"], version = "*"}
+    torch = "^2.0.0"
+    tensorflow = {version = "^2.12.0", allow-prereleases = true}
+    opencv-python = "^4.7.0.72"
 
     [tool.poetry.dev-dependencies]
     black = "*"

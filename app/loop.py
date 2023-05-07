@@ -70,17 +70,16 @@ def loop():
     for episode in range(MAX_EPISODES):
         print(f"episode: {episode}")
         state = preprocess_state(env.reset()[0])
-        done = False
 
+        done = False
         episode_reward = 0
         episode_length = 0
+        start_time = time()
 
         # run episode
-        start_time = time()
         while not done:
             action = dqn.act(state, epsilon)
-            next_state, reward, done, truncated, info = env.step(action)
-            next_state = preprocess_state(next_state)
+            next_state, reward, done = env.step(action)
             memory.append((state, action, reward, next_state, done))
             state = next_state
 

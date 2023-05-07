@@ -75,3 +75,6 @@ class DQN(nn.Module):
                 torch.from_numpy(state).float().unsqueeze(0)
             )  # Convert state to a float tensor and add a batch dimension
             return torch.argmax(self(state_tensor)).item()
+
+    def save_model(self, file_name) -> None:
+        torch.save(self.state_dict(), file_name)

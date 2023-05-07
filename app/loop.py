@@ -3,14 +3,11 @@ from collections import deque
 from csv import DictWriter
 from pathlib import Path
 from time import time
-from typing import NoReturn, Self
+from typing import Self
 
 import cv2
 import gym
 import numpy as np
-import torch
-import torch.nn as nn
-import torch.optim as optim
 from dqn_torch import DQN
 from loguru import logger
 
@@ -26,8 +23,8 @@ MEMORY_SIZE = 100000
 BATCH_SIZE = 64
 EPSILON_DECAY = 0.999
 EPSILON_MIN = 0.1
-MODEL_SAVE_INTERVAL = 50  # episode
-LOG_INTERVAL = 10
+MODEL_SAVE_INTERVAL = 1  # episode
+LOG_INTERVAL = 1
 
 
 def preprocess_state(state):
@@ -137,7 +134,7 @@ def loop():
             win_count = 0
 
         if episode % MODEL_SAVE_INTERVAL == 0:
-            torch.save(dqn.state_dict(), f"pong_model_{total_steps}.pth")
+            dqn.save_model(f"pong_model_{total_steps}.pth")
 
 
 if __name__ == "__main__":

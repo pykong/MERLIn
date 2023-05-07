@@ -6,6 +6,7 @@ from typing import Final
 
 import numpy as np
 from dqn_torch import DQN
+from gym.wrappers.monitoring import video_recorder
 from loguru import logger
 from pong_wrapper import PongWrapper
 from utils.csv_logger import CsvLogger
@@ -22,8 +23,9 @@ MEMORY_SIZE: Final[int] = 100_000
 BATCH_SIZE: Final[int] = 64
 EPSILON_DECAY: Final[float] = 0.999
 EPSILON_MIN: Final[float] = 0.1
-MODEL_SAVE_INTERVAL: Final[int] = 1  # episode
+MODEL_SAVE_INTERVAL: Final[int] = 1
 LOG_INTERVAL: Final[int] = 1
+RECORD_INTERVAL: Final[int] = 1
 
 # checkpoints dir
 CHECKPOINTS_DIR: Final[Path] = Path("checkpoints")
@@ -66,8 +68,13 @@ def loop():
         episode_length = 0
         start_time = time()
 
+        if episode % RECORD_INTERVAL == 0:
+            # Set up the video recorder
+            video = video_recorder.VideoRecorder(env, f"video/episode_{episode}.mp4")
+
         # run episode
         while not done:
+            video.capture_frame()
             action = dqn.act(state, epsilon)
             next_state, reward, done = env.step(action)
             memory.append((state, action, reward, next_state, done))
@@ -112,6 +119,13 @@ def loop():
 
         if episode % MODEL_SAVE_INTERVAL == 0:
             dqn.save_model(CHECKPOINTS_DIR / f"pong_model_{total_steps}.pth")
+
+        if episode % RECORD_INTERVAL == 0:
+            # Close the video recorder
+            try:
+                video.close()
+            except e:
+                print(e)
 
 
 if __name__ == "__main__":

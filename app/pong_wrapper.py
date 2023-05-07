@@ -22,7 +22,7 @@ class PongWrapper(gym.Wrapper):
     allowed_actions: Final[Set[int]] = {0, 1, 2, 3}  # TODO is '1' needed?
 
     def __init__(self: Self, env_name: str):
-        env = gym.make(env_name)
+        env = gym.make(env_name, render_mode="rgb_array")
         super().__init__(env)
         self.action_space = gym.spaces.Discrete(len(self.allowed_actions))
 

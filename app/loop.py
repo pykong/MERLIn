@@ -10,6 +10,7 @@ import gym
 import numpy as np
 from dqn_torch import DQN
 from loguru import logger
+from pong_wrapper import PongWrapper
 
 # Set random seeds for reproducibility
 np.random.seed(0)
@@ -19,7 +20,7 @@ np.random.seed(0)
 MAX_EPISODES = 20_000
 GAMMA = 0.99
 LEARNING_RATE = 0.001
-MEMORY_SIZE = 100000
+MEMORY_SIZE = 100_000
 BATCH_SIZE = 64
 EPSILON_DECAY = 0.999
 EPSILON_MIN = 0.1
@@ -52,7 +53,7 @@ class CsvLogger:
 
 
 def loop():
-    env = gym.make("PongDeterministic-v4")
+    env = PongWrapper("PongDeterministic-v4")
     input_shape = (1, 80, 80)
     num_actions = env.action_space.n
 

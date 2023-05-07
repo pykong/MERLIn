@@ -3,7 +3,7 @@ from collections import deque
 from csv import DictWriter
 from pathlib import Path
 from time import time
-from typing import Self
+from typing import Final, Self
 
 import cv2 as cv
 import numpy as np
@@ -25,6 +25,9 @@ EPSILON_DECAY = 0.999
 EPSILON_MIN = 0.1
 MODEL_SAVE_INTERVAL = 1  # episode
 LOG_INTERVAL = 1
+
+CHECKPOINTS_DIR: Final[Path] = Path("checkpoints")
+CHECKPOINTS_DIR.mkdir(exist_ok=True)
 
 
 def preprocess_state(state):
@@ -133,7 +136,7 @@ def loop():
             win_count = 0
 
         if episode % MODEL_SAVE_INTERVAL == 0:
-            dqn.save_model(f"pong_model_{total_steps}.pth")
+            dqn.save_model(CHECKPOINTS_DIR / f"pong_model_{total_steps}.pth")
 
 
 if __name__ == "__main__":

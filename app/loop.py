@@ -1,6 +1,9 @@
 import random
 from collections import deque
+from csv import DictWriter
+from pathlib import Path
 from time import time
+from typing import NoReturn, Self
 
 import cv2
 import gym
@@ -37,6 +40,20 @@ def preprocess_state(state):
     return state
 
 
+class CsvLogger:
+    def __init__(self: Self, log_file: Path, columns: list[str]) -> None:
+        self.log_file = log_file
+        self.columns = columns
+        with open(self.log_file, "w", newline="") as csvfile:
+            self.writer = DictWriter(csvfile, fieldnames=columns)
+            self.writer.writeheader()
+
+    def log(self: Self, items: dict[str, str | int | float]) -> None:
+        with open(self.log_file, "a", newline="") as csvfile:
+            self.writer = DictWriter(csvfile, fieldnames=self.columns)
+            self.writer.writerow(items)
+
+
 def loop():
     env = gym.make("PongDeterministic-v4")
     input_shape = (1, 80, 80)
@@ -52,59 +69,75 @@ def loop():
     episode_time = []
     win_count = 0
 
-    with open("training_metrics.log", "w") as log_file:
-        log_file.write(
-            "episode,avg_reward,win_rate,avg_episode_length,epsilon,exec_time\n"
-        )
+    csv_logger = CsvLogger(
+        Path("training_metrics.log"),
+        [
+            "episode",
+            "avg_reward",
+            "win_rate",
+            "avg_episode_length",
+            "epsilon",
+            "avg_time",
+        ],
+    )
 
-        for episode in range(MAX_EPISODES):
-            print(f"episode: {episode}")
-            state = preprocess_state(env.reset()[0])
-            done = False
+    for episode in range(MAX_EPISODES):
+        print(f"episode: {episode}")
+        state = preprocess_state(env.reset()[0])
+        done = False
 
-            episode_reward = 0
-            episode_length = 0
+        episode_reward = 0
+        episode_length = 0
 
-            # run episode
-            start_time = time()
-            while not done:
-                action = dqn.act(state, epsilon)
-                next_state, reward, done, truncated, info = env.step(action)
-                next_state = preprocess_state(next_state)
-                memory.append((state, action, reward, next_state, done))
-                state = next_state
+        # run episode
+        start_time = time()
+        while not done:
+            action = dqn.act(state, epsilon)
+            next_state, reward, done, truncated, info = env.step(action)
+            next_state = preprocess_state(next_state)
+            memory.append((state, action, reward, next_state, done))
+            state = next_state
 
-                episode_reward += reward
-                episode_length += 1
+            episode_reward += reward
+            episode_length += 1
 
-                if len(memory) >= BATCH_SIZE:
-                    minibatch = random.sample(memory, BATCH_SIZE)
-                    states, actions, rewards, next_states, dones = map(
-                        np.array, zip(*minibatch)
-                    )
-                    dqn.update(states, actions, rewards, next_states, dones)
+            if len(memory) >= BATCH_SIZE:
+                minibatch = random.sample(memory, BATCH_SIZE)
+                states, actions, rewards, next_states, dones = map(
+                    np.array, zip(*minibatch)
+                )
+                dqn.update(states, actions, rewards, next_states, dones)
 
-            episode_time.append(time() - start_time)
-            episode_rewards.append(episode_reward)
-            episode_lengths.append(episode_length)
-            if episode_reward > 0:
-                win_count += 1
-            epsilon = max(EPSILON_MIN, epsilon * EPSILON_DECAY)
+        episode_time.append(time() - start_time)
+        episode_rewards.append(episode_reward)
+        episode_lengths.append(episode_length)
+        if episode_reward > 0:
+            win_count += 1
+        epsilon = max(EPSILON_MIN, epsilon * EPSILON_DECAY)
 
-            if episode % LOG_INTERVAL == 0:
-                avg_time = np.mean(episode_time[-LOG_INTERVAL:])
-                avg_reward = np.mean(episode_rewards[-LOG_INTERVAL:])
-                avg_episode_length = np.mean(episode_lengths[-LOG_INTERVAL:])
-                win_rate = (win_count / LOG_INTERVAL) * 100
+        if episode % LOG_INTERVAL == 0:
+            avg_time = np.mean(episode_time[-LOG_INTERVAL:])
+            avg_reward = np.mean(episode_rewards[-LOG_INTERVAL:])
+            avg_episode_length = np.mean(episode_lengths[-LOG_INTERVAL:])
+            win_rate = (win_count / LOG_INTERVAL) * 100
 
-                log_message = f"{episode},{avg_reward:.2f},{win_rate:.2f},{avg_episode_length:.2f},{epsilon:.4f},{avg_time:.2f}"
+            log_message = f"{episode},{avg_reward:.2f},{win_rate:.2f},{avg_episode_length:.2f},{epsilon:.4f},{avg_time:.2f}"
 
-                logger.info(log_message)
-                log_file.write(log_message + "\n")
-                win_count = 0
+            logger.info(log_message)
+            csv_logger.log(
+                {
+                    "episode": episode,
+                    "avg_reward": avg_reward,
+                    "win_rate": win_rate,
+                    "avg_episode_length": avg_episode_length,
+                    "epsilon": epsilon,
+                    "avg_time": avg_time,
+                }
+            )
+            win_count = 0
 
-            if episode % MODEL_SAVE_INTERVAL == 0:
-                torch.save(dqn.state_dict(), f"pong_model_{total_steps}.pth")
+        if episode % MODEL_SAVE_INTERVAL == 0:
+            torch.save(dqn.state_dict(), f"pong_model_{total_steps}.pth")
 
 
 if __name__ == "__main__":

@@ -12,22 +12,23 @@ from loguru import logger
 from pong_wrapper import PongWrapper
 
 # Set random seeds for reproducibility
-np.random.seed(0)
-
+RANDOM_SEED: Final[int] = 0
+np.random.seed(RANDOM_SEED)
 
 # Hyperparameters
-MAX_EPISODES = 20_000
-GAMMA = 0.99
-LEARNING_RATE = 0.001
-MEMORY_SIZE = 100_000
-BATCH_SIZE = 64
-EPSILON_DECAY = 0.999
-EPSILON_MIN = 0.1
-MODEL_SAVE_INTERVAL = 1  # episode
-LOG_INTERVAL = 1
+MAX_EPISODES: Final[int] = 20_000
+GAMMA: Final[float] = 0.99
+LEARNING_RATE: Final[float] = 0.001
+MEMORY_SIZE: Final[int] = 100_000
+BATCH_SIZE: Final[int] = 64
+EPSILON_DECAY: Final[float] = 0.999
+EPSILON_MIN: Final[float] = 0.1
+MODEL_SAVE_INTERVAL: Final[int] = 1  # episode
+LOG_INTERVAL: Final[int] = 1
 
+# checkpoints dir
 CHECKPOINTS_DIR: Final[Path] = Path("checkpoints")
-CHECKPOINTS_DIR.mkdir(exist_ok=True)
+CHECKPOINTS_DIR.mkdir(exist_ok=True)  # ensure dir
 
 
 def preprocess_state(state):

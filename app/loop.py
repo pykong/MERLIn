@@ -1,15 +1,15 @@
 import random
 from collections import deque
-from csv import DictWriter
 from pathlib import Path
 from time import time
-from typing import Final, Self
+from typing import Final
 
 import cv2 as cv
 import numpy as np
 from dqn_torch import DQN
 from loguru import logger
 from pong_wrapper import PongWrapper
+from utils.csv_logger import CsvLogger
 
 # Set random seeds for reproducibility
 RANDOM_SEED: Final[int] = 0
@@ -38,20 +38,6 @@ def preprocess_state(state):
     state = cv.resize(state, (80, 80), interpolation=cv.INTER_AREA)  # downsample
     state = np.expand_dims(state, axis=0)  # add channel dimension at the beginning
     return state
-
-
-class CsvLogger:
-    def __init__(self: Self, log_file: Path, columns: list[str]) -> None:
-        self.log_file = log_file
-        self.columns = columns
-        with open(self.log_file, "w", newline="") as csvfile:
-            self.writer = DictWriter(csvfile, fieldnames=columns)
-            self.writer.writeheader()
-
-    def log(self: Self, items: dict[str, str | int | float]) -> None:
-        with open(self.log_file, "a", newline="") as csvfile:
-            self.writer = DictWriter(csvfile, fieldnames=self.columns)
-            self.writer.writerow(items)
 
 
 def loop():

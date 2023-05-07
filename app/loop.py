@@ -78,17 +78,16 @@ def loop():
 
             if len(memory) >= BATCH_SIZE:
                 minibatch = random.sample(memory, BATCH_SIZE)
-                states, actions, rewards, next_states, dones = map(
-                    np.array, zip(*minibatch)
-                )
-                dqn.update(states, actions, rewards, next_states, dones)
+                minibatch = map(np.array, zip(*minibatch))
+                dqn.update(*minibatch)
+
+        epsilon = max(EPSILON_MIN, epsilon * EPSILON_DECAY)  # update epsilon
 
         episode_time.append(time() - start_time)
         episode_rewards.append(episode_reward)
         episode_lengths.append(episode_length)
         if episode_reward > 0:
             win_count += 1
-        epsilon = max(EPSILON_MIN, epsilon * EPSILON_DECAY)
 
         if episode % LOG_INTERVAL == 0:
             avg_time = np.mean(episode_time[-LOG_INTERVAL:])

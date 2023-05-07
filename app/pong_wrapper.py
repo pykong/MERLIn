@@ -4,6 +4,8 @@ import cv2 as cv
 import gym
 import numpy as np
 
+__all__ = ["PongWrapper"]
+
 
 def preprocess_state(state):
     """Shapes the observation space."""
@@ -29,3 +31,6 @@ class PongWrapper(gym.Wrapper):
         action = self.default_action if action not in self.allowed_actions else action
         next_state, reward, done, _, _ = super().step(action)
         return preprocess_state(next_state), reward, done
+
+    def reset(self: Self):
+        return preprocess_state(self.env.reset()[0])

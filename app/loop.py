@@ -4,18 +4,17 @@ from pathlib import Path
 from time import time
 from typing import Final
 
-import cv2 as cv
 import numpy as np
 from dqn_torch import DQN
 from loguru import logger
 from pong_wrapper import PongWrapper
 from utils.csv_logger import CsvLogger
 
-# Set random seeds for reproducibility
+# set random seeds for reproducibility
 RANDOM_SEED: Final[int] = 0
 np.random.seed(RANDOM_SEED)
 
-# Hyperparameters
+# hyperparameters
 MAX_EPISODES: Final[int] = 20_000
 GAMMA: Final[float] = 0.99
 LEARNING_RATE: Final[float] = 0.001
@@ -28,16 +27,7 @@ LOG_INTERVAL: Final[int] = 1
 
 # checkpoints dir
 CHECKPOINTS_DIR: Final[Path] = Path("checkpoints")
-CHECKPOINTS_DIR.mkdir(exist_ok=True)  # ensure dir
-
-
-def preprocess_state(state):
-    """Shapes the observation space."""
-    state = state[35:195]  # crop irrelevant parts of the image (top and bottom)
-    state = cv.cvtColor(state, cv.COLOR_RGB2GRAY)  # convert to grayscale
-    state = cv.resize(state, (80, 80), interpolation=cv.INTER_AREA)  # downsample
-    state = np.expand_dims(state, axis=0)  # add channel dimension at the beginning
-    return state
+LOG_DIR: Final[Path] = Path("log")
 
 
 def loop():
@@ -56,7 +46,7 @@ def loop():
     win_count = 0
 
     csv_logger = CsvLogger(
-        Path("training_metrics.log"),
+        LOG_DIR / "training_metrics.log",
         [
             "episode",
             "avg_reward",
@@ -69,7 +59,7 @@ def loop():
 
     for episode in range(MAX_EPISODES):
         print(f"episode: {episode}")
-        state = preprocess_state(env.reset()[0])
+        state = env.reset()
 
         done = False
         episode_reward = 0

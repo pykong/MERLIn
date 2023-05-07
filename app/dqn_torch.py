@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import numpy as np
 import torch
 import torch.nn as nn
@@ -76,5 +78,6 @@ class DQN(nn.Module):
             )  # Convert state to a float tensor and add a batch dimension
             return torch.argmax(self(state_tensor)).item()
 
-    def save_model(self, file_name) -> None:
+    def save_model(self, file_name: Path) -> None:
+        file_name.parent.mkdir(parents=True, exist_ok=True)  # ensure folders
         torch.save(self.state_dict(), file_name)

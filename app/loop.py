@@ -5,8 +5,7 @@ from pathlib import Path
 from time import time
 from typing import Self
 
-import cv2
-import gym
+import cv2 as cv
 import numpy as np
 from dqn_torch import DQN
 from loguru import logger
@@ -29,12 +28,11 @@ LOG_INTERVAL = 1
 
 
 def preprocess_state(state):
-    state = state[35:195]  # Crop the irrelevant parts of the image (top and bottom)
-    state = cv2.cvtColor(state, cv2.COLOR_RGB2GRAY)  # Convert to grayscale
-    state = cv2.resize(
-        state, (80, 80), interpolation=cv2.INTER_AREA
-    )  # Downsample to 80x80
-    state = np.expand_dims(state, axis=0)  # Add a channel dimension at the beginning
+    """Shapes the observation space."""
+    state = state[35:195]  # crop irrelevant parts of the image (top and bottom)
+    state = cv.cvtColor(state, cv.COLOR_RGB2GRAY)  # convert to grayscale
+    state = cv.resize(state, (80, 80), interpolation=cv.INTER_AREA)  # downsample
+    state = np.expand_dims(state, axis=0)  # add channel dimension at the beginning
     return state
 
 

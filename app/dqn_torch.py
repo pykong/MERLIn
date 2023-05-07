@@ -69,14 +69,14 @@ class DQN(nn.Module):
         loss.backward()
         self.optimizer.step()
 
-    def act(self, state, epsilon):
+    def act(self, state, epsilon) -> int:
         if np.random.rand() < epsilon:
             return np.random.randint(self.fc2.out_features)
         with torch.no_grad():
             state_tensor = (
                 torch.from_numpy(state).float().unsqueeze(0)
             )  # Convert state to a float tensor and add a batch dimension
-            return torch.argmax(self(state_tensor)).item()
+            return int(torch.argmax(self(state_tensor)).item())
 
     def save_model(self, file_name: Path) -> None:
         file_name.parent.mkdir(parents=True, exist_ok=True)  # ensure folders

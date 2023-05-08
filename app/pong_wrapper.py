@@ -1,10 +1,16 @@
-from typing import Final, Self, Set
+from typing import Any, Final, NamedTuple, Self, Set
 
 import cv2 as cv
 import gym
 import numpy as np
 
 __all__ = ["PongWrapper"]
+
+
+class Step(NamedTuple):
+    state: np.ndarray
+    reward: float
+    don: bool
 
 
 def preprocess_state(state):
@@ -26,11 +32,11 @@ class PongWrapper(gym.Wrapper):
         super().__init__(env)
         self.action_space = gym.spaces.Discrete(len(self.allowed_actions))
 
-    def step(self: Self, action: int):
+    def step(self: Self, action: int) -> Step:
         """Map the reduced action space to the original actions."""
         action = self.default_action if action not in self.allowed_actions else action
         next_state, reward, done, _, _ = super().step(action)
-        return preprocess_state(next_state), reward, done
+        return Step(preprocess_state(next_state), reward, done)
 
     def reset(self: Self):
         return preprocess_state(self.env.reset()[0])

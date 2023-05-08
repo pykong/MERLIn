@@ -63,18 +63,20 @@ def loop():
         print(f"episode: {episode}")
         state = env.reset()
 
-        done = False
         episode_reward = 0
         episode_length = 0
         start_time = time()
 
+        video = None
         if episode % RECORD_INTERVAL == 0:
             # Set up the video recorder
             video = video_recorder.VideoRecorder(env, f"video/episode_{episode}.mp4")
 
         # run episode
+        done = False
         while not done:
-            video.capture_frame()
+            if video:
+                video.capture_frame()
             action = dqn.act(state, epsilon)
             next_state, reward, done = env.step(action)
             memory.append((state, action, reward, next_state, done))
@@ -120,12 +122,9 @@ def loop():
         if episode % MODEL_SAVE_INTERVAL == 0:
             dqn.save_model(CHECKPOINTS_DIR / f"pong_model_{total_steps}.pth")
 
-        if episode % RECORD_INTERVAL == 0:
-            # Close the video recorder
-            try:
-                video.close()
-            except e:
-                print(e)
+        # Close the video recorder
+        if video:
+            video.close()
 
 
 if __name__ == "__main__":

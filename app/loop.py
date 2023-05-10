@@ -77,6 +77,7 @@ def loop():
         # run episode
         done = False
         while not done:
+            total_steps += 1
             if video:
                 video.capture_frame()
             action = dqn.act(state, epsilon)

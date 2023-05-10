@@ -10,6 +10,7 @@ from gym.wrappers.monitoring import video_recorder
 from loguru import logger
 from pong_wrapper import PongWrapper
 from utils.csv_logger import CsvLogger
+from utils.torch_device import get_torch_device
 
 # set random seeds for reproducibility
 RANDOM_SEED: Final[int] = 0
@@ -38,6 +39,7 @@ def loop():
     num_actions = env.action_space.n
 
     dqn = DQN(input_shape, num_actions)
+    dqn.to(get_torch_device())
     memory = deque(maxlen=MEMORY_SIZE)
     epsilon = 1.0
 

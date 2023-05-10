@@ -56,16 +56,27 @@ class DQN(nn.Module):
         return self.fc2(x)
 
     def update(self, states, actions, rewards, next_states, dones):
-        target_values = self(torch.Tensor(states))
-        next_target_values = self(torch.Tensor(next_states)).detach()
-        target_values[np.arange(states.shape[0]), actions] = torch.Tensor(
-            rewards
-        ) + GAMMA * torch.max(next_target_values, dim=1).values * torch.Tensor(
-            1 - dones
+        device = next(self.parameters()).device  # Get the device of the model
+
+        # Move tensors to the device and ensure they all have the same data type (torch.float32)
+        states = torch.tensor(states, dtype=torch.float32).to(device)
+        actions = torch.tensor(actions, dtype=torch.long).to(
+            device
+        )  # Use long dtype for indices
+        rewards = torch.tensor(rewards, dtype=torch.float32).to(device)
+        next_states = torch.tensor(next_states, dtype=torch.float32).to(device)
+        dones = torch.tensor(dones, dtype=torch.float32).to(device)
+
+        target_values = self(states)
+        next_target_values = self(next_states).detach()
+        target_values[
+            np.arange(states.shape[0]), actions
+        ] = rewards + GAMMA * torch.max(next_target_values, dim=1).values * (
+            1.0 - dones
         )
 
         self.optimizer.zero_grad()
-        loss = self.loss_fn(self(torch.Tensor(states)), target_values)
+        loss = self.loss_fn(self(states), target_values)
         loss.backward()
         self.optimizer.step()
 
@@ -76,6 +87,8 @@ class DQN(nn.Module):
             state_tensor = (
                 torch.from_numpy(state).float().unsqueeze(0)
             )  # Convert state to a float tensor and add a batch dimension
+            device = next(self.parameters()).device  # Get the device of the modelg
+            state_tensor = torch.tensor(state_tensor, dtype=torch.float32).to(device)
             return int(torch.argmax(self(state_tensor)).item())
 
     def save_model(self, file_name: Path) -> None:

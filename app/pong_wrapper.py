@@ -34,7 +34,6 @@ class PongWrapper(gym.Wrapper):
         self.skip = skip
 
     def step(self: Self, action: int) -> Step:
-        """Map the reduced action space to the original actions."""
         action = self.default_action if action not in self.allowed_actions else action
 
         total_reward = 0
@@ -47,7 +46,7 @@ class PongWrapper(gym.Wrapper):
             if done:
                 break
 
-        return Step(preprocess_state(next_state), reward, done)
+        return Step(preprocess_state(next_state), total_reward, done)
 
     def reset(self: Self):
         return preprocess_state(self.env.reset()[0])

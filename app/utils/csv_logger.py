@@ -1,6 +1,8 @@
 from csv import DictWriter
 from pathlib import Path
-from typing import Self
+from typing import Any, Self
+
+from numpy import floating
 
 
 class CsvLogger:
@@ -12,7 +14,7 @@ class CsvLogger:
             self.writer = DictWriter(csvfile, fieldnames=columns)
             self.writer.writeheader()
 
-    def log(self: Self, items: dict[str, str | int | float]) -> None:
+    def log(self: Self, items: dict[str, str | int | float | floating[Any]]) -> None:
         with open(self.log_file, "a", newline="") as csvfile:
             self.writer = DictWriter(csvfile, fieldnames=self.columns)
             self.writer.writerow(items)

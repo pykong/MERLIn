@@ -36,7 +36,7 @@ LOG_DIR: Final[Path] = Path("log")
 def loop():
     env = PongWrapper("PongDeterministic-v4")
     input_shape = (1, 80, 80)
-    num_actions = env.action_space.n
+    num_actions = env.action_space.n # type: ignore
 
     dqn = DQN(input_shape, num_actions)
     dqn.to(get_torch_device())

@@ -18,16 +18,16 @@ np.random.seed(RANDOM_SEED)
 
 # hyperparameters
 MAX_EPISODES: Final[int] = 20_000
-FRAME_SKIP = 4
+FRAME_SKIP: Final[int] = 4
 GAMMA: Final[float] = 0.99
 LEARNING_RATE: Final[float] = 0.001
 MEMORY_SIZE: Final[int] = 100_000
-BATCH_SIZE: Final[int] = 64
+BATCH_SIZE: Final[int] = 32
 EPSILON_DECAY: Final[float] = 0.999
 EPSILON_MIN: Final[float] = 0.1
-MODEL_SAVE_INTERVAL: Final[int] = 1
+MODEL_SAVE_INTERVAL: Final[int] = 32
 LOG_INTERVAL: Final[int] = 1
-RECORD_INTERVAL: Final[int] = 1
+RECORD_INTERVAL: Final[int] = 32
 
 # checkpoints dir
 CHECKPOINTS_DIR: Final[Path] = Path("checkpoints")
@@ -63,7 +63,6 @@ def loop():
     )
 
     for episode in range(MAX_EPISODES):
-        print(f"episode: {episode}")
         state = env.reset()
 
         episode_reward = 0

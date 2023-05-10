@@ -1,8 +1,9 @@
-from typing import Any, Final, NamedTuple, Self, Set
+from typing import Final, NamedTuple, Self, Set
 
 import cv2 as cv
 import gym
 import numpy as np
+from gym.spaces import Discrete
 
 __all__ = ["PongWrapper"]
 
@@ -30,7 +31,7 @@ class PongWrapper(gym.Wrapper):
     def __init__(self: Self, env_name: str, skip: int = 1):
         env = gym.make(env_name, render_mode="rgb_array")
         super().__init__(env)
-        self.action_space = gym.spaces.Discrete(len(self.allowed_actions))
+        self.action_space = Discrete(len(self.allowed_actions))
         self.skip = skip
 
     def step(self: Self, action: int) -> Step:

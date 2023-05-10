@@ -27,15 +27,26 @@ class PongWrapper(gym.Wrapper):
     default_action: Final[int] = 0
     allowed_actions: Final[Set[int]] = {0, 1, 2, 3}  # TODO is '1' needed?
 
-    def __init__(self: Self, env_name: str):
+    def __init__(self: Self, env_name: str, skip: int = 1):
         env = gym.make(env_name, render_mode="rgb_array")
         super().__init__(env)
         self.action_space = gym.spaces.Discrete(len(self.allowed_actions))
+        self.skip = skip
 
     def step(self: Self, action: int) -> Step:
         """Map the reduced action space to the original actions."""
         action = self.default_action if action not in self.allowed_actions else action
-        next_state, reward, done, _, _ = super().step(action)
+
+        total_reward = 0
+        next_state = None
+        reward = 0
+        done = False
+        for _ in range(self.skip):
+            next_state, reward, done, _, _ = super().step(action)
+            total_reward += reward
+            if done:
+                break
+
         return Step(preprocess_state(next_state), reward, done)
 
     def reset(self: Self):

@@ -18,6 +18,7 @@ np.random.seed(RANDOM_SEED)
 
 # hyperparameters
 MAX_EPISODES: Final[int] = 20_000
+FRAME_SKIP = 4
 GAMMA: Final[float] = 0.99
 LEARNING_RATE: Final[float] = 0.001
 MEMORY_SIZE: Final[int] = 100_000
@@ -34,9 +35,9 @@ LOG_DIR: Final[Path] = Path("log")
 
 
 def loop():
-    env = PongWrapper("PongDeterministic-v4")
+    env = PongWrapper("ALE/Pong-v5", skip=FRAME_SKIP)
     input_shape = (1, 80, 80)
-    num_actions = env.action_space.n # type: ignore
+    num_actions = env.action_space.n  # type: ignore
 
     dqn = DQN(input_shape, num_actions)
     dqn.to(get_torch_device())

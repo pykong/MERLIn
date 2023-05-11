@@ -55,7 +55,7 @@ class DQN(nn.Module):
         x = torch.relu(self.fc1(x))
         return self.fc2(x)
 
-    def update(self, states, actions, rewards, next_states, dones):
+    def update(self, states, actions, rewards, next_states, dones, target_network):
         device = next(self.parameters()).device  # Get the device of the model
 
         # Move tensors to the device and ensure they all have the same data type (torch.float32)
@@ -68,7 +68,7 @@ class DQN(nn.Module):
         dones = torch.tensor(dones, dtype=torch.float32).to(device)
 
         target_values = self(states)
-        next_target_values = self(next_states).detach()
+        next_target_values = target_network(next_states).detach()
         target_values[
             np.arange(states.shape[0]), actions
         ] = rewards + GAMMA * torch.max(next_target_values, dim=1).values * (
@@ -94,3 +94,6 @@ class DQN(nn.Module):
     def save_model(self, file_name: Path) -> None:
         file_name.parent.mkdir(parents=True, exist_ok=True)  # ensure folders
         torch.save(self.state_dict(), file_name)
+
+    def copy_from(self, other):
+        self.load_state_dict(other.state_dict())

@@ -29,6 +29,7 @@ MODEL_SAVE_INTERVAL: Final[int] = 32
 LOG_INTERVAL: Final[int] = 1
 RECORD_INTERVAL: Final[int] = 32
 STEP_PENALTY: Final[float] = 0.01
+TARGET_NETWORK_UPDATE_INTERVAL: Final[int] = 1000
 
 # checkpoints dir
 CHECKPOINTS_DIR: Final[Path] = Path("checkpoints")
@@ -42,6 +43,13 @@ def loop():
 
     dqn = DQN(input_shape, num_actions)
     dqn.to(get_torch_device())
+
+    # Create a target network
+    dqn_target = DQN(input_shape, num_actions)
+    dqn_target.to(get_torch_device())
+    # Initially set it to the same weights as dqn
+    dqn_target.copy_from(dqn)
+
     memory = deque(maxlen=MEMORY_SIZE)
     epsilon = 1.0
 
@@ -92,7 +100,11 @@ def loop():
             if len(memory) >= BATCH_SIZE:
                 minibatch = random.sample(memory, BATCH_SIZE)
                 minibatch = map(np.array, zip(*minibatch))
-                dqn.update(*minibatch)
+                dqn.update(*minibatch, dqn_target)
+
+            # Periodically update the target network
+            if total_steps % TARGET_NETWORK_UPDATE_INTERVAL == 0:
+                dqn_target.copy_from(dqn)
 
         epsilon = max(EPSILON_MIN, epsilon * EPSILON_DECAY)  # update epsilon
 

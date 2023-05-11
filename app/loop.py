@@ -29,6 +29,7 @@ MODEL_SAVE_INTERVAL: Final[int] = 64
 RECORD_INTERVAL: Final[int] = 512
 STEP_PENALTY: Final[float] = 0.01
 TARGET_NETWORK_UPDATE_INTERVAL: Final[int] = 1000
+NUM_STACKED_FRAMES: Final[int] = 4
 
 # checkpoints dir
 CHECKPOINTS_DIR: Final[Path] = Path("checkpoints")
@@ -64,8 +65,13 @@ def log_episode(episode, reward, steps, epsilon, start_time):
 
 
 def loop():
-    env = PongWrapper("ALE/Pong-v5", skip=FRAME_SKIP, step_penalty=STEP_PENALTY)
-    input_shape = (1, 80, 80)
+    env = PongWrapper(
+        "ALE/Pong-v5",
+        skip=FRAME_SKIP,
+        step_penalty=STEP_PENALTY,
+        num_stacked_frames=NUM_STACKED_FRAMES,
+    )
+    input_shape = (1, 80 * NUM_STACKED_FRAMES, 80)
     num_actions = env.action_space.n  # type: ignore
 
     dqn = DQN(input_shape, num_actions)

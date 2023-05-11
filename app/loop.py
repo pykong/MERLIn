@@ -26,7 +26,6 @@ BATCH_SIZE: Final[int] = 64
 EPSILON_DECAY: Final[float] = 0.995
 EPSILON_MIN: Final[float] = 0.1
 MODEL_SAVE_INTERVAL: Final[int] = 64
-LOG_INTERVAL: Final[int] = 1
 RECORD_INTERVAL: Final[int] = 512
 STEP_PENALTY: Final[float] = 0.01
 TARGET_NETWORK_UPDATE_INTERVAL: Final[int] = 1000
@@ -47,27 +46,21 @@ def loop():
     # Create a target network
     dqn_target = DQN(input_shape, num_actions)
     dqn_target.to(get_torch_device())
-    # Initially set it to the same weights as dqn
     dqn_target.copy_from(dqn)
 
     memory = deque(maxlen=MEMORY_SIZE)
     epsilon = 1.0
 
     total_steps = 0
-    episode_rewards = []
-    episode_lengths = []
-    episode_time = []
-    win_count = 0
 
     csv_logger = CsvLogger(
         LOG_DIR / "training_metrics.log",
         [
             "episode",
-            "avg_reward",
-            "win_rate",
-            "avg_episode_length",
+            "episode_reward",
+            "episode_length",
             "epsilon",
-            "avg_time",
+            "cpu_time",
         ],
     )
 
@@ -108,32 +101,21 @@ def loop():
 
         epsilon = max(EPSILON_MIN, epsilon * EPSILON_DECAY)  # update epsilon
 
-        episode_time.append(time() - start_time)
-        episode_rewards.append(episode_reward)
-        episode_lengths.append(episode_length)
-        if episode_reward > 0:
-            win_count += 1
+        # log episode
+        cpu_time = time() - start_time
 
-        if episode % LOG_INTERVAL == 0:
-            avg_time = np.mean(episode_time[-LOG_INTERVAL:])
-            avg_reward = np.mean(episode_rewards[-LOG_INTERVAL:])
-            avg_episode_length = np.mean(episode_lengths[-LOG_INTERVAL:])
-            win_rate = (win_count / LOG_INTERVAL) * 100
+        log_message = f"{episode},{episode_reward:.2f},{episode_length:.2f},{epsilon:.4f},{cpu_time:.2f}"
 
-            log_message = f"{episode},{avg_reward:.2f},{win_rate:.2f},{avg_episode_length:.2f},{epsilon:.4f},{avg_time:.2f}"
-
-            logger.info(log_message)
-            csv_logger.log(
-                {
-                    "episode": episode,
-                    "avg_reward": avg_reward,
-                    "win_rate": win_rate,
-                    "avg_episode_length": avg_episode_length,
-                    "epsilon": epsilon,
-                    "avg_time": avg_time,
-                }
-            )
-            win_count = 0
+        logger.info(log_message)
+        csv_logger.log(
+            {
+                "episode": episode,
+                "episode_reward": episode_reward,
+                "episode_length": episode_length,
+                "epsilon": epsilon,
+                "cpu_time": cpu_time,
+            }
+        )
 
         if episode % MODEL_SAVE_INTERVAL == 0:
             dqn.save_model(CHECKPOINTS_DIR / f"pong_model_{total_steps}.pth")

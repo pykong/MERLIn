@@ -35,6 +35,34 @@ CHECKPOINTS_DIR: Final[Path] = Path("checkpoints")
 LOG_DIR: Final[Path] = Path("log")
 
 
+csv_logger = CsvLogger(
+    LOG_DIR / "training_metrics.log",
+    [
+        "episode",
+        "reward",
+        "steps",
+        "epsilon",
+        "time",
+    ],
+)
+
+
+def log_episode(episode, reward, steps, epsilon, start_time):
+    time_ = time() - start_time
+    log_message = f"{episode},{reward:.2f},{steps:.2f},{epsilon:.4f},{time_:.2f}"
+
+    logger.info(log_message)
+    csv_logger.log(
+        {
+            "episode": episode,
+            "reward": reward,
+            "steps": steps,
+            "epsilon": epsilon,
+            "time": time_,
+        }
+    )
+
+
 def loop():
     env = PongWrapper("ALE/Pong-v5", skip=FRAME_SKIP, step_penalty=STEP_PENALTY)
     input_shape = (1, 80, 80)
@@ -53,17 +81,6 @@ def loop():
 
     total_steps = 0
 
-    csv_logger = CsvLogger(
-        LOG_DIR / "training_metrics.log",
-        [
-            "episode",
-            "episode_reward",
-            "episode_length",
-            "epsilon",
-            "cpu_time",
-        ],
-    )
-
     for episode in range(MAX_EPISODES):
         state = env.reset()
 
@@ -71,52 +88,44 @@ def loop():
         episode_length = 0
         start_time = time()
 
+        # set up the video recorder
         video = None
         if episode % RECORD_INTERVAL == 0:
-            # Set up the video recorder
             video = video_recorder.VideoRecorder(env, f"video/episode_{episode}.mp4")
 
         # run episode
         done = False
         while not done:
             total_steps += 1
+            episode_length += 1
             if video:
                 video.capture_frame()
+
+            # act & observe
             action = dqn.act(state, epsilon)
             next_state, reward, done = env.step(action)
+
             memory.append((state, action, reward, next_state, done))
             state = next_state
-
             episode_reward += reward
-            episode_length += 1
 
+            # update policy network
             if len(memory) >= BATCH_SIZE:
                 minibatch = random.sample(memory, BATCH_SIZE)
                 minibatch = map(np.array, zip(*minibatch))
                 dqn.update(*minibatch, dqn_target)
 
-            # Periodically update the target network
+            # periodically update the target network
             if total_steps % TARGET_NETWORK_UPDATE_INTERVAL == 0:
                 dqn_target.copy_from(dqn)
 
-        epsilon = max(EPSILON_MIN, epsilon * EPSILON_DECAY)  # update epsilon
+        # update epsilon
+        epsilon = max(EPSILON_MIN, epsilon * EPSILON_DECAY)
 
         # log episode
-        cpu_time = time() - start_time
+        log_episode(episode, episode_reward, episode_length, epsilon, start_time)
 
-        log_message = f"{episode},{episode_reward:.2f},{episode_length:.2f},{epsilon:.4f},{cpu_time:.2f}"
-
-        logger.info(log_message)
-        csv_logger.log(
-            {
-                "episode": episode,
-                "episode_reward": episode_reward,
-                "episode_length": episode_length,
-                "epsilon": epsilon,
-                "cpu_time": cpu_time,
-            }
-        )
-
+        # periodically save model
         if episode % MODEL_SAVE_INTERVAL == 0:
             dqn.save_model(CHECKPOINTS_DIR / f"pong_model_{total_steps}.pth")
 

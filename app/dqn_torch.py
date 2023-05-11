@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Self
 
 import numpy as np
 import torch
@@ -22,7 +23,7 @@ LOG_INTERVAL = 10
 
 
 class DQN(nn.Module):
-    def __init__(self, input_shape, num_actions):
+    def __init__(self: Self, input_shape, num_actions: int) -> None:
         super(DQN, self).__init__()
         self.conv1 = nn.Conv2d(input_shape[0], 32, kernel_size=8, stride=4)
         self.conv2 = nn.Conv2d(32, 64, kernel_size=4, stride=2)
@@ -47,7 +48,7 @@ class DQN(nn.Module):
         self.optimizer = optim.Adam(self.parameters(), lr=LEARNING_RATE)
         self.loss_fn = nn.MSELoss()
 
-    def forward(self, x):
+    def forward(self: Self, x: torch.Tensor) -> torch.nn.Linear:
         x = torch.relu(self.conv1(x))
         x = torch.relu(self.conv2(x))
         x = torch.relu(self.conv3(x))
@@ -55,7 +56,9 @@ class DQN(nn.Module):
         x = torch.relu(self.fc1(x))
         return self.fc2(x)
 
-    def update(self, states, actions, rewards, next_states, dones, target_network):
+    def update(
+        self: Self, states, actions, rewards, next_states, dones, target_network
+    ) -> None:
         device = next(self.parameters()).device  # Get the device of the model
 
         # Move tensors to the device and ensure they all have the same data type (torch.float32)
@@ -80,8 +83,9 @@ class DQN(nn.Module):
         loss.backward()
         self.optimizer.step()
 
-    def act(self, state, epsilon) -> int:
+    def act(self: Self, state, epsilon: float) -> int:
         if np.random.rand() < epsilon:
+            # random exploration
             return np.random.randint(self.fc2.out_features)
         with torch.no_grad():
             state_tensor = (
@@ -91,9 +95,9 @@ class DQN(nn.Module):
             state_tensor = state_tensor.clone().detach().to(device)
             return int(torch.argmax(self(state_tensor)).item())
 
-    def save_model(self, file_name: Path) -> None:
+    def save_model(self: Self, file_name: Path) -> None:
         file_name.parent.mkdir(parents=True, exist_ok=True)  # ensure folders
         torch.save(self.state_dict(), file_name)
 
-    def copy_from(self, other):
+    def copy_from(self: Self, other: "DQN") -> None:
         self.load_state_dict(other.state_dict())

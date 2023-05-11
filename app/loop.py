@@ -28,6 +28,7 @@ EPSILON_MIN: Final[float] = 0.1
 MODEL_SAVE_INTERVAL: Final[int] = 32
 LOG_INTERVAL: Final[int] = 1
 RECORD_INTERVAL: Final[int] = 32
+STEP_PENALTY: Final[float] = 0.01
 
 # checkpoints dir
 CHECKPOINTS_DIR: Final[Path] = Path("checkpoints")
@@ -35,7 +36,7 @@ LOG_DIR: Final[Path] = Path("log")
 
 
 def loop():
-    env = PongWrapper("ALE/Pong-v5", skip=FRAME_SKIP)
+    env = PongWrapper("ALE/Pong-v5", skip=FRAME_SKIP, step_penalty=STEP_PENALTY)
     input_shape = (1, 80, 80)
     num_actions = env.action_space.n  # type: ignore
 

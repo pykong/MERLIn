@@ -28,11 +28,12 @@ class PongWrapper(gym.Wrapper):
     default_action: Final[int] = 0
     allowed_actions: Final[Set[int]] = {0, 1, 2, 3}  # TODO is '1' needed?
 
-    def __init__(self: Self, env_name: str, skip: int = 1):
+    def __init__(self: Self, env_name: str, skip: int = 1, step_penalty: float = 0):
         env = gym.make(env_name, render_mode="rgb_array")
         super().__init__(env)
         self.action_space = Discrete(len(self.allowed_actions))
         self.skip = skip
+        self.step_penalty = step_penalty
 
     def step(self: Self, action: int) -> Step:
         action = self.default_action if action not in self.allowed_actions else action
@@ -43,7 +44,13 @@ class PongWrapper(gym.Wrapper):
         done = False
         for _ in range(self.skip):
             next_state, reward, done, _, _ = super().step(action)
-            total_reward += reward
+
+            if reward == 0:
+                # reward shaping
+                total_reward -= self.step_penalty
+            else:
+                total_reward += reward
+
             if done:
                 break
 

@@ -1,5 +1,6 @@
 import random
 from collections import deque
+from copy import deepcopy
 from pathlib import Path
 from time import time
 from typing import Final
@@ -21,15 +22,15 @@ MAX_EPISODES: Final[int] = 5000
 FRAME_SKIP: Final[int] = 4
 GAMMA: Final[float] = 0.99
 LEARNING_RATE: Final[float] = 0.001
-MEMORY_SIZE: Final[int] = 100_000
+MEMORY_SIZE: Final[int] = 10_000
 BATCH_SIZE: Final[int] = 64
-EPSILON_DECAY: Final[float] = 0.995
+EPSILON_DECAY: Final[float] = 0.999
 EPSILON_MIN: Final[float] = 0.1
 MODEL_SAVE_INTERVAL: Final[int] = 64
 RECORD_INTERVAL: Final[int] = 512
 STEP_PENALTY: Final[float] = 0.01
 TARGET_NETWORK_UPDATE_INTERVAL: Final[int] = 1000
-NUM_STACKED_FRAMES: Final[int] = 4
+NUM_STACKED_FRAMES: Final[int] = 3
 
 # checkpoints dir
 CHECKPOINTS_DIR: Final[Path] = Path("checkpoints")
@@ -65,6 +66,10 @@ def log_episode(episode, reward, steps, epsilon, start_time):
 
 
 def loop():
+    total_steps = 0
+    memory = deque(maxlen=MEMORY_SIZE)
+    epsilon = 1.0
+
     env = PongWrapper(
         "ALE/Pong-v5",
         skip=FRAME_SKIP,
@@ -74,19 +79,14 @@ def loop():
     input_shape = (1, 80 * NUM_STACKED_FRAMES, 80)
     num_actions = env.action_space.n  # type: ignore
 
-    dqn = DQN(input_shape, num_actions)
-    dqn.to(get_torch_device())
+    # create the policy network
+    dqn_policy = DQN(input_shape, num_actions)
+    dqn_policy.to(get_torch_device())
 
-    # Create a target network
-    dqn_target = DQN(input_shape, num_actions)
-    dqn_target.to(get_torch_device())
-    dqn_target.copy_from(dqn)
+    # create the target network
+    dqn_target = deepcopy(dqn_policy)
 
-    memory = deque(maxlen=MEMORY_SIZE)
-    epsilon = 1.0
-
-    total_steps = 0
-
+    # run main loop
     for episode in range(MAX_EPISODES):
         state = env.reset()
 
@@ -108,7 +108,7 @@ def loop():
                 video.capture_frame()
 
             # act & observe
-            action = dqn.act(state, epsilon)
+            action = dqn_policy.act(state, epsilon)
             next_state, reward, done = env.step(action)
 
             memory.append((state, action, reward, next_state, done))
@@ -119,11 +119,11 @@ def loop():
             if len(memory) >= BATCH_SIZE:
                 minibatch = random.sample(memory, BATCH_SIZE)
                 minibatch = map(np.array, zip(*minibatch))
-                dqn.update(*minibatch, dqn_target)
+                dqn_policy.update(*minibatch, dqn_target)
 
             # periodically update the target network
             if total_steps % TARGET_NETWORK_UPDATE_INTERVAL == 0:
-                dqn_target.copy_from(dqn)
+                dqn_target.copy_from(dqn_policy)
 
         # update epsilon
         epsilon = max(EPSILON_MIN, epsilon * EPSILON_DECAY)
@@ -133,7 +133,7 @@ def loop():
 
         # periodically save model
         if episode % MODEL_SAVE_INTERVAL == 0:
-            dqn.save_model(CHECKPOINTS_DIR / f"pong_model_{total_steps}.pth")
+            dqn_policy.save_model(CHECKPOINTS_DIR / f"pong_model_{total_steps}.pth")
 
         # Close the video recorder
         if video:

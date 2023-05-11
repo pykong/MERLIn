@@ -17,17 +17,17 @@ RANDOM_SEED: Final[int] = 0
 np.random.seed(RANDOM_SEED)
 
 # hyperparameters
-MAX_EPISODES: Final[int] = 20_000
+MAX_EPISODES: Final[int] = 5000
 FRAME_SKIP: Final[int] = 4
 GAMMA: Final[float] = 0.99
 LEARNING_RATE: Final[float] = 0.001
 MEMORY_SIZE: Final[int] = 100_000
-BATCH_SIZE: Final[int] = 32
-EPSILON_DECAY: Final[float] = 0.999
+BATCH_SIZE: Final[int] = 64
+EPSILON_DECAY: Final[float] = 0.995
 EPSILON_MIN: Final[float] = 0.1
-MODEL_SAVE_INTERVAL: Final[int] = 32
+MODEL_SAVE_INTERVAL: Final[int] = 64
 LOG_INTERVAL: Final[int] = 1
-RECORD_INTERVAL: Final[int] = 32
+RECORD_INTERVAL: Final[int] = 512
 STEP_PENALTY: Final[float] = 0.01
 TARGET_NETWORK_UPDATE_INTERVAL: Final[int] = 1000
 

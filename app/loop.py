@@ -30,7 +30,7 @@ MODEL_SAVE_INTERVAL: Final[int] = 64
 RECORD_INTERVAL: Final[int] = 512
 STEP_PENALTY: Final[float] = 0.01
 TARGET_NETWORK_UPDATE_INTERVAL: Final[int] = 1000
-NUM_STACKED_FRAMES: Final[int] = 3
+NUM_STACKED_FRAMES: Final[int] = 4
 
 # checkpoints dir
 CHECKPOINTS_DIR: Final[Path] = Path("checkpoints")

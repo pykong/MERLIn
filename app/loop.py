@@ -31,6 +31,8 @@ RECORD_INTERVAL: Final[int] = 512
 STEP_PENALTY: Final[float] = 0.01
 TARGET_NETWORK_UPDATE_INTERVAL: Final[int] = 1000
 NUM_STACKED_FRAMES: Final[int] = 4
+INPUT_DIM: Final[int] = 80
+INPUT_SHAPE: Final[tuple] = (1, INPUT_DIM * NUM_STACKED_FRAMES, INPUT_DIM)
 
 # checkpoints dir
 CHECKPOINTS_DIR: Final[Path] = Path("checkpoints")
@@ -67,8 +69,8 @@ def log_episode(episode, reward, steps, epsilon, start_time):
 
 def loop():
     total_steps = 0
-    memory = deque(maxlen=MEMORY_SIZE)
     epsilon = 1.0
+    memory = deque(maxlen=MEMORY_SIZE)
 
     env = PongWrapper(
         "ALE/Pong-v5",
@@ -76,11 +78,9 @@ def loop():
         step_penalty=STEP_PENALTY,
         num_stacked_frames=NUM_STACKED_FRAMES,
     )
-    input_shape = (1, 80 * NUM_STACKED_FRAMES, 80)
-    num_actions = env.action_space.n  # type: ignore
 
     # create the policy network
-    dqn_policy = DQN(input_shape, num_actions)
+    dqn_policy = DQN(INPUT_SHAPE, num_actions=env.action_space.n)  # type: ignore
     dqn_policy.to(get_torch_device())
 
     # create the target network
@@ -135,7 +135,7 @@ def loop():
         if episode % MODEL_SAVE_INTERVAL == 0:
             dqn_policy.save_model(CHECKPOINTS_DIR / f"pong_model_{total_steps}.pth")
 
-        # Close the video recorder
+        # close the video recorder
         if video:
             video.close()
 

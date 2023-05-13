@@ -48,6 +48,7 @@ class DQNSimpleAgent:
     def act(self, state) -> int:
         if np.random.rand() <= self.epsilon:
             return random.randrange(self.action_space)
+        state = np.expand_dims(state, axis=0)
         act_values = self.model.predict(state)
         return int(np.argmax(act_values[0]))
 
@@ -55,11 +56,13 @@ class DQNSimpleAgent:
         minibatch = random.sample(self.memory, batch_size)
         for experience in minibatch:
             state, action, reward, next_state, done = experience
-            target = self.model.predict(state)
+            state = np.expand_dims(state, axis=0)  # add batch dimension
+            next_state = np.expand_dims(next_state, axis=0)  # add batch dimension
+            target = self.model.predict(state, verbose=0)
             if done:
                 target[0][action] = reward
             else:
-                Q_future = max(self.model.predict(next_state)[0])
+                Q_future = max(self.model.predict(next_state, verbose=0)[0])
                 target[0][action] = reward + Q_future * self.gamma
             self.model.fit(state, target, epochs=1, verbose=0)
         if self.epsilon > self.epsilon_min:

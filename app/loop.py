@@ -117,7 +117,7 @@ def loop():
 
         # periodically save model
         if episode % MODEL_SAVE_INTERVAL == 0:
-            dqn_policy.save_model(CHECKPOINTS_DIR / f"pong_model_{total_steps}.pth")
+            dqn_policy.save_model(CHECKPOINTS_DIR / f"pong_model_{total_steps}.h5")
 
         # close the video recorder
         if video:

@@ -12,7 +12,7 @@ from loguru import logger
 from pong_wrapper import PongWrapper
 from utils.file_utils import empty_directories
 from utils.logging import EpisodeLog, log_to_csv
-from utils.replay_memory import ReplayMemory
+from utils.replay_memory import Experience, ReplayMemory
 
 # set random seeds for reproducibility
 RANDOM_SEED: Final[int] = 0
@@ -80,6 +80,7 @@ def loop():
         # run episode
         done = False
         while not done:
+            # prepare step
             total_steps += 1
             episode_log.steps += 1
             if video:
@@ -89,7 +90,11 @@ def loop():
             action = dqn_policy.act(state, epsilon)
             next_state, reward, done = env.step(action)
 
-            memory.push(state, action, reward, next_state, done)
+            # save experience
+            experience = Experience(state, action, reward, next_state, done)
+            memory.push(experience)
+
+            # ???
             state = next_state
             episode_log.reward += reward
 

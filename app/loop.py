@@ -1,6 +1,7 @@
 import random
 from collections import deque
 from copy import deepcopy
+from dataclasses import dataclass
 from pathlib import Path
 from time import time
 from typing import Final
@@ -10,8 +11,8 @@ from agents.dqn_torch import DQN
 from gym.wrappers.monitoring import video_recorder
 from loguru import logger
 from pong_wrapper import PongWrapper
-from utils.csv_logger import CsvLogger
 from utils.file_utils import empty_directories
+from utils.logging import EpisodeLog, log_to_csv
 
 # set random seeds for reproducibility
 RANDOM_SEED: Final[int] = 0
@@ -39,34 +40,6 @@ CHECKPOINTS_DIR: Final[Path] = Path("checkpoints")
 LOG_DIR: Final[Path] = Path("log")
 
 
-csv_logger = CsvLogger(
-    LOG_DIR / "training_metrics.log",
-    [
-        "episode",
-        "reward",
-        "steps",
-        "epsilon",
-        "time",
-    ],
-)
-
-
-def log_episode(episode, reward, steps, epsilon, start_time):
-    time_ = time() - start_time
-    log_message = f"{episode},{reward:.2f},{steps:.2f},{epsilon:.4f},{time_:.2f}"
-
-    logger.info(log_message)
-    csv_logger.log(
-        {
-            "episode": episode,
-            "reward": reward,
-            "steps": steps,
-            "epsilon": epsilon,
-            "time": time_,
-        }
-    )
-
-
 def loop():
     total_steps = 0
     epsilon = 1.0
@@ -88,9 +61,9 @@ def loop():
     # run main loop
     for episode in range(MAX_EPISODES):
         state = env.reset()
+        epsilon = max(EPSILON_MIN, epsilon * EPSILON_DECAY)
 
-        episode_reward = 0
-        episode_length = 0
+        episode_log = EpisodeLog(episode=episode, epsilon=epsilon)
         start_time = time()
 
         # set up the video recorder
@@ -102,7 +75,7 @@ def loop():
         done = False
         while not done:
             total_steps += 1
-            episode_length += 1
+            episode_log.steps += 1
             if video:
                 video.capture_frame()
 
@@ -112,7 +85,7 @@ def loop():
 
             memory.append((state, action, reward, next_state, done))
             state = next_state
-            episode_reward += reward
+            episode_log.reward += reward
 
             # update policy network
             if len(memory) >= BATCH_SIZE:
@@ -124,11 +97,10 @@ def loop():
             if total_steps % TARGET_NETWORK_UPDATE_INTERVAL == 0:
                 dqn_target.copy_from(dqn_policy)
 
-        # update epsilon
-        epsilon = max(EPSILON_MIN, epsilon * EPSILON_DECAY)
-
         # log episode
-        log_episode(episode, episode_reward, episode_length, epsilon, start_time)
+        episode_log.time = time() - start_time
+        print(episode_log)
+        log_to_csv(episode_log, Path("log") / "training_metrics.log")
 
         # periodically save model
         if episode % MODEL_SAVE_INTERVAL == 0:

@@ -36,7 +36,7 @@ class DQN(nn.Module):
             self (Self): The instance.
             input_shape (tuple): The input shape.
             num_actions (int): The number of actions.
-            gamma (float, optional): ???. Defaults to 0.99.
+            gamma (float, optional): Discount factor. Defaults to 0.99.
             alpha (float, optional): The learning rate alpha. Defaults to 0.001.
 
         Returns:

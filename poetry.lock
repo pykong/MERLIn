@@ -1611,6 +1611,17 @@ files = [
 ]
 
 [[package]]
+name = "tensorflow-gpu"
+version = "2.12.0"
+description = "Removed: please install \"tensorflow\" instead."
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "tensorflow-gpu-2.12.0.tar.gz", hash = "sha256:51cc56493594840814e55545cf36c006e174a6186f71418cc29aafa62e77b756"},
+]
+
+[[package]]
 name = "tensorflow-io-gcs-filesystem"
 version = "0.32.0"
 description = "TensorFlow IO"
@@ -1954,4 +1965,4 @@ files = [
 [metadata]
 lock-version = "2.0"
     python-versions = ">=3.11,<3.12"
-content-hash = "7e325226098561f6b082331776f4582d8d87a65ff07338b701954ffa85da7399"
+content-hash = "47ef9b8bcc0a1ccc1db8827908a664d7289d152d6e53f635f22ae678ade084e5"

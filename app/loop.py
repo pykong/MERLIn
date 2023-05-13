@@ -1,17 +1,18 @@
-import random
-from collections import deque
 from copy import deepcopy
 from pathlib import Path
 from time import time
 from typing import Final
 
 import numpy as np
-from agents.dqn_torch import DQN
+
+# from agents.dqn_torch import DQN
+from agents.dqn_tensorflow import DQN
 from gym.wrappers.monitoring import video_recorder as vr
 from loguru import logger
 from pong_wrapper import PongWrapper
 from utils.file_utils import empty_directories
 from utils.logging import EpisodeLog, log_to_csv
+from utils.replay_memory import ReplayMemory
 
 # set random seeds for reproducibility
 RANDOM_SEED: Final[int] = 0
@@ -25,7 +26,7 @@ VIDEO_DIR: Final[Path] = Path("video")
 # hyperparameters
 MAX_EPISODES: Final[int] = 5000
 FRAME_SKIP: Final[int] = 4
-GAMMA: Final[float] = 0.99
+GAMMA: Final[float] = 0.99  # discount factor
 LEARNING_RATE: Final[float] = 0.001
 MEMORY_SIZE: Final[int] = 10_000
 BATCH_SIZE: Final[int] = 64
@@ -37,13 +38,13 @@ STEP_PENALTY: Final[float] = 0.01
 TARGET_NETWORK_UPDATE_INTERVAL: Final[int] = 1000
 NUM_STACKED_FRAMES: Final[int] = 4
 INPUT_DIM: Final[int] = 80
-INPUT_SHAPE: Final[tuple] = (1, INPUT_DIM * NUM_STACKED_FRAMES, INPUT_DIM)
+INPUT_SHAPE: Final[tuple] = (INPUT_DIM * NUM_STACKED_FRAMES, INPUT_DIM, 1)
 
 
 def loop():
     total_steps = 0
     epsilon = 1.0
-    memory = deque(maxlen=MEMORY_SIZE)
+    memory = ReplayMemory(capacity=MEMORY_SIZE)
 
     env = PongWrapper(
         "ALE/Pong-v5",
@@ -53,7 +54,12 @@ def loop():
     )
 
     # create the policy network
-    dqn_policy = DQN(INPUT_SHAPE, num_actions=env.action_space.n)  # type: ignore
+    dqn_policy = DQN(
+        INPUT_SHAPE,
+        action_space=env.action_space.n,  # type: ignore
+        gamma=GAMMA,
+        alpha=LEARNING_RATE,
+    )
 
     # create the target network
     dqn_target = deepcopy(dqn_policy)
@@ -83,15 +89,14 @@ def loop():
             action = dqn_policy.act(state, epsilon)
             next_state, reward, done = env.step(action)
 
-            memory.append((state, action, reward, next_state, done))
+            memory.push(state, action, reward, next_state, done)
             state = next_state
             episode_log.reward += reward
 
             # update policy network
             if len(memory) >= BATCH_SIZE:
-                minibatch = random.sample(memory, BATCH_SIZE)
-                minibatch = map(np.array, zip(*minibatch))
-                dqn_policy.update(*minibatch, dqn_target)
+                minibatch = memory.sample(BATCH_SIZE)
+                dqn_policy.update(dqn_target, *minibatch)
 
             # periodically update the target network
             if total_steps % TARGET_NETWORK_UPDATE_INTERVAL == 0:

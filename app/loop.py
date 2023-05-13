@@ -52,7 +52,7 @@ def loop():
     )
 
     # create the policy network
-    dqn_policy = DQNSimpleAgent(
+    agent = DQNSimpleAgent(
         state_shape=INPUT_SHAPE,
         action_space=env.action_space.n,  # type: ignore
         epsilon_decay=EPSILON_DECAY,
@@ -66,7 +66,7 @@ def loop():
     for episode in range(MAX_EPISODES):
         state = env.reset()
 
-        episode_log = EpisodeLog(episode=episode, epsilon=dqn_policy.epsilon)
+        episode_log = EpisodeLog(episode=episode, epsilon=agent.epsilon)
         start_time = time()
 
         # set up the video recorder
@@ -84,15 +84,15 @@ def loop():
                 video.capture_frame()
 
             # act & observe
-            action = dqn_policy.act(state)
+            action = agent.act(state)
             next_state, reward, done = env.step(action)
 
             # save experience
             experience = Experience(state, action, reward, next_state, done)
-            dqn_policy.remember(experience)
+            agent.remember(experience)
 
             # update policy network
-            dqn_policy.replay()
+            agent.replay()
 
             # ???
             state = next_state
@@ -103,7 +103,7 @@ def loop():
             #     dqn_target.copy_from(dqn_policy)
 
         # update epsilon
-        dqn_policy.update_epsilon()
+        agent.update_epsilon()
 
         # log episode
         episode_log.time = time() - start_time
@@ -112,7 +112,7 @@ def loop():
 
         # periodically save model
         if episode % MODEL_SAVE_INTERVAL == 0:
-            dqn_policy.save(CHECKPOINTS_DIR / f"pong_model_{total_steps}.pth")
+            agent.save(CHECKPOINTS_DIR / f"pong_model_{total_steps}.pth")
 
         # close the video recorder
         if video:

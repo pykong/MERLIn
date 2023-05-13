@@ -1,6 +1,6 @@
 import random
 from collections import deque, namedtuple
-from utils.replay_memory import Experience
+from utils.replay_memory import Experience, ReplayMemory
 
 import lightning as L
 import numpy as np
@@ -27,21 +27,21 @@ class DQNSimpleAgent(L.LightningModule):
         state_shape,
         action_space,
         alpha=0.001,
-        gamma=0.95,
         epsilon=1.0,
         epsilon_min=0.01,
-        epsilon_decay=0.995,
-        memory_size=10000,
+        epsilon_decay=0.999,
+        memory_size=10_000,
+        batch_size=64,
     ):
         super().__init__()
         self.state_shape = state_shape
         self.action_space = action_space
         self.alpha = alpha
-        self.gamma = gamma
         self.epsilon = epsilon
         self.epsilon_min = epsilon_min
         self.epsilon_decay = epsilon_decay
-        self.memory = deque(maxlen=memory_size)
+        self.memory = ReplayMemory(capacity=memory_size)
+        self.batch_size = batch_size
         self.model: nn.Sequential = self._build_model()
         self.gpu = get_torch_device()
         self.model.to(self.gpu)
@@ -57,7 +57,7 @@ class DQNSimpleAgent(L.LightningModule):
         )
 
     def remember(self, experience: Experience) -> None:
-        self.memory.append(experience)
+        self.memory.push(experience)
 
     def act(self, state):
         if np.random.rand() <= self.epsilon:
@@ -66,8 +66,8 @@ class DQNSimpleAgent(L.LightningModule):
         act_values = self.model(state)
         return int(torch.argmax(act_values[0]).item())
 
-    def replay(self, batch_size: int):
-        minibatch = random.sample(self.memory, batch_size)
+    def replay(self) -> None:
+        minibatch = self.memory.sample(self.batch_size)
         for experience in minibatch:
             state, action, reward, next_state, done = experience
             state = torch.from_numpy(state).float().unsqueeze(0).to(self.gpu)
@@ -77,9 +77,11 @@ class DQNSimpleAgent(L.LightningModule):
                 target[0][action] = reward
             else:
                 q_future = self.model(next_state).max(1)[0].item()
-                target[0][action] = reward + q_future * self.gamma
+                target[0][action] = reward + q_future * self.epsilon_decay
             self._update_weights(state, target)
-        if self.epsilon > self.epsilon_min:
+
+    def update_epsilon(self) -> None:
+        if self.epsilon > self.epsilon_min:  # epsilon is adjusted to often!!!git
             self.epsilon *= self.epsilon_decay
 
     def _update_weights(self, state, target):

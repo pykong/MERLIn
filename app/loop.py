@@ -26,11 +26,10 @@ VIDEO_DIR: Final[Path] = Path("video")
 # hyperparameters
 MAX_EPISODES: Final[int] = 5000
 FRAME_SKIP: Final[int] = 4
-GAMMA: Final[float] = 0.99  # discount factor
 LEARNING_RATE: Final[float] = 0.001
 MEMORY_SIZE: Final[int] = 10_000
 BATCH_SIZE: Final[int] = 64
-EPSILON_DECAY: Final[float] = 0.999
+EPSILON_DECAY: Final[float] = 0.999  # discount factor gamma
 EPSILON_MIN: Final[float] = 0.1
 MODEL_SAVE_INTERVAL: Final[int] = 64
 RECORD_INTERVAL: Final[int] = 8
@@ -43,9 +42,8 @@ INPUT_SHAPE: Final[tuple] = (INPUT_DIM * NUM_STACKED_FRAMES, INPUT_DIM, 1)
 
 def loop():
     total_steps = 0
-    epsilon = 1.0
-    memory = ReplayMemory(capacity=MEMORY_SIZE)
 
+    # create environment
     env = PongWrapper(
         "ALE/Pong-v5",
         skip=FRAME_SKIP,
@@ -57,7 +55,7 @@ def loop():
     dqn_policy = DQNSimpleAgent(
         state_shape=INPUT_SHAPE,
         action_space=env.action_space.n,  # type: ignore
-        gamma=GAMMA,
+        epsilon_decay=EPSILON_DECAY,
         alpha=LEARNING_RATE,
     )
 
@@ -67,9 +65,8 @@ def loop():
     # run main loop
     for episode in range(MAX_EPISODES):
         state = env.reset()
-        epsilon = max(EPSILON_MIN, epsilon * EPSILON_DECAY)
 
-        episode_log = EpisodeLog(episode=episode, epsilon=epsilon)
+        episode_log = EpisodeLog(episode=episode, epsilon=dqn_policy.epsilon)
         start_time = time()
 
         # set up the video recorder
@@ -93,28 +90,25 @@ def loop():
             # save experience
             experience = Experience(state, action, reward, next_state, done)
             dqn_policy.remember(experience)
-            # experience = Experience(state, action, reward, next_state, done)
-            # memory.push(experience)
+
+            # update policy network
+            dqn_policy.replay()
 
             # ???
             state = next_state
             episode_log.reward += reward
 
-            # update policy network
-
-            if len(dqn_policy.memory) >= BATCH_SIZE:
-                dqn_policy.replay(BATCH_SIZE)
-                # minibatch = memory.sample(BATCH_SIZE)
-                # dqn_policy.replay(minibatch)
-
             # periodically update the target network
             # if total_steps % TARGET_NETWORK_UPDATE_INTERVAL == 0:
             #     dqn_target.copy_from(dqn_policy)
 
+        # update epsilon
+        dqn_policy.update_epsilon()
+
         # log episode
         episode_log.time = time() - start_time
         print(episode_log)
-        log_to_csv(episode_log, Path("log") / "training_metrics.csv")
+        log_to_csv(episode_log, LOG_DIR / "training_metrics.csv")
 
         # periodically save model
         if episode % MODEL_SAVE_INTERVAL == 0:

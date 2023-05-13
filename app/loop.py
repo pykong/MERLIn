@@ -113,11 +113,11 @@ def loop():
         # log episode
         episode_log.time = time() - start_time
         print(episode_log)
-        log_to_csv(episode_log, Path("log") / "training_metrics.log")
+        log_to_csv(episode_log, Path("log") / "training_metrics.csv")
 
         # periodically save model
         if episode % MODEL_SAVE_INTERVAL == 0:
-            dqn_policy.save_model(CHECKPOINTS_DIR / f"pong_model_{total_steps}.h5")
+            dqn_policy.save(CHECKPOINTS_DIR / f"pong_model_{total_steps}.pth")
 
         # close the video recorder
         if video:

@@ -13,7 +13,7 @@ def get_torch_device() -> torch.device:
     """Provide best possible device for running PyTorch."""
     if torch.cuda.is_available():
         gpu0 = torch.cuda.get_device_name(0)
-        logger.succes(f"CUDA is available, running PyTorch on ({gpu0}).")
+        logger.success(f"CUDA is available, running PyTorch on ({gpu0}).")
         return torch.device("cuda")
     else:
         logger.warn(f"Running PyTorch on CPU.")
@@ -46,8 +46,8 @@ class DQNSimpleAgent(L.LightningModule):
             field_names=["state", "action", "reward", "next_state", "done"],
         )
         self.model = self._build_model()
-        # self.device = get_torch_device()
-        # self.model.to(self.device)
+        self.gpu = get_torch_device()
+        self.model.to(self.gpu)
 
     def _build_model(self):
         model = nn.Sequential(
@@ -66,7 +66,7 @@ class DQNSimpleAgent(L.LightningModule):
     def act(self, state):
         if np.random.rand() <= self.epsilon:
             return random.randrange(self.action_space)
-        state = torch.from_numpy(state).float().unsqueeze(0).to(self.device)
+        state = torch.from_numpy(state).float().unsqueeze(0).to(self.gpu)
         act_values = self.model(state)
         return int(torch.argmax(act_values[0]).item())
 
@@ -74,10 +74,8 @@ class DQNSimpleAgent(L.LightningModule):
         minibatch = random.sample(self.memory, batch_size)
         for experience in minibatch:
             state, action, reward, next_state, done = experience
-            state = torch.from_numpy(state).float().unsqueeze(0).to(self.device)
-            next_state = (
-                torch.from_numpy(next_state).float().unsqueeze(0).to(self.device)
-            )
+            state = torch.from_numpy(state).float().unsqueeze(0).to(self.gpu)
+            next_state = torch.from_numpy(next_state).float().unsqueeze(0).to(self.gpu)
             target = self.model(state)
             if done:
                 target[0][action] = reward
@@ -89,10 +87,10 @@ class DQNSimpleAgent(L.LightningModule):
             self.epsilon *= self.epsilon_decay
 
     def _update_weights(self, state, target):
-        self.optimizer.zero_grad()
+        # self.optimizer.zero_grad()
         loss = F.mse_loss(self.model(state), target)
         loss.backward()
-        self.optimizer.step()
+        # self.optimizer.step()
 
     def forward(self, x):
         return self.model(x)

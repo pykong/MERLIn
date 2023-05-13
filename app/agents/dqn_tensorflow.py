@@ -5,6 +5,8 @@ from tensorflow.keras.losses import MeanSquaredError
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.optimizers import Adam
 
+from app.utils.replay_memory import Experience
+
 
 class DQN:
     def __init__(self, state_shape, action_space, gamma=0.99, alpha=0.001):
@@ -40,7 +42,9 @@ class DQN:
         q_values = self.model.predict(state)
         return np.argmax(q_values[0])
 
-    def update(self, target_model, states, actions, rewards, next_states, dones):
+    def update(self, experience: Experience):
+        
+
         # Predict Q(s, a) given the batch of states
         q_sa = self.model.predict(states)
 

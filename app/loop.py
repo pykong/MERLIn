@@ -6,7 +6,7 @@ from typing import Final
 import numpy as np
 
 # from agents.dqn_torch import DQN
-from agents.dqn_tensorflow import DQN
+from agents.dqn_simple import DQNSimpleAgent
 from gym.wrappers.monitoring import video_recorder as vr
 from loguru import logger
 from pong_wrapper import PongWrapper
@@ -54,15 +54,15 @@ def loop():
     )
 
     # create the policy network
-    dqn_policy = DQN(
-        INPUT_SHAPE,
+    dqn_policy = DQNSimpleAgent(
+        state_shape=INPUT_SHAPE,
         action_space=env.action_space.n,  # type: ignore
         gamma=GAMMA,
         alpha=LEARNING_RATE,
     )
 
     # create the target network
-    dqn_target = deepcopy(dqn_policy)
+    # dqn_target = deepcopy(dqn_policy)
 
     # run main loop
     for episode in range(MAX_EPISODES):
@@ -87,25 +87,28 @@ def loop():
                 video.capture_frame()
 
             # act & observe
-            action = dqn_policy.act(state, epsilon)
+            action = dqn_policy.act(state)
             next_state, reward, done = env.step(action)
 
             # save experience
-            experience = Experience(state, action, reward, next_state, done)
-            memory.push(experience)
+            dqn_policy.remember(state, action, reward, next_state, done)
+            # experience = Experience(state, action, reward, next_state, done)
+            # memory.push(experience)
 
             # ???
             state = next_state
             episode_log.reward += reward
 
             # update policy network
-            if len(memory) >= BATCH_SIZE:
-                minibatch = memory.sample(BATCH_SIZE)
-                dqn_policy.update(dqn_target, *minibatch)
+
+            if len(dqn_policy.memory) >= BATCH_SIZE:
+                dqn_policy.replay(BATCH_SIZE)
+                # minibatch = memory.sample(BATCH_SIZE)
+                # dqn_policy.replay(minibatch)
 
             # periodically update the target network
-            if total_steps % TARGET_NETWORK_UPDATE_INTERVAL == 0:
-                dqn_target.copy_from(dqn_policy)
+            # if total_steps % TARGET_NETWORK_UPDATE_INTERVAL == 0:
+            #     dqn_target.copy_from(dqn_policy)
 
         # log episode
         episode_log.time = time() - start_time

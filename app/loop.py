@@ -1,14 +1,13 @@
 import random
 from collections import deque
 from copy import deepcopy
-from dataclasses import dataclass
 from pathlib import Path
 from time import time
 from typing import Final
 
 import numpy as np
 from agents.dqn_torch import DQN
-from gym.wrappers.monitoring import video_recorder
+from gym.wrappers.monitoring import video_recorder as vr
 from loguru import logger
 from pong_wrapper import PongWrapper
 from utils.file_utils import empty_directories
@@ -17,6 +16,11 @@ from utils.logging import EpisodeLog, log_to_csv
 # set random seeds for reproducibility
 RANDOM_SEED: Final[int] = 0
 np.random.seed(RANDOM_SEED)
+
+# checkpoints dir
+CHECKPOINTS_DIR: Final[Path] = Path("checkpoints")
+LOG_DIR: Final[Path] = Path("log")
+VIDEO_DIR: Final[Path] = Path("video")
 
 # hyperparameters
 MAX_EPISODES: Final[int] = 5000
@@ -34,10 +38,6 @@ TARGET_NETWORK_UPDATE_INTERVAL: Final[int] = 1000
 NUM_STACKED_FRAMES: Final[int] = 4
 INPUT_DIM: Final[int] = 80
 INPUT_SHAPE: Final[tuple] = (1, INPUT_DIM * NUM_STACKED_FRAMES, INPUT_DIM)
-
-# checkpoints dir
-CHECKPOINTS_DIR: Final[Path] = Path("checkpoints")
-LOG_DIR: Final[Path] = Path("log")
 
 
 def loop():
@@ -69,7 +69,7 @@ def loop():
         # set up the video recorder
         video = None
         if episode % RECORD_INTERVAL == 0:
-            video = video_recorder.VideoRecorder(env, f"video/episode_{episode}.mp4")
+            video = vr.VideoRecorder(env, str(VIDEO_DIR / f"episode_{episode}.mp4"))
 
         # run episode
         done = False
@@ -112,5 +112,5 @@ def loop():
 
 
 if __name__ == "__main__":
-    empty_directories("checkpoints", "log", "video")
+    empty_directories(CHECKPOINTS_DIR, LOG_DIR, VIDEO_DIR)
     loop()

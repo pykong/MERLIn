@@ -27,7 +27,7 @@ BATCH_SIZE: Final[int] = 64
 EPSILON_DECAY: Final[float] = 0.999
 EPSILON_MIN: Final[float] = 0.1
 MODEL_SAVE_INTERVAL: Final[int] = 64
-RECORD_INTERVAL: Final[int] = 512
+RECORD_INTERVAL: Final[int] = 8
 STEP_PENALTY: Final[float] = 0.01
 TARGET_NETWORK_UPDATE_INTERVAL: Final[int] = 1000
 NUM_STACKED_FRAMES: Final[int] = 4
@@ -76,7 +76,7 @@ def loop():
         "ALE/Pong-v5",
         skip=FRAME_SKIP,
         step_penalty=STEP_PENALTY,
-        num_stacked_frames=NUM_STACKED_FRAMES,
+        stack_size=NUM_STACKED_FRAMES,
     )
 
     # create the policy network

@@ -6,25 +6,30 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-# Set random seeds for reproducibility
-np.random.seed(0)
-
-
-# Hyperparameters
-MAX_EPISODES = 20_000
-GAMMA = 0.99
-LEARNING_RATE = 0.001
-MEMORY_SIZE = 100000
-BATCH_SIZE = 64
-EPSILON_DECAY = 0.999
-EPSILON_MIN = 0.1
-MODEL_SAVE_INTERVAL = 50  # episode
-LOG_INTERVAL = 10
-
 
 class DQN(nn.Module):
-    def __init__(self: Self, input_shape, num_actions: int) -> None:
+    def __init__(
+        self: Self,
+        input_shape,
+        *,
+        num_actions: int,
+        gamma: float = 0.99,
+        alpha: float = 0.001,
+    ) -> None:
+        """The deep Q network implementation.
+
+        Args:
+            self (Self): The instance.
+            input_shape (tuple): The input shape.
+            num_actions (int): The number of actions.
+            gamma (float, optional): ???. Defaults to 0.99.
+            alpha (float, optional): The learning rate alpha. Defaults to 0.001.
+
+        Returns:
+            _type_: _description_
+        """
         super(DQN, self).__init__()
+        self.gamma = gamma
         self.conv1 = nn.Conv2d(input_shape[0], 32, kernel_size=8, stride=4)
         self.conv2 = nn.Conv2d(32, 64, kernel_size=4, stride=2)
         self.conv3 = nn.Conv2d(64, 64, kernel_size=3)
@@ -45,7 +50,7 @@ class DQN(nn.Module):
         self.fc1 = nn.Linear(linear_input_size, 512)
         self.fc2 = nn.Linear(512, num_actions)
 
-        self.optimizer = optim.Adam(self.parameters(), lr=LEARNING_RATE)
+        self.optimizer = optim.Adam(self.parameters(), lr=alpha)
         self.loss_fn = nn.MSELoss()
 
     def forward(self: Self, x: torch.Tensor) -> torch.nn.Linear:
@@ -74,7 +79,7 @@ class DQN(nn.Module):
         next_target_values = target_network(next_states).detach()
         target_values[
             np.arange(states.shape[0]), actions
-        ] = rewards + GAMMA * torch.max(next_target_values, dim=1).values * (
+        ] = rewards + self.gamma * torch.max(next_target_values, dim=1).values * (
             1.0 - dones
         )
 

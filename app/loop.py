@@ -11,6 +11,7 @@ from gym.wrappers.monitoring import video_recorder
 from loguru import logger
 from pong_wrapper import PongWrapper
 from utils.csv_logger import CsvLogger
+from utils.file_utils import empty_directories
 
 # set random seeds for reproducibility
 RANDOM_SEED: Final[int] = 0
@@ -139,4 +140,5 @@ def loop():
 
 
 if __name__ == "__main__":
+    empty_directories("checkpoints", "log", "video")
     loop()

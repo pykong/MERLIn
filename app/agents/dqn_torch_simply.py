@@ -1,5 +1,6 @@
 import random
 from collections import deque, namedtuple
+from utils.replay_memory import Experience
 
 import lightning as L
 import numpy as np
@@ -41,16 +42,12 @@ class DQNSimpleAgent(L.LightningModule):
         self.epsilon_min = epsilon_min
         self.epsilon_decay = epsilon_decay
         self.memory = deque(maxlen=memory_size)
-        self.Experience = namedtuple(
-            "Experience",
-            field_names=["state", "action", "reward", "next_state", "done"],
-        )
-        self.model = self._build_model()
+        self.model: nn.Sequential = self._build_model()
         self.gpu = get_torch_device()
         self.model.to(self.gpu)
 
-    def _build_model(self):
-        model = nn.Sequential(
+    def _build_model(self) -> nn.Sequential:
+        return nn.Sequential(
             nn.Flatten(),
             nn.Linear(np.prod(self.state_shape), 64),
             nn.ReLU(),
@@ -58,10 +55,9 @@ class DQNSimpleAgent(L.LightningModule):
             nn.ReLU(),
             nn.Linear(64, self.action_space),
         )
-        return model
 
-    def remember(self, state, action, reward, next_state, done):
-        self.memory.append(self.Experience(state, action, reward, next_state, done))
+    def remember(self, experience: Experience) -> None:
+        self.memory.append(experience)
 
     def act(self, state):
         if np.random.rand() <= self.epsilon:
@@ -70,7 +66,7 @@ class DQNSimpleAgent(L.LightningModule):
         act_values = self.model(state)
         return int(torch.argmax(act_values[0]).item())
 
-    def replay(self, batch_size):
+    def replay(self, batch_size: int):
         minibatch = random.sample(self.memory, batch_size)
         for experience in minibatch:
             state, action, reward, next_state, done = experience
@@ -80,8 +76,8 @@ class DQNSimpleAgent(L.LightningModule):
             if done:
                 target[0][action] = reward
             else:
-                Q_future = self.model(next_state).max(1)[0].item()
-                target[0][action] = reward + Q_future * self.gamma
+                q_future = self.model(next_state).max(1)[0].item()
+                target[0][action] = reward + q_future * self.gamma
             self._update_weights(state, target)
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
@@ -103,8 +99,8 @@ class DQNSimpleAgent(L.LightningModule):
         # This function is intentionally left blank, because we'll manually update the weights in replay()
         pass
 
-    def load(self, name):
+    def load(self, name) -> None:
         self.load_state_dict(torch.load(name))
 
-    def save(self, name):
+    def save(self, name) -> None:
         torch.save(self.state_dict(), name)

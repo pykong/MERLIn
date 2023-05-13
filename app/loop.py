@@ -91,7 +91,8 @@ def loop():
             next_state, reward, done = env.step(action)
 
             # save experience
-            dqn_policy.remember(state, action, reward, next_state, done)
+            experience = Experience(state, action, reward, next_state, done)
+            dqn_policy.remember(experience)
             # experience = Experience(state, action, reward, next_state, done)
             # memory.push(experience)
 

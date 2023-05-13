@@ -5,6 +5,20 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from loguru import logger
+
+__all__ = ["DQN"]
+
+
+def get_torch_device() -> torch.device:
+    """Provide best possible device for running PyTorch."""
+    if torch.cuda.is_available():
+        gpu0 = torch.cuda.get_device_name(0)
+        logger.info(f"CUDA is available. Running PyTorch on GPU ({gpu0}).")
+        return torch.device("cuda")
+    else:
+        logger.info(f"Running PyTorch on CPU.")
+        return torch.device("cpu")
 
 
 class DQN(nn.Module):
@@ -52,6 +66,7 @@ class DQN(nn.Module):
 
         self.optimizer = optim.Adam(self.parameters(), lr=alpha)
         self.loss_fn = nn.MSELoss()
+        self.to(get_torch_device())
 
     def forward(self: Self, x: torch.Tensor) -> torch.nn.Linear:
         x = torch.relu(self.conv1(x))

@@ -6,12 +6,11 @@ from time import time
 from typing import Final
 
 import numpy as np
-from dqn_torch import DQN
+from agents.dqn_torch import DQN
 from gym.wrappers.monitoring import video_recorder
 from loguru import logger
 from pong_wrapper import PongWrapper
 from utils.csv_logger import CsvLogger
-from utils.torch_device import get_torch_device
 
 # set random seeds for reproducibility
 RANDOM_SEED: Final[int] = 0
@@ -81,7 +80,6 @@ def loop():
 
     # create the policy network
     dqn_policy = DQN(INPUT_SHAPE, num_actions=env.action_space.n)  # type: ignore
-    dqn_policy.to(get_torch_device())
 
     # create the target network
     dqn_target = deepcopy(dqn_policy)

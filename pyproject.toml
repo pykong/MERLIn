@@ -12,9 +12,10 @@ license = "MIT"
     gym = {extras = ["atari"], version = "*"}
     autorom = {extras = ["accept-rom-license"], version = "*"}
     opencv-python = "*"
-    nvidia-cudnn-cu11 = "*"
+    # nvidia-cudnn-cu11 = "*"
     torch = "*"
     lightning = {extras = ["extra"], version = "*"}
+    moviepy = "^1.0.3"
 
     [tool.poetry.dev-dependencies]
     black = "*"

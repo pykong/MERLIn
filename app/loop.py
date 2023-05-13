@@ -6,7 +6,7 @@ from typing import Final
 import numpy as np
 
 # from agents.dqn_torch import DQN
-from agents.dqn_simple import DQNSimpleAgent
+from agents.dqn_torch_simply import DQNSimpleAgent
 from gym.wrappers.monitoring import video_recorder as vr
 from loguru import logger
 from pong_wrapper import PongWrapper

@@ -11,9 +11,10 @@ license = "MIT"
     loguru = "*"
     gym = {extras = ["atari"], version = "*"}
     autorom = {extras = ["accept-rom-license"], version = "*"}
-    torch = "^2.0.0"
-    tensorflow = {version = "^2.12.0", allow-prereleases = true}
-    opencv-python = "^4.7.0.72"
+    opencv-python = "*"
+    nvidia-cudnn-cu11 = "*"
+    torch = "*"
+    lightning = {extras = ["extra"], version = "*"}
 
     [tool.poetry.dev-dependencies]
     black = "*"

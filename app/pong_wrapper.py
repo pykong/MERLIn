@@ -26,6 +26,7 @@ def preprocess_state(state):
 
 class PongWrapper(gym.Wrapper):
     # https://gymnasium.farama.org/environments/atari/pong/#actions
+    name: Final[str] = "pong"
     default_action: Final[int] = 0
     valid_actions: Final[Set[int]] = {0, 1, 2, 3}
 

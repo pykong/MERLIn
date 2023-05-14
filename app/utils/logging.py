@@ -1,5 +1,6 @@
 import csv
 from dataclasses import asdict, dataclass, field
+from pathlib import Path
 
 
 @dataclass
@@ -11,7 +12,7 @@ class EpisodeLog:
     time: float = field(default=0.0, metadata={"decimal_places": 3})
 
 
-def log_to_csv(log: EpisodeLog, filename: str):
+def log_to_csv(log: EpisodeLog, filename: Path):
     with open(filename, "a", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=log.__annotations__.keys())
         if f.tell() == 0:  # file is empty, write a header

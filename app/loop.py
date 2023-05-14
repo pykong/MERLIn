@@ -12,7 +12,7 @@ from loguru import logger
 from pong_wrapper import PongWrapper
 from utils.file_utils import empty_directories
 from utils.logging import EpisodeLog, log_to_csv
-from utils.replay_memory import Experience, ReplayMemory
+from utils.replay_memory import Experience
 
 # set random seeds for reproducibility
 RANDOM_SEED: Final[int] = 0
@@ -108,11 +108,11 @@ def loop():
         # log episode
         episode_log.time = time() - start_time
         print(episode_log)
-        log_to_csv(episode_log, LOG_DIR / "training_metrics.csv")
+        log_to_csv(episode_log, LOG_DIR / f"{env.name}_{agent.name}.csv")
 
         # periodically save model
         if episode % MODEL_SAVE_INTERVAL == 0:
-            agent.save(CHECKPOINTS_DIR / f"pong_model_{total_steps}.pth")
+            agent.save(CHECKPOINTS_DIR / f"{env.name}_{agent.name}_{total_steps}.pth")
 
         # close the video recorder
         if video:

@@ -1,6 +1,6 @@
 import random
 from collections import deque, namedtuple
-from utils.replay_memory import Experience, ReplayMemory
+from typing import Final
 
 import lightning as L
 import numpy as np
@@ -8,6 +8,7 @@ import torch
 import torch.nn.functional as F
 from loguru import logger
 from torch import nn, optim
+from utils.replay_memory import Experience, ReplayMemory
 
 
 def get_torch_device() -> torch.device:
@@ -22,6 +23,8 @@ def get_torch_device() -> torch.device:
 
 
 class DQNSimpleAgent(L.LightningModule):
+    name: Final[str] = "dqn_simple"
+
     def __init__(
         self,
         state_shape,

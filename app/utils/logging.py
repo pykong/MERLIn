@@ -47,13 +47,23 @@ class EpisodeLog:
     steps: int = field(default=0, metadata={"decimal_places": 3})
     time: float = field(default=0.0, metadata={"decimal_places": 3})
 
-    def start_timer(self):
+    def start_timer(self: Self) -> None:
         self.__start_time = time.time()
 
-    def stop_timer(self):
+    def stop_timer(self: Self) -> None:
         if self.__start_time is None:
             raise ValueError("Timer has not been started.")
         self.time = time.time() - self.__start_time
+
+    def __str__(self: Self) -> str:
+        fields = (
+            f"{self.episode:05d}",
+            f"{self.epsilon:.3f}",
+            f"{self.reward:.3f}",
+            f"{self.steps:06d}",
+            f"{self.time:.2f}",
+        )
+        return " | ".join(fields)
 
 
 class EpisodeLogger:

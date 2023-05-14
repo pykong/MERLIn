@@ -1,5 +1,4 @@
 import random
-from collections import deque, namedtuple
 from typing import Final
 
 import lightning as L

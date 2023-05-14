@@ -1,5 +1,6 @@
+import os
+import sys
 from pathlib import Path
-from time import time
 from typing import Final
 
 import numpy as np
@@ -11,6 +12,9 @@ from pong_wrapper import PongWrapper
 from utils.file_utils import empty_directories
 from utils.logging import EpisodeLog, EpisodeLogger
 from utils.replay_memory import Experience
+
+# suppress moviepy output: ultimata taio :-|
+sys.stdout = open(os.devnull, "w")
 
 # set random seeds for reproducibility
 RANDOM_SEED: Final[int] = 0

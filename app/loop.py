@@ -57,8 +57,10 @@ def loop():
 
     # run main loop
     for episode in range(MAX_EPISODES):
+        # reset environment
         state = env.reset()
 
+        # init episode logger
         episode_log = EpisodeLog(episode=episode, epsilon=agent.epsilon)
         episode_log.start_timer()
 

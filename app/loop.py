@@ -10,7 +10,7 @@ from agents.dqn_torch_simply import DQNSimpleAgent
 from gym.wrappers.monitoring import video_recorder as vr
 from pong_wrapper import PongWrapper
 from utils.file_utils import empty_directories
-from utils.logging import EpisodeLog, EpisodeLogger
+from utils.logging import EpisodeLog, EpisodeLogger, LogLevel
 from utils.replay_memory import Experience
 
 # suppress moviepy output: ultimata taio :-|
@@ -75,6 +75,7 @@ def loop():
         video = None
         if episode % RECORD_INTERVAL == 0:
             video_path = str(VIDEO_DIR / f"{env.name}_{agent.name}_{episode}.mp4")
+            logger.log(f"Recording video: {video_path}", LogLevel.VIDEO)
             video = vr.VideoRecorder(env, video_path)
 
         # run episode
@@ -109,7 +110,9 @@ def loop():
 
         # periodically save model
         if episode % MODEL_SAVE_INTERVAL == 0:
-            agent.save(CHECKPOINTS_DIR / f"{env.name}_{agent.name}_{episode}.pth")
+            model_file = f"{env.name}_{agent.name}_{episode}.pth"
+            logger.log(f"Saving model: {model_file}", LogLevel.SAVE)
+            agent.save(CHECKPOINTS_DIR / model_file)
 
         # close the video recorder
         if video:

@@ -12,6 +12,8 @@ from loguru import logger
 class LogLevel(Enum):
     VICTORY = "VICTORY"
     DEFEAT = "DEFEAT"
+    VIDEO = "VIDEO"
+    SAVE = "SAVE"
 
     def __str__(self: Self) -> str:
         return self.value
@@ -25,6 +27,8 @@ format_base = " {{level.icon}} <{color}>{{level}}</> - {{time:HH:mm:ss}} | {{mes
 
 logger.level(str(LogLevel.VICTORY), no=48, icon="🏆", color="<green>")
 logger.level(str(LogLevel.DEFEAT), no=49, icon="💀", color="<red>")
+logger.level(str(LogLevel.VIDEO), no=47, icon="🎥", color="<blue>")
+logger.level(str(LogLevel.SAVE), no=46, icon="💾", color="<yellow>")
 
 logger.add(
     sys.stderr,
@@ -35,6 +39,16 @@ logger.add(
     sys.stderr,
     format=format_base.format(color="red"),
     filter=lambda record: record["level"].name == str(LogLevel.DEFEAT),
+)
+logger.add(
+    sys.stderr,
+    format=format_base.format(color="blue"),
+    filter=lambda record: record["level"].name == str(LogLevel.VIDEO),
+)
+logger.add(
+    sys.stderr,
+    format=format_base.format(color="yellow"),
+    filter=lambda record: record["level"].name == str(LogLevel.SAVE),
 )
 
 
@@ -70,10 +84,15 @@ class EpisodeLogger:
     def __init__(self: Self, log_file: Path):
         self.log_file = log_file
 
-    def log(self: Self, episode_log: EpisodeLog) -> None:
-        level = LogLevel.VICTORY if episode_log.reward > 0 else LogLevel.DEFEAT
-        logger.log(str(level), episode_log)
-        self.__log_to_csv(episode_log)
+    def log(
+        self: Self, message: EpisodeLog | str, level: LogLevel = LogLevel.VIDEO
+    ) -> None:
+        if isinstance(message, EpisodeLog):
+            level = LogLevel.VICTORY if message.reward > 0 else LogLevel.DEFEAT
+            logger.log(str(level), message)
+            self.__log_to_csv(message)
+        else:
+            logger.log(str(level), message)
 
     def __log_to_csv(self: Self, episode_log: EpisodeLog) -> None:
         self.log_file.parent.mkdir(parents=True, exist_ok=True)

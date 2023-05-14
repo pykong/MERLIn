@@ -66,6 +66,8 @@ class EpisodeLogger:
         self.__log_to_csv(episode_log)
 
     def __log_to_csv(self: Self, episode_log: EpisodeLog) -> None:
+        self.log_file.parent.mkdir(parents=True, exist_ok=True)
+        self.log_file.touch()
         with open(self.log_file, "a", newline="") as f:
             writer = csv.DictWriter(f, fieldnames=episode_log.__annotations__.keys())
             if f.tell() == 0:  # file is empty, write a header

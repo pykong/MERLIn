@@ -23,33 +23,31 @@ class LogLevel(Enum):
 logger.remove()
 
 # Base format with placeholders for color and icon
-format_base = (
-    " {{level.icon}} <{color}>{{level:<9}}</> - {{time:HH:mm:ss}} | {{message}}"
-)
+msg_fmt = " {{level.icon}} <{color}>{{level:<9}}</> - {{time:HH:mm:ss}} | {{message}}"
 
-logger.level(str(LogLevel.VICTORY), no=48, icon="🏆", color="<green>")
-logger.level(str(LogLevel.DEFEAT), no=49, icon="💀", color="<red>")
-logger.level(str(LogLevel.VIDEO), no=47, icon="🎥", color="<blue>")
-logger.level(str(LogLevel.SAVE), no=46, icon="💾", color="<yellow>")
+logger.level(str(LogLevel.VICTORY), no=48, icon="🏆")
+logger.level(str(LogLevel.DEFEAT), no=49, icon="💀")
+logger.level(str(LogLevel.VIDEO), no=47, icon="🎥")
+logger.level(str(LogLevel.SAVE), no=46, icon="💾")
 
 logger.add(
     sys.stderr,
-    format=format_base.format(color="green"),
+    format=msg_fmt.format(color="green"),
     filter=lambda record: record["level"].name == str(LogLevel.VICTORY),
 )
 logger.add(
     sys.stderr,
-    format=format_base.format(color="red"),
+    format=msg_fmt.format(color="red"),
     filter=lambda record: record["level"].name == str(LogLevel.DEFEAT),
 )
 logger.add(
     sys.stderr,
-    format=format_base.format(color="blue"),
+    format=msg_fmt.format(color="blue"),
     filter=lambda record: record["level"].name == str(LogLevel.VIDEO),
 )
 logger.add(
     sys.stderr,
-    format=format_base.format(color="yellow"),
+    format=msg_fmt.format(color="yellow"),
     filter=lambda record: record["level"].name == str(LogLevel.SAVE),
 )
 
@@ -58,10 +56,9 @@ logger.add(
 class EpisodeLog:
     episode: int
     epsilon: float
-    __start_time: float = field(default=None, init=False, repr=False)  # type: ignore
-    reward: float = field(default=0.0, metadata={"decimal_places": 3})
-    steps: int = field(default=0, metadata={"decimal_places": 3})
-    time: float = field(default=0.0, metadata={"decimal_places": 3})
+    reward: float = 0.0
+    steps: int = 0
+    time: float = field(init=False)
 
     def start_timer(self: Self) -> None:
         self.__start_time = time.time()
@@ -86,9 +83,7 @@ class EpisodeLogger:
     def __init__(self: Self, log_file: Path):
         self.log_file = log_file
 
-    def log(
-        self: Self, message: EpisodeLog | str, level: LogLevel = LogLevel.VIDEO
-    ) -> None:
+    def log(self: Self, message: EpisodeLog | str, level: LogLevel | str = "") -> None:
         if isinstance(message, EpisodeLog):
             level = LogLevel.VICTORY if message.reward > 0 else LogLevel.DEFEAT
             logger.log(str(level), message)

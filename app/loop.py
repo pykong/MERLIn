@@ -60,7 +60,7 @@ def loop():
         state = env.reset()
 
         episode_log = EpisodeLog(episode=episode, epsilon=agent.epsilon)
-        start_time = time()
+        episode_log.start_timer()
 
         # set up the video recorder
         video = None
@@ -95,7 +95,7 @@ def loop():
         agent.update_epsilon()
 
         # log episode
-        episode_log.time = time() - start_time
+        episode_log.stop_timer()
         print(episode_log)
         log_to_csv(episode_log, LOG_DIR / f"{env.name}_{agent.name}.csv")
 

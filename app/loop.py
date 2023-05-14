@@ -110,9 +110,9 @@ def loop():
 
         # periodically save model
         if episode % MODEL_SAVE_INTERVAL == 0:
-            model_file = f"{env.name}_{agent.name}_{episode}.pth"
+            model_file = CHECKPOINTS_DIR / f"{env.name}_{agent.name}_{episode}.pth"
             logger.log(f"Saving model: {model_file}", LogLevel.SAVE)
-            agent.save(CHECKPOINTS_DIR / model_file)
+            agent.save(model_file)
 
         # close the video recorder
         if video:

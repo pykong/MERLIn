@@ -23,7 +23,9 @@ class LogLevel(Enum):
 logger.remove()
 
 # Base format with placeholders for color and icon
-format_base = " {{level.icon}} <{color}>{{level}}</> - {{time:HH:mm:ss}} | {{message}}"
+format_base = (
+    " {{level.icon}} <{color}>{{level:<9}}</> - {{time:HH:mm:ss}} | {{message}}"
+)
 
 logger.level(str(LogLevel.VICTORY), no=48, icon="🏆", color="<green>")
 logger.level(str(LogLevel.DEFEAT), no=49, icon="💀", color="<red>")

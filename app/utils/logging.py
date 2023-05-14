@@ -17,25 +17,23 @@ class LogLevel(Enum):
         return self.value
 
 
-# Base format with placeholders for color and icon
-format_base = " {icon} <{color}>{level}</> - {time:HH:mm:ss} |  {message}"
-format_victory = format_base.format(color="green", icon="🏆")
-format_defeat = format_base.format(color="red", icon="💀")
-
 # Remove default handler and add custom format
 logger.remove()
 
-format_victory = " {level.icon} <green>{level}</> - {time:HH:mm:ss} |  {message}"
-format_defeat = " {level.icon} <red>{level}</>   - {time:HH:mm:ss} |  {message}"
+# Base format with placeholders for color and icon
+format_base = " {{level.icon}} <{color}>{{level}}</> - {{time:HH:mm:ss}} | {{message}}"
+
+logger.level(str(LogLevel.VICTORY), no=48, icon="🏆", color="<green>")
+logger.level(str(LogLevel.DEFEAT), no=49, icon="💀", color="<red>")
 
 logger.add(
     sys.stderr,
-    format=format_victory,
+    format=format_base.format(color="green"),
     filter=lambda record: record["level"].name == str(LogLevel.VICTORY),
 )
 logger.add(
     sys.stderr,
-    format=format_defeat,
+    format=format_base.format(color="red"),
     filter=lambda record: record["level"].name == str(LogLevel.DEFEAT),
 )
 

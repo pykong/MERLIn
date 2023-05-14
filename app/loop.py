@@ -1,4 +1,3 @@
-from copy import deepcopy
 from pathlib import Path
 from time import time
 from typing import Final
@@ -8,7 +7,6 @@ import numpy as np
 # from agents.dqn_torch import DQN
 from agents.dqn_torch_simply import DQNSimpleAgent
 from gym.wrappers.monitoring import video_recorder as vr
-from loguru import logger
 from pong_wrapper import PongWrapper
 from utils.file_utils import empty_directories
 from utils.logging import EpisodeLog, log_to_csv
@@ -41,8 +39,6 @@ INPUT_SHAPE: Final[tuple] = (INPUT_DIM * NUM_STACKED_FRAMES, INPUT_DIM, 1)
 
 
 def loop():
-    total_steps = 0
-
     # create environment
     env = PongWrapper(
         "ALE/Pong-v5",
@@ -59,9 +55,6 @@ def loop():
         alpha=LEARNING_RATE,
     )
 
-    # create the target network
-    # dqn_target = deepcopy(dqn_policy)
-
     # run main loop
     for episode in range(MAX_EPISODES):
         state = env.reset()
@@ -72,13 +65,13 @@ def loop():
         # set up the video recorder
         video = None
         if episode % RECORD_INTERVAL == 0:
-            video = vr.VideoRecorder(env, str(VIDEO_DIR / f"episode_{episode}.mp4"))
+            video_path = str(VIDEO_DIR / f"{env.name}_{agent.name}_{episode}.mp4")
+            video = vr.VideoRecorder(env, video_path)
 
         # run episode
         done = False
         while not done:
             # prepare step
-            total_steps += 1
             episode_log.steps += 1
             if video:
                 video.capture_frame()
@@ -98,10 +91,6 @@ def loop():
             state = next_state
             episode_log.reward += reward
 
-            # periodically update the target network
-            # if total_steps % TARGET_NETWORK_UPDATE_INTERVAL == 0:
-            #     dqn_target.copy_from(dqn_policy)
-
         # update epsilon
         agent.update_epsilon()
 
@@ -112,7 +101,7 @@ def loop():
 
         # periodically save model
         if episode % MODEL_SAVE_INTERVAL == 0:
-            agent.save(CHECKPOINTS_DIR / f"{env.name}_{agent.name}_{total_steps}.pth")
+            agent.save(CHECKPOINTS_DIR / f"{env.name}_{agent.name}_{episode}.pth")
 
         # close the video recorder
         if video:

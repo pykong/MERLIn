@@ -17,9 +17,10 @@ class LogLevel(Enum):
         return self.value
 
 
-# Defining new log levels
-logger.level(str(LogLevel.VICTORY), no=35, icon="🏆")
-logger.level(str(LogLevel.DEFEAT), no=45, icon="💀")
+# Base format with placeholders for color and icon
+format_base = " {icon} <{color}>{level}</> - {time:HH:mm:ss} |  {message}"
+format_victory = format_base.format(color="green", icon="🏆")
+format_defeat = format_base.format(color="red", icon="💀")
 
 # Remove default handler and add custom format
 logger.remove()

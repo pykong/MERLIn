@@ -8,7 +8,7 @@ from pathlib import Path
 class EpisodeLog:
     episode: int
     epsilon: float
-    __start_time: float = None
+    __start_time: float = None  # type: ignore
     reward: float = field(default=0.0, metadata={"decimal_places": 3})
     steps: int = field(default=0, metadata={"decimal_places": 3})
     time: float = field(default=0.0, metadata={"decimal_places": 3})

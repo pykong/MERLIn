@@ -9,7 +9,7 @@ from agents.dqn_torch_simply import DQNSimpleAgent
 from gym.wrappers.monitoring import video_recorder as vr
 from pong_wrapper import PongWrapper
 from utils.file_utils import empty_directories
-from utils.logging import EpisodeLog, log_to_csv
+from utils.logging import EpisodeLog, EpisodeLogger
 from utils.replay_memory import Experience
 
 # set random seeds for reproducibility
@@ -55,6 +55,9 @@ def loop():
         alpha=LEARNING_RATE,
     )
 
+    # init logger
+    logger = EpisodeLogger(log_file=LOG_DIR / f"{env.name}_{agent.name}.csv")
+
     # run main loop
     for episode in range(MAX_EPISODES):
         # reset environment
@@ -98,8 +101,7 @@ def loop():
 
         # log episode
         episode_log.stop_timer()
-        print(episode_log)
-        log_to_csv(episode_log, LOG_DIR / f"{env.name}_{agent.name}.csv")
+        logger.log(episode_log)
 
         # periodically save model
         if episode % MODEL_SAVE_INTERVAL == 0:

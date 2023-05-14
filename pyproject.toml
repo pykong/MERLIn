@@ -8,7 +8,6 @@ license = "MIT"
     [tool.poetry.dependencies]
     python = ">=3.11,<3.12"
     typer = "*"
-    loguru = "*"
     gym = {extras = ["atari"], version = "*"}
     autorom = {extras = ["accept-rom-license"], version = "*"}
     opencv-python = "*"
@@ -16,6 +15,7 @@ license = "MIT"
     torch = "*"
     lightning = {extras = ["extra"], version = "*"}
     moviepy = "^1.0.3"
+    loguru = "^0.7.0"
 
     [tool.poetry.dev-dependencies]
     black = "*"

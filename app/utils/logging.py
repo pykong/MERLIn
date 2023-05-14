@@ -2,10 +2,41 @@ import csv
 import sys
 import time
 from dataclasses import asdict, dataclass, field
+from enum import Enum
 from pathlib import Path
 from typing import Self
 
 from loguru import logger
+
+
+class LogLevel(Enum):
+    VICTORY = "VICTORY"
+    DEFEAT = "DEFEAT"
+
+    def __str__(self: Self) -> str:
+        return self.value
+
+
+# Defining new log levels
+logger.level(str(LogLevel.VICTORY), no=35, icon="🏆")
+logger.level(str(LogLevel.DEFEAT), no=45, icon="💀")
+
+# Remove default handler and add custom format
+logger.remove()
+
+format_victory = " {level.icon} <green>{level}</> - {time:HH:mm:ss} |  {message}"
+format_defeat = " {level.icon} <red>{level}</>   - {time:HH:mm:ss} |  {message}"
+
+logger.add(
+    sys.stderr,
+    format=format_victory,
+    filter=lambda record: record["level"].name == str(LogLevel.VICTORY),
+)
+logger.add(
+    sys.stderr,
+    format=format_defeat,
+    filter=lambda record: record["level"].name == str(LogLevel.DEFEAT),
+)
 
 
 @dataclass
@@ -29,15 +60,10 @@ class EpisodeLog:
 class EpisodeLogger:
     def __init__(self: Self, log_file: Path):
         self.log_file = log_file
-        # log_fmt = " {level.icon} {level} - {message}"
-        # logger.level("ERROR", color="<red>", icon="💀")
-        # logger.level("VICTORY", no=15, color="<green>", icon="🏆")
-        # logger.add(sys.stdout, format=log_fmt)
-        # logger.add(sys.stdout, level="VICTORY", format=log_fmt)
 
     def log(self: Self, episode_log: EpisodeLog) -> None:
-        level = "SUCCESS" if episode_log.reward > 0 else "ERROR"
-        logger.log(level, episode_log)
+        level = LogLevel.VICTORY if episode_log.reward > 0 else LogLevel.DEFEAT
+        logger.log(str(level), episode_log)
         self.__log_to_csv(episode_log)
 
     def __log_to_csv(self: Self, episode_log: EpisodeLog) -> None:

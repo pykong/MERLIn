@@ -13,7 +13,7 @@ from utils.replay_memory import Experience, ReplayMemory
 def get_torch_device() -> torch.device:
     """Provide best possible device for running PyTorch."""
     if torch.cuda.is_available():
-        logger.log(str(LogLevel.GREEN), f"CUDA is available.")
+        logger.log(str(LogLevel.GREEN), f"CUDA is available (v{torch.version.cuda}).")
         for i in range(torch.cuda.device_count()):
             gpu = torch.cuda.get_device_name(i)
             logger.log(str(LogLevel.GREEN), f"cuda:{i} - {gpu}")

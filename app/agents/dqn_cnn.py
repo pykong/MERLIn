@@ -53,13 +53,15 @@ class DQNCNNAgent(L.LightningModule):
         # Calculate the output size after the convolutional layers
         conv_output_size = self.state_shape[1] // 4  # two conv layers with stride=2
         conv_output_size *= self.state_shape[2] // 4  # two conv layers with stride=2
-        conv_output_size *= 32  # output channels of last conv layer
+        conv_output_size *= 16  # output channels of last conv layer
         return nn.Sequential(
-            nn.Conv2d(self.state_shape[0], 32, kernel_size=3, stride=2, padding=1),
+            nn.Conv2d(self.state_shape[0], 16, kernel_size=3, stride=2, padding=1),
             nn.ReLU(),
             nn.MaxPool2d(2, 2),
             nn.Flatten(),
-            nn.Linear(conv_output_size, 16),
+            nn.Linear(conv_output_size, 32),
+            nn.ReLU(),
+            nn.Linear(32, 16),
             nn.ReLU(),
             nn.Linear(16, self.action_space),
         )

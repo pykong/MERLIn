@@ -59,9 +59,9 @@ class DQNCNNAgent(L.LightningModule):
             nn.ReLU(),
             nn.MaxPool2d(2, 2),
             nn.Flatten(),
-            nn.Linear(conv_output_size, 64),
+            nn.Linear(conv_output_size, 32),
             nn.ReLU(),
-            nn.Linear(64, self.action_space),
+            nn.Linear(32, self.action_space),
         )
 
     def remember(self, experience: Experience) -> None:

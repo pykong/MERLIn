@@ -14,6 +14,8 @@ class LogLevel(Enum):
     DEFEAT = "DEFEAT"
     VIDEO = "VIDEO"
     SAVE = "SAVE"
+    GREEN = "GREEN"
+    YELLOW = "YELLOW"
 
     def __str__(self: Self) -> str:
         return self.value
@@ -29,6 +31,7 @@ logger.level(str(LogLevel.VICTORY), no=48, icon="🏆")
 logger.level(str(LogLevel.DEFEAT), no=49, icon="💀")
 logger.level(str(LogLevel.VIDEO), no=47, icon="🎥")
 logger.level(str(LogLevel.SAVE), no=46, icon="💾")
+logger.level(str(LogLevel.GREEN), no=36)
 
 logger.add(
     sys.stderr,
@@ -49,6 +52,16 @@ logger.add(
     sys.stderr,
     format=msg_fmt.format(color="yellow"),
     filter=lambda record: record["level"].name == str(LogLevel.SAVE),
+)
+logger.add(
+    sys.stderr,
+    format="<green>{message}</>",
+    filter=lambda record: record["level"].name == str(LogLevel.GREEN),
+)
+logger.add(
+    sys.stderr,
+    format="<yellow>{message}</>",
+    filter=lambda record: record["level"].name == str(LogLevel.YELLOW),
 )
 
 

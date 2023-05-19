@@ -5,7 +5,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
-# from loguru import logger
+from loguru import logger
 
 __all__ = ["DQN"]
 

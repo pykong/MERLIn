@@ -6,7 +6,7 @@ from typing import Final
 import numpy as np
 
 # from agents.dqn_torch import DQN
-from agents.dqn_linear import DQNLinearAgent
+from agents.dqn_cnn import DQNCNNAgent
 from gym.wrappers.monitoring import video_recorder as vr
 from pong_wrapper import PongWrapper
 from utils.file_utils import empty_directories
@@ -39,7 +39,7 @@ STEP_PENALTY: Final[float] = 0.01
 TARGET_NETWORK_UPDATE_INTERVAL: Final[int] = 1000
 NUM_STACKED_FRAMES: Final[int] = 4
 INPUT_DIM: Final[int] = 80
-INPUT_SHAPE: Final[tuple] = (INPUT_DIM * NUM_STACKED_FRAMES, INPUT_DIM, 1)
+INPUT_SHAPE: Final[tuple] = (1, INPUT_DIM * NUM_STACKED_FRAMES, INPUT_DIM)
 
 
 def loop():
@@ -52,7 +52,7 @@ def loop():
     )
 
     # create the policy network
-    agent = DQNLinearAgent(
+    agent = DQNCNNAgent(
         state_shape=INPUT_SHAPE,
         action_space=env.action_space.n,  # type: ignore
         epsilon_decay=EPSILON_DECAY,

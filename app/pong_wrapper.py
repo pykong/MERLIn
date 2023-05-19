@@ -20,7 +20,7 @@ def preprocess_state(state):
     state = state[35:195]  # crop irrelevant parts of the image (top and bottom)
     state = cv.cvtColor(state, cv.COLOR_RGB2GRAY)  # convert to grayscale
     state = cv.resize(state, (80, 80), interpolation=cv.INTER_AREA)  # downsample
-    state = np.expand_dims(state, axis=state.ndim)  # append channel dimension
+    state = np.expand_dims(state, axis=0)  # prepend channel dimension
     return state
 
 
@@ -60,7 +60,7 @@ class PongWrapper(gym.Wrapper):
                 break
 
         self.state_buffer.append(preprocess_state(next_state))
-        stacked_state = np.concatenate(self.state_buffer, axis=0)
+        stacked_state = np.concatenate(self.state_buffer, axis=1)
         return Step(stacked_state, total_reward, done)
 
     def reset(self: Self) -> np.ndarray:

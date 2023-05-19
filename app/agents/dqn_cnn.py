@@ -54,18 +54,15 @@ class DQNCNNAgent(L.LightningModule):
         conv_output_size = self.state_shape[1] // 4  # two conv layers with stride=2
         conv_output_size *= self.state_shape[2] // 4  # two conv layers with stride=2
         conv_output_size *= 64  # output channels of last conv layer
-
-        model = nn.Sequential(
-            nn.Conv2d(self.state_shape[0], 32, kernel_size=3, stride=2, padding=1),
+        return nn.Sequential(
+            nn.Conv2d(self.state_shape[0], 64, kernel_size=3, stride=2, padding=1),
             nn.ReLU(),
-            nn.Conv2d(32, 64, kernel_size=3, stride=2, padding=1),
-            nn.ReLU(),
+            nn.MaxPool2d(2, 2),
             nn.Flatten(),
             nn.Linear(conv_output_size, 64),
             nn.ReLU(),
             nn.Linear(64, self.action_space),
         )
-        return model
 
     def remember(self, experience: Experience) -> None:
         self.memory.push(experience)

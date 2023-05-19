@@ -13,7 +13,7 @@ from utils.file_utils import empty_directories
 from utils.logging import EpisodeLog, EpisodeLogger, LogLevel
 from utils.replay_memory import Experience
 
-# suppress moviepy output: ultimata taio :-|
+# suppress moviepy output: ultimata ratio :-|
 sys.stdout = open(os.devnull, "w")
 
 # set random seeds for reproducibility

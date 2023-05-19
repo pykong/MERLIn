@@ -6,7 +6,7 @@ from typing import Final
 import numpy as np
 
 # from agents.dqn_torch import DQN
-from agents.dqn_torch_simply import DQNSimpleAgent
+from agents.dqn_linear import DQNLinearAgent
 from gym.wrappers.monitoring import video_recorder as vr
 from pong_wrapper import PongWrapper
 from utils.file_utils import empty_directories
@@ -52,7 +52,7 @@ def loop():
     )
 
     # create the policy network
-    agent = DQNSimpleAgent(
+    agent = DQNLinearAgent(
         state_shape=INPUT_SHAPE,
         action_space=env.action_space.n,  # type: ignore
         epsilon_decay=EPSILON_DECAY,

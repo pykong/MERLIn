@@ -20,8 +20,10 @@ def get_torch_device() -> torch.device:
         return torch.device("cpu")
 
 
-class DQNSimpleAgent(L.LightningModule):
-    name: Final[str] = "dqn_simple"
+class DQNLinearAgent(L.LightningModule):
+    """An deep-Q-network agent with a linear neural network structure."""
+
+    name: Final[str] = "dqn_linear"
 
     def __init__(
         self,

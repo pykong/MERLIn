@@ -1,11 +1,11 @@
 import random
 from typing import Final
 
-import lightning as L
+import lightning.pytorch as pl
 import numpy as np
 import torch
 import torch.nn.functional as F
-from torch import nn, optim
+from torch import nn
 from utils.logging import LogLevel, logger
 from utils.replay_memory import Experience, ReplayMemory
 
@@ -23,7 +23,7 @@ def get_torch_device() -> torch.device:
         return torch.device("cpu")
 
 
-class DQNCNNAgent(L.LightningModule):
+class DQNCNNAgent(pl.LightningModule):
     """An deep-Q-network agent with a convolutional neural network structure."""
 
     name: Final[str] = "dqn_cnn"
@@ -81,34 +81,48 @@ class DQNCNNAgent(L.LightningModule):
 
     def replay(self) -> None:
         minibatch = self.memory.sample(self.batch_size)
-        for experience in minibatch:
-            state, action, reward, next_state, done = experience
-            state = torch.from_numpy(state).float().unsqueeze(0).to(self.gpu)
-            next_state = torch.from_numpy(next_state).float().unsqueeze(0).to(self.gpu)
-            target = self.model(state)
-            if done:
-                target[0][action] = reward
-            else:
-                q_future = self.model(next_state).max(1)[0].item()
-                target[0][action] = reward + q_future * self.epsilon_decay
-            self._update_weights(state, target)
+
+        # Convert the minibatch to a more convenient format.
+        states, actions, rewards, next_states, dones = zip(*minibatch)
+
+        # Convert to tensors and add an extra dimension.
+        states = torch.from_numpy(np.array(states)).float().to(self.gpu)
+        actions = torch.tensor(actions).unsqueeze(1).to(self.gpu)
+        rewards = torch.tensor(rewards).float().to(self.gpu)
+        next_states = torch.from_numpy(np.array(next_states)).float().to(self.gpu)
+        dones = torch.tensor(dones).float().to(self.gpu)
+
+        # Predict Q-values for the initial states.
+        state_action_values = self.model(states).gather(1, actions)
+
+        # Compute V(s_{t+1}) for all next states.
+        next_state_values = self.model(next_states).max(1)[0].detach()
+
+        # Compute the expected Q values.
+        expected_state_action_values = (
+            next_state_values * self.epsilon_decay + rewards
+        ) * (1 - dones)
+
+        # Update the weights.
+        self._update_weights(
+            state_action_values, expected_state_action_values.unsqueeze(1)
+        )
 
     def update_epsilon(self) -> None:
         if self.epsilon > self.epsilon_min:  # epsilon is adjusted to often!!!git
             self.epsilon *= self.epsilon_decay
 
-    def _update_weights(self, state, target):
-        # self.optimizer.zero_grad()
-        loss = F.mse_loss(self.model(state), target)
+    def _update_weights(self, state_action_values, expected_state_action_values):
+        # self.optimizers().zero_grad()
+        loss = F.mse_loss(state_action_values, expected_state_action_values)
         loss.backward()
-        # self.optimizer.step()
+        # self.optimizers().step()
 
     def forward(self, x):
         return self.model(x)
 
     def configure_optimizers(self):
-        self.optimizer = optim.Adam(self.parameters(), lr=self.alpha)
-        return self.optimizer
+        return torch.optim.Adam(self.model.parameters(), lr=self.alpha)
 
     def training_step(self, batch, batch_idx):
         # This function is intentionally left blank, because we'll manually update the weights in replay()

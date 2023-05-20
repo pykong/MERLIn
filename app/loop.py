@@ -7,7 +7,8 @@ import numpy as np
 
 # from agents.dqn_torch import DQN
 # from agents.dqn_cnn import DQNCNNAgent
-from agents.dqn_cnn_double import DDQNCNNAgent
+# from agents.dqn_cnn_double import DDQNCNNAgent
+from agents.dqn_cnn_duelling import DuellingQNCNNAgent
 from gym.wrappers.monitoring import video_recorder as vr
 from pong_wrapper import PongWrapper
 from utils.file_utils import empty_directories
@@ -53,7 +54,7 @@ def loop():
     )
 
     # create the policy network
-    agent = DDQNCNNAgent(
+    agent = DuellingQNCNNAgent(
         state_shape=INPUT_SHAPE,
         action_space=env.action_space.n,  # type: ignore
         epsilon_decay=EPSILON_DECAY,

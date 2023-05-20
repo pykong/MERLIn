@@ -24,7 +24,7 @@ def get_torch_device() -> torch.device:
 
 
 class DuellingQNCNNAgent(pl.LightningModule):
-    """An deep-Q-network agent with a convolutional neural network structure."""
+    """An duelling deep-Q-network agent with a convolutional neural network structure."""
 
     name: Final[str] = "duelling_dqn_cnn"
 

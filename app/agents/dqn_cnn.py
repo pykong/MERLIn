@@ -51,7 +51,7 @@ class DQNCNNAgent(pl.LightningModule):
         self.model: nn.Sequential = self._build_model()
         self.gpu = get_torch_device()
         self.model.to(self.gpu)
-        # TODO: If not training efficiently use internal optimizer and trainer
+        self.trainer = pl.Trainer()  # TODO: neccessary?
 
     def _build_model(self) -> nn.Sequential:
         # Calculate the output size after the convolutional layers
@@ -114,10 +114,10 @@ class DQNCNNAgent(pl.LightningModule):
             self.epsilon *= self.epsilon_decay
 
     def _update_weights(self, state_action_values, expected_state_action_values):
-        # self.optimizers().zero_grad()
+        [o.zero_grad() for o in self.optimizers()]  # TODO: neccessary?
         loss = F.mse_loss(state_action_values, expected_state_action_values)
         loss.backward()
-        # self.optimizers().step()
+        [o.step() for o in self.optimizers()]  # TODO: neccessary?
 
     def forward(self, x):
         return self.model(x)

@@ -42,7 +42,11 @@ STEP_PENALTY: Final[float] = 0.01
 TARGET_NETWORK_UPDATE_INTERVAL: Final[int] = 1024
 NUM_STACKED_FRAMES: Final[int] = 2
 INPUT_DIM: Final[int] = 80
-INPUT_SHAPE: Final[tuple] = (1, INPUT_DIM * NUM_STACKED_FRAMES, INPUT_DIM)
+INPUT_SHAPE: Final[tuple[int, int, int]] = (
+    1,
+    INPUT_DIM * NUM_STACKED_FRAMES,
+    INPUT_DIM,
+)
 
 
 def loop():

@@ -1,5 +1,6 @@
 import random
-from typing import Final
+from pathlib import Path
+from typing import Final, Self
 
 import lightning.pytorch as pl
 import numpy as np
@@ -30,15 +31,15 @@ class DQNCNNAgent(pl.LightningModule):
     name: Final[str] = "dqn_cnn"
 
     def __init__(
-        self,
-        state_shape,
+        self: Self,
+        state_shape: tuple[int, int, int],
         action_space,
-        alpha=0.001,
-        epsilon=1.0,
-        epsilon_min=0.01,
-        epsilon_decay=0.999,
-        memory_size=10_000,
-        batch_size=64,
+        alpha: float = 0.001,
+        epsilon: float = 1.0,
+        epsilon_min: float = 0.01,
+        epsilon_decay: float = 0.999,
+        memory_size: int = 10_000,
+        batch_size: int = 64,
     ):
         super().__init__()
         self.state_shape = state_shape
@@ -53,7 +54,7 @@ class DQNCNNAgent(pl.LightningModule):
         self.model.to(self.gpu)
         self.optimizer = optim.Adam(self.model.parameters(), lr=alpha)
 
-    def _build_model(self) -> nn.Sequential:
+    def _build_model(self: Self) -> nn.Sequential:
         # Calculate the output size after the convolutional layers
         conv_output_size = self.state_shape[1] // 4  # two conv layers with stride=2
         conv_output_size *= self.state_shape[2] // 4  # two conv layers with stride=2
@@ -68,17 +69,17 @@ class DQNCNNAgent(pl.LightningModule):
             nn.Linear(64, self.action_space),
         )
 
-    def remember(self, experience: Experience) -> None:
+    def remember(self: Self, experience: Experience) -> None:
         self.memory.push(experience)
 
-    def act(self, state):
+    def act(self: Self, state):
         if np.random.rand() <= self.epsilon:
             return random.randrange(self.action_space)
         state = torch.from_numpy(state).float().unsqueeze(0).to(self.gpu)
         act_values = self.model(state)
         return int(torch.argmax(act_values[0]).item())
 
-    def replay(self) -> None:
+    def replay(self: Self) -> None:
         minibatch = self.memory.sample(self.batch_size)
 
         # Convert the minibatch to a more convenient format.
@@ -107,15 +108,15 @@ class DQNCNNAgent(pl.LightningModule):
         loss.backward()
         self.optimizer.step()
 
-    def forward(self, x):
+    def forward(self: Self, x):
         return self.model(x)
 
-    def update_epsilon(self) -> None:
+    def update_epsilon(self: Self) -> None:
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.gamma
 
-    def load(self, name) -> None:
+    def load(self: Self, name: Path) -> None:
         self.load_state_dict(torch.load(name))
 
-    def save(self, name) -> None:
+    def save(self: Self, name: Path) -> None:
         torch.save(self.state_dict(), name)

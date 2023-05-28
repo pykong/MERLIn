@@ -102,8 +102,11 @@ class DQNCNNAgent(pl.LightningModule):
         # scale rewards
         rewards /= 100
 
+        # mask dones
+        dones = 1 - dones
+
         # Compute the expected Q values (expected_state_action_values)
-        target = (max_q_prime * self.gamma + rewards) * (1 - dones)
+        target = rewards + max_q_prime * self.gamma * dones
 
         # Update the weights.
         self.optimizer.zero_grad()

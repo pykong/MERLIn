@@ -83,14 +83,7 @@ class DQNCNNAgent(pl.LightningModule):
         minibatch = self.memory.sample(self.batch_size)
 
         # Convert the minibatch to a more convenient format.
-        states, actions, rewards, next_states, dones = zip(*minibatch)
-
-        # Convert to tensors and add an extra dimension.
-        states = torch.from_numpy(np.array(states)).float().to(self.device_)
-        actions = torch.tensor(actions).unsqueeze(1).to(self.device_)
-        rewards = torch.tensor(rewards).float().to(self.device_)
-        next_states = torch.from_numpy(np.array(next_states)).float().to(self.device_)
-        dones = torch.tensor(dones).float().to(self.device_)
+        states, actions, rewards, next_states, dones = self.prepare_minibatch(minibatch)
 
         # Predict Q-values for the initial states.
         q_out = self.forward(states)
@@ -116,6 +109,15 @@ class DQNCNNAgent(pl.LightningModule):
         loss = F.smooth_l1_loss(q_a, target.unsqueeze(1))
         loss.backward()
         self.optimizer.step()
+
+    def prepare_minibatch(self: Self, minibatch: list[Experience]):
+        states, actions, rewards, next_states, dones = zip(*minibatch)
+        states = torch.from_numpy(np.array(states)).float().to(self.device_)
+        actions = torch.tensor(actions).unsqueeze(1).to(self.device_)
+        rewards = torch.tensor(rewards).float().to(self.device_)
+        next_states = torch.from_numpy(np.array(next_states)).float().to(self.device_)
+        dones = torch.tensor(dones).float().to(self.device_)
+        return states, actions, rewards, next_states, dones
 
     def forward(self: Self, x):
         return self.model(x)

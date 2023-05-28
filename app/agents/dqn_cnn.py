@@ -102,6 +102,9 @@ class DQNCNNAgent(pl.LightningModule):
         # scale rewards
         rewards /= 100
 
+        # clip rewards
+        rewards = rewards.clamp(min=-1.0, max=1.0)
+
         # mask dones
         dones = 1 - dones
 

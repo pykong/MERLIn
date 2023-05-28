@@ -97,7 +97,10 @@ class DQNCNNAgent(pl.LightningModule):
         q_a = q_out.gather(1, actions)  # state_action_values
 
         # Compute V(s_{t+1}) for all next states.
-        max_q_prime = self.forward(next_states).max(1)[0].detach()  # next_state_values
+        max_q_prime = self.forward(next_states).max(1)[0].detach()  # next_state_values+
+
+        # scale rewards
+        rewards /= 100
 
         # Compute the expected Q values (expected_state_action_values)
         target = (max_q_prime * self.gamma + rewards) * (1 - dones)

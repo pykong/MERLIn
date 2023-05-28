@@ -106,8 +106,11 @@ class DQNCNNAgent(pl.LightningModule):
         target = rewards + max_q_prime * self.gamma * dones
 
         # update the weights.
+        self.__update_weights(q_a, target.unsqueeze(1))
+
+    def __update_weights(self, q_a, target) -> None:
         self.optimizer.zero_grad()
-        loss = F.smooth_l1_loss(q_a, target.unsqueeze(1))
+        loss = F.smooth_l1_loss(q_a, target)
         loss.backward()
         self.optimizer.step()
 

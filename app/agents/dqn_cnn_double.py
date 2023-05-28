@@ -1,10 +1,12 @@
 import random
-from typing import Final
+from pathlib import Path
+from typing import Final, Self
 
 import lightning.pytorch as pl
 import numpy as np
 import torch
 import torch.nn.functional as F
+import torch.optim as optim
 from torch import nn
 from utils.logging import LogLevel, logger
 from utils.replay_memory import Experience, ReplayMemory
@@ -35,7 +37,7 @@ class DDQNCNNAgent(pl.LightningModule):
         alpha=0.001,
         epsilon=1.0,
         epsilon_min=0.01,
-        epsilon_decay=0.999,
+        gamma=0.999,
         memory_size=10_000,
         batch_size=64,
     ):
@@ -45,14 +47,15 @@ class DDQNCNNAgent(pl.LightningModule):
         self.alpha = alpha
         self.epsilon = epsilon
         self.epsilon_min = epsilon_min
-        self.epsilon_decay = epsilon_decay
+        self.gamma = gamma
         self.memory = ReplayMemory(capacity=memory_size)
         self.batch_size = batch_size
         self.model: nn.Sequential = self._build_model()
-        self.gpu = get_torch_device()
-        self.model.to(self.gpu)
+        self.device_: torch.device = get_torch_device()
+        self.model.to(self.device_)
+        self.optimizer = optim.Adam(self.model.parameters(), lr=alpha)
         self.target_model: nn.Sequential = self._build_model()  # Target network
-        self.target_model.to(self.gpu)  # TODO: Neccessary?
+        self.target_model.to(self.device_)  # TODO: Neccessary?
         self.update_target()  # Initialize target network weights to be the same as policy network
 
     def update_target(self):
@@ -79,71 +82,67 @@ class DDQNCNNAgent(pl.LightningModule):
     def remember(self, experience: Experience) -> None:
         self.memory.push(experience)
 
-    def act(self, state):
+    def act(self: Self, state):
         if np.random.rand() <= self.epsilon:
             return random.randrange(self.action_space)
-        state = torch.from_numpy(state).float().unsqueeze(0).to(self.gpu)
-        act_values = self.model(state)
+        state = torch.from_numpy(state).float().unsqueeze(0).to(self.device_)
+        act_values = self.forward(state)
         return int(torch.argmax(act_values[0]).item())
 
     def replay(self) -> None:
+        # sample memory
         minibatch = self.memory.sample(self.batch_size)
 
-        # Convert the minibatch to a more convenient format.
-        states, actions, rewards, next_states, dones = zip(*minibatch)
+        # convert the minibatch to a more convenient format
+        states, actions, rewards, next_states, dones = self.prepare_minibatch(minibatch)
 
-        # Convert to tensors and add an extra dimension.
-        states = torch.from_numpy(np.array(states)).float().to(self.gpu)
-        actions = torch.tensor(actions).unsqueeze(1).to(self.gpu)
-        rewards = torch.tensor(rewards).float().to(self.gpu)
-        next_states = torch.from_numpy(np.array(next_states)).float().to(self.gpu)
-        dones = torch.tensor(dones).float().to(self.gpu)
+        # predict Q-values for the initial states.
+        q_out = self.forward(states)
+        q_a = q_out.gather(1, actions)  # state_action_values
 
-        # Predict Q-values for the initial states.
-        state_action_values = self.model(states).gather(1, actions)
+        # compute V(s_{t+1}) for all next states.
+        max_q_prime = self.target_model.forward(next_states).max(1)[0].detach()
 
-        # Double DQN update: Use the policy network to select the actions and target network to evaluate those actions
-        next_actions = (
-            self.model(next_states).argmax(1).unsqueeze(1)
-        )  # Actions selected by policy network
-        next_state_values = (
-            self.target_model(next_states).gather(1, next_actions).squeeze(1).detach()
-        )  # Q-values from target network
+        # scale rewards
+        rewards /= 100
 
-        # Compute the expected Q values.
-        expected_state_action_values = (
-            next_state_values * self.epsilon_decay + rewards
-        ) * (1 - dones)
+        # clip rewards
+        rewards = rewards.clamp(min=-1.0, max=1.0)
 
-        # Update the weights.
-        self._update_weights(
-            state_action_values, expected_state_action_values.unsqueeze(1)
-        )
+        # mask dones
+        dones = 1 - dones
 
-    def update_epsilon(self) -> None:
-        if self.epsilon > self.epsilon_min:  # epsilon is adjusted to often!!!git
-            self.epsilon *= self.epsilon_decay
+        # compute the expected Q values (expected_state_action_values)
+        target = rewards + max_q_prime * self.gamma * dones
 
-    def _update_weights(self, state_action_values, expected_state_action_values):
-        # self.optimizers().zero_grad()
-        loss = F.mse_loss(state_action_values, expected_state_action_values)
+        # update the weights.
+        self.__update_weights(q_a, target.unsqueeze(1))
+
+    def __update_weights(self, q_a, target) -> None:
+        self.optimizer.zero_grad()
+        loss = F.smooth_l1_loss(q_a, target)
         loss.backward()
-        # self.optimizers().step()
+        self.optimizer.step()
 
-    def forward(self, x):
+    def prepare_minibatch(self: Self, minibatch: list[Experience]):
+        # TODO: make private
+        states, actions, rewards, next_states, dones = zip(*minibatch)
+        states = torch.from_numpy(np.array(states)).float().to(self.device_)
+        actions = torch.tensor(actions).unsqueeze(1).to(self.device_)
+        rewards = torch.tensor(rewards).float().to(self.device_)
+        next_states = torch.from_numpy(np.array(next_states)).float().to(self.device_)
+        dones = torch.tensor(dones).float().to(self.device_)
+        return states, actions, rewards, next_states, dones
+
+    def forward(self: Self, x):
         return self.model(x)
 
-    def configure_optimizers(self):
-        return torch.optim.Adam(self.model.parameters(), lr=self.alpha)
+    def update_epsilon(self: Self) -> None:
+        if self.epsilon > self.epsilon_min:
+            self.epsilon *= self.gamma
 
-    def training_step(self, batch, batch_idx):
-        # Training step logic...
-        # After training is done, periodically update the target network
-        if batch_idx % 100 == 0:  # for example, every 100 steps
-            self.update_target()
-
-    def load(self, name) -> None:
+    def load(self: Self, name: Path) -> None:
         self.load_state_dict(torch.load(name))
 
-    def save(self, name) -> None:
+    def save(self: Self, name: Path) -> None:
         torch.save(self.state_dict(), name)

@@ -4,17 +4,18 @@ from pathlib import Path
 from typing import Final
 
 import numpy as np
+from agents.dqn_cnn_double import DDQNCNNAgent
 
-# from agents.dqn_torch import DQN
-from agents.dqn_cnn import DQNCNNAgent
-
-# from agents.dqn_cnn_double import DDQNCNNAgent
 # from agents.dqn_cnn_duelling import DuellingQNCNNAgent
 from gym.wrappers.monitoring import video_recorder as vr
 from pong_wrapper import PongWrapper
 from utils.file_utils import empty_directories
 from utils.logging import EpisodeLog, EpisodeLogger, LogLevel
 from utils.replay_memory import Experience
+
+# from agents.dqn_torch import DQN
+# from agents.dqn_cnn import DQNCNNAgent
+
 
 # suppress moviepy output: ultimata ratio :-|
 sys.stdout = open(os.devnull, "w")
@@ -39,7 +40,7 @@ EPSILON_MIN: Final[float] = 0.1
 MODEL_SAVE_INTERVAL: Final[int] = 1024
 RECORD_INTERVAL: Final[int] = 1024
 STEP_PENALTY: Final[float] = 0.01
-TARGET_NETWORK_UPDATE_INTERVAL: Final[int] = 1024
+TARGET_NETWORK_UPDATE_INTERVAL: Final[int] = 16
 NUM_STACKED_FRAMES: Final[int] = 2
 INPUT_DIM: Final[int] = 80
 INPUT_SHAPE: Final[tuple[int, int, int]] = (
@@ -59,7 +60,7 @@ def loop():
     )
 
     # create the policy network
-    agent = DQNCNNAgent(
+    agent = DDQNCNNAgent(
         state_shape=INPUT_SHAPE,
         action_space=env.action_space.n,  # type: ignore
         gamma=EPSILON_DECAY,
@@ -114,6 +115,10 @@ def loop():
         # log episode
         episode_log.stop_timer()
         logger.log(episode_log)
+
+        if episode % TARGET_NETWORK_UPDATE_INTERVAL == 0:
+            logger.log(f"Updating target network", LogLevel.GREEN)
+            agent.update_target()
 
         # periodically save model
         if episode % MODEL_SAVE_INTERVAL == 0:

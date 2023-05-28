@@ -50,8 +50,8 @@ class DQNCNNAgent(pl.LightningModule):
         self.memory = ReplayMemory(capacity=memory_size)
         self.batch_size = batch_size
         self.model: nn.Sequential = self._build_model()
-        self.device: torch.device = get_torch_device()
-        self.model.to(self.device)
+        self.device_: torch.device = get_torch_device()
+        self.model.to(self.device_)
         self.optimizer = optim.Adam(self.model.parameters(), lr=alpha)
 
     def _build_model(self: Self) -> nn.Sequential:
@@ -75,8 +75,8 @@ class DQNCNNAgent(pl.LightningModule):
     def act(self: Self, state):
         if np.random.rand() <= self.epsilon:
             return random.randrange(self.action_space)
-        state = torch.from_numpy(state).float().unsqueeze(0).to(self.device)
-        act_values = self.model(state)
+        state = torch.from_numpy(state).float().unsqueeze(0).to(self.device_)
+        act_values = self.forward(state)
         return int(torch.argmax(act_values[0]).item())
 
     def replay(self: Self) -> None:
@@ -86,11 +86,11 @@ class DQNCNNAgent(pl.LightningModule):
         states, actions, rewards, next_states, dones = zip(*minibatch)
 
         # Convert to tensors and add an extra dimension.
-        states = torch.from_numpy(np.array(states)).float().to(self.device)
-        actions = torch.tensor(actions).unsqueeze(1).to(self.device)
-        rewards = torch.tensor(rewards).float().to(self.device)
-        next_states = torch.from_numpy(np.array(next_states)).float().to(self.device)
-        dones = torch.tensor(dones).float().to(self.device)
+        states = torch.from_numpy(np.array(states)).float().to(self.device_)
+        actions = torch.tensor(actions).unsqueeze(1).to(self.device_)
+        rewards = torch.tensor(rewards).float().to(self.device_)
+        next_states = torch.from_numpy(np.array(next_states)).float().to(self.device_)
+        dones = torch.tensor(dones).float().to(self.device_)
 
         # Predict Q-values for the initial states.
         q_out = self.forward(states)

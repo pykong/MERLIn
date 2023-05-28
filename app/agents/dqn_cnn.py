@@ -80,17 +80,18 @@ class DQNCNNAgent(pl.LightningModule):
         return int(torch.argmax(act_values[0]).item())
 
     def replay(self: Self) -> None:
+        # sample memory
         minibatch = self.memory.sample(self.batch_size)
 
-        # Convert the minibatch to a more convenient format.
+        # convert the minibatch to a more convenient format
         states, actions, rewards, next_states, dones = self.prepare_minibatch(minibatch)
 
-        # Predict Q-values for the initial states.
+        # predict Q-values for the initial states.
         q_out = self.forward(states)
         q_a = q_out.gather(1, actions)  # state_action_values
 
-        # Compute V(s_{t+1}) for all next states.
-        max_q_prime = self.forward(next_states).max(1)[0].detach()  # next_state_values+
+        # compute V(s_{t+1}) for all next states.
+        max_q_prime = self.forward(next_states).max(1)[0].detach()
 
         # scale rewards
         rewards /= 100
@@ -101,10 +102,10 @@ class DQNCNNAgent(pl.LightningModule):
         # mask dones
         dones = 1 - dones
 
-        # Compute the expected Q values (expected_state_action_values)
+        # compute the expected Q values (expected_state_action_values)
         target = rewards + max_q_prime * self.gamma * dones
 
-        # Update the weights.
+        # update the weights.
         self.optimizer.zero_grad()
         loss = F.smooth_l1_loss(q_a, target.unsqueeze(1))
         loss.backward()

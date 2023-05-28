@@ -5,8 +5,14 @@
 # You can also overwrite the destination.ip via command line arg.
 # ./sync_vm.sh new.destination.ip
 
+# Get the directory where the script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Change the working directory to the script directory
+cd "$SCRIPT_DIR"
+
 # Load configurations
-source config.cfg
+source sync.cfg
 
 # Overwrite DESTINATION_IP if command line argument is provided
 if [ ! -z "$1" ]; then
@@ -14,7 +20,7 @@ if [ ! -z "$1" ]; then
 fi
 
 # Split EXCLUDE_PATTERNS into an array and prepare rsync exclude options
-IFS=' ' read -r -a EXCLUDE_PATTERNS_ARRAY <<< "$EXCLUDE_PATTERNS"
+IFS=',' read -r -a EXCLUDE_PATTERNS_ARRAY <<< "$EXCLUDE_PATTERNS"
 EXCLUDE_OPTIONS=()
 for pattern in "${EXCLUDE_PATTERNS_ARRAY[@]}"; do
   EXCLUDE_OPTIONS+=("--exclude=$pattern")

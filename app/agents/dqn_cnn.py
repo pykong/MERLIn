@@ -45,7 +45,7 @@ class DQNCNNAgent(pl.LightningModule):
         self.alpha = alpha
         self.epsilon = epsilon
         self.epsilon_min = epsilon_min
-        self.epsilon_decay = epsilon_decay
+        self.gamma = epsilon_decay
         self.memory = ReplayMemory(capacity=memory_size)
         self.batch_size = batch_size
         self.model: nn.Sequential = self._build_model()
@@ -92,24 +92,21 @@ class DQNCNNAgent(pl.LightningModule):
         dones = torch.tensor(dones).float().to(self.gpu)
 
         # Predict Q-values for the initial states.
-        state_action_values = self.model(states).gather(1, actions)
+        q_out = self.model(states)
+        q_a = q_out.gather(1, actions)  # state_action_values
 
         # Compute V(s_{t+1}) for all next states.
-        next_state_values = self.model(next_states).max(1)[0].detach()
+        max_q_prime = self.model(next_states).max(1)[0].detach()  # next_state_values
 
-        # Compute the expected Q values.
-        expected_state_action_values = (
-            next_state_values * self.epsilon_decay + rewards
-        ) * (1 - dones)
+        # Compute the expected Q values (expected_state_action_values)
+        target = (max_q_prime * self.gamma + rewards) * (1 - dones)
 
         # Update the weights.
-        self._update_weights(
-            state_action_values, expected_state_action_values.unsqueeze(1)
-        )
+        self._update_weights(q_a, target.unsqueeze(1))
 
     def update_epsilon(self) -> None:
         if self.epsilon > self.epsilon_min:  # epsilon is adjusted to often!!!git
-            self.epsilon *= self.epsilon_decay
+            self.epsilon *= self.gamma
 
     def _update_weights(self, state_action_values, expected_state_action_values):
         [o.zero_grad() for o in self.optimizers()]  # TODO: neccessary?

@@ -113,7 +113,8 @@ class DQNCNNAgent(pl.LightningModule):
 
     def _update_weights(self, state_action_values, expected_state_action_values):
         [o.zero_grad() for o in self.optimizers()]  # TODO: neccessary?
-        loss = F.mse_loss(state_action_values, expected_state_action_values)
+        # loss = F.mse_loss(state_action_values, expected_state_action_values)
+        loss = F.smooth_l1_loss(state_action_values, expected_state_action_values)
         loss.backward()
         [o.step() for o in self.optimizers()]  # TODO: neccessary?
 

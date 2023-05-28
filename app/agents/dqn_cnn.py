@@ -5,6 +5,7 @@ import lightning.pytorch as pl
 import numpy as np
 import torch
 import torch.nn.functional as F
+import torch.optim as optim
 from torch import nn
 from utils.logging import LogLevel, logger
 from utils.replay_memory import Experience, ReplayMemory
@@ -42,7 +43,6 @@ class DQNCNNAgent(pl.LightningModule):
         super().__init__()
         self.state_shape = state_shape
         self.action_space = action_space
-        self.alpha = alpha
         self.epsilon = epsilon
         self.epsilon_min = epsilon_min
         self.gamma = epsilon_decay
@@ -51,7 +51,7 @@ class DQNCNNAgent(pl.LightningModule):
         self.model: nn.Sequential = self._build_model()
         self.gpu = get_torch_device()
         self.model.to(self.gpu)
-        self.trainer = pl.Trainer()  # TODO: neccessary?
+        self.optimizer = optim.Adam(self.model.parameters(), lr=alpha)
 
     def _build_model(self) -> nn.Sequential:
         # Calculate the output size after the convolutional layers
@@ -92,7 +92,7 @@ class DQNCNNAgent(pl.LightningModule):
         dones = torch.tensor(dones).float().to(self.gpu)
 
         # Predict Q-values for the initial states.
-        q_out = self.model(states)
+        q_out = self.forward(states)
         q_a = q_out.gather(1, actions)  # state_action_values
 
         # Compute V(s_{t+1}) for all next states.
@@ -102,28 +102,17 @@ class DQNCNNAgent(pl.LightningModule):
         target = (max_q_prime * self.gamma + rewards) * (1 - dones)
 
         # Update the weights.
-        self._update_weights(q_a, target.unsqueeze(1))
-
-    def update_epsilon(self) -> None:
-        if self.epsilon > self.epsilon_min:  # epsilon is adjusted to often!!!git
-            self.epsilon *= self.gamma
-
-    def _update_weights(self, state_action_values, expected_state_action_values):
-        [o.zero_grad() for o in self.optimizers()]  # TODO: neccessary?
-        # loss = F.mse_loss(state_action_values, expected_state_action_values)
-        loss = F.smooth_l1_loss(state_action_values, expected_state_action_values)
+        self.optimizer.zero_grad()
+        loss = F.smooth_l1_loss(q_a, target.unsqueeze(1))
         loss.backward()
-        [o.step() for o in self.optimizers()]  # TODO: neccessary?
+        self.optimizer.step()
 
     def forward(self, x):
         return self.model(x)
 
-    def configure_optimizers(self):
-        return torch.optim.Adam(self.model.parameters(), lr=self.alpha)
-
-    def training_step(self, batch, batch_idx):
-        # This function is intentionally left blank, because we'll manually update the weights in replay()
-        pass
+    def update_epsilon(self) -> None:
+        if self.epsilon > self.epsilon_min:
+            self.epsilon *= self.gamma
 
     def load(self, name) -> None:
         self.load_state_dict(torch.load(name))

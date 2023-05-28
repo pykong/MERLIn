@@ -29,15 +29,15 @@ LOG_DIR: Final[Path] = Path("log")
 VIDEO_DIR: Final[Path] = Path("video")
 
 # hyperparameters
-MAX_EPISODES: Final[int] = 5000
+MAX_EPISODES: Final[int] = 10_000
 FRAME_SKIP: Final[int] = 4
-LEARNING_RATE: Final[float] = 0.001
-MEMORY_SIZE: Final[int] = 10_000
-BATCH_SIZE: Final[int] = 64
-EPSILON_DECAY: Final[float] = 0.999  # discount factor gamma
+LEARNING_RATE: Final[float] = 0.0005
+MEMORY_SIZE: Final[int] = 50_000
+BATCH_SIZE: Final[int] = 32
+EPSILON_DECAY: Final[float] = 0.9995  # discount factor gamma
 EPSILON_MIN: Final[float] = 0.1
-MODEL_SAVE_INTERVAL: Final[int] = 64
-RECORD_INTERVAL: Final[int] = 8
+MODEL_SAVE_INTERVAL: Final[int] = 1024
+RECORD_INTERVAL: Final[int] = 1024
 STEP_PENALTY: Final[float] = 0.01
 TARGET_NETWORK_UPDATE_INTERVAL: Final[int] = 1000
 NUM_STACKED_FRAMES: Final[int] = 2

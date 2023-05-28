@@ -30,7 +30,7 @@ LOG_DIR: Final[Path] = Path("log")
 VIDEO_DIR: Final[Path] = Path("video")
 
 # hyperparameters
-MAX_EPISODES: Final[int] = 10_000
+MAX_EPISODES: Final[int] = 20_000
 FRAME_SKIP: Final[int] = 4
 LEARNING_RATE: Final[float] = 0.001
 MEMORY_SIZE: Final[int] = 32_000

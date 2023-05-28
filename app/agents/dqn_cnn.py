@@ -37,7 +37,7 @@ class DQNCNNAgent(pl.LightningModule):
         alpha: float = 0.001,
         epsilon: float = 1.0,
         epsilon_min: float = 0.01,
-        epsilon_decay: float = 0.999,
+        gamma: float = 0.999,  # epsilon decay
         memory_size: int = 10_000,
         batch_size: int = 64,
     ):
@@ -46,12 +46,12 @@ class DQNCNNAgent(pl.LightningModule):
         self.action_space = action_space
         self.epsilon = epsilon
         self.epsilon_min = epsilon_min
-        self.gamma = epsilon_decay
+        self.gamma = gamma
         self.memory = ReplayMemory(capacity=memory_size)
         self.batch_size = batch_size
         self.model: nn.Sequential = self._build_model()
-        self.gpu = get_torch_device()
-        self.model.to(self.gpu)
+        self.device: torch.device = get_torch_device()
+        self.model.to(self.device)
         self.optimizer = optim.Adam(self.model.parameters(), lr=alpha)
 
     def _build_model(self: Self) -> nn.Sequential:
@@ -75,7 +75,7 @@ class DQNCNNAgent(pl.LightningModule):
     def act(self: Self, state):
         if np.random.rand() <= self.epsilon:
             return random.randrange(self.action_space)
-        state = torch.from_numpy(state).float().unsqueeze(0).to(self.gpu)
+        state = torch.from_numpy(state).float().unsqueeze(0).to(self.device)
         act_values = self.model(state)
         return int(torch.argmax(act_values[0]).item())
 
@@ -86,18 +86,18 @@ class DQNCNNAgent(pl.LightningModule):
         states, actions, rewards, next_states, dones = zip(*minibatch)
 
         # Convert to tensors and add an extra dimension.
-        states = torch.from_numpy(np.array(states)).float().to(self.gpu)
-        actions = torch.tensor(actions).unsqueeze(1).to(self.gpu)
-        rewards = torch.tensor(rewards).float().to(self.gpu)
-        next_states = torch.from_numpy(np.array(next_states)).float().to(self.gpu)
-        dones = torch.tensor(dones).float().to(self.gpu)
+        states = torch.from_numpy(np.array(states)).float().to(self.device)
+        actions = torch.tensor(actions).unsqueeze(1).to(self.device)
+        rewards = torch.tensor(rewards).float().to(self.device)
+        next_states = torch.from_numpy(np.array(next_states)).float().to(self.device)
+        dones = torch.tensor(dones).float().to(self.device)
 
         # Predict Q-values for the initial states.
         q_out = self.forward(states)
         q_a = q_out.gather(1, actions)  # state_action_values
 
         # Compute V(s_{t+1}) for all next states.
-        max_q_prime = self.model(next_states).max(1)[0].detach()  # next_state_values
+        max_q_prime = self.forward(next_states).max(1)[0].detach()  # next_state_values
 
         # Compute the expected Q values (expected_state_action_values)
         target = (max_q_prime * self.gamma + rewards) * (1 - dones)

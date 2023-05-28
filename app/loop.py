@@ -62,7 +62,7 @@ def loop():
     agent = DQNCNNAgent(
         state_shape=INPUT_SHAPE,
         action_space=env.action_space.n,  # type: ignore
-        epsilon_decay=EPSILON_DECAY,
+        gamma=EPSILON_DECAY,
         alpha=LEARNING_RATE,
     )
 

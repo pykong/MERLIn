@@ -115,6 +115,7 @@ class DQNCNNAgent(pl.LightningModule):
         self.optimizer.step()
 
     def prepare_minibatch(self: Self, minibatch: list[Experience]):
+        # TODO: make private
         states, actions, rewards, next_states, dones = zip(*minibatch)
         states = torch.from_numpy(np.array(states)).float().to(self.device_)
         actions = torch.tensor(actions).unsqueeze(1).to(self.device_)

@@ -94,7 +94,16 @@ class DDQNCNNAgent(pl.LightningModule):
         q_out = self.forward(states)
         q_a = q_out.gather(1, actions)  # state_action_values
 
-        # compute V(s_{t+1}) for all next states.
+        # get indices of maximum values according to the policy network
+        _, policy_net_actions = self.model(next_states).max(1)
+
+        # compute V(s_{t+1}) for all next states using target network, but choose the best action from the policy network.
+        max_q_prime = (
+            self.target_model.forward(next_states)
+            .gather(1, policy_net_actions.unsqueeze(-1))
+            .squeeze()
+            .detach()
+        )
         max_q_prime = self.target_model.forward(next_states).max(1)[0].detach()
 
         # mask dones
@@ -104,10 +113,10 @@ class DDQNCNNAgent(pl.LightningModule):
         target = rewards + max_q_prime * self.gamma * dones
 
         # scale target
-        # target /= 100
+        target /= 100
 
         # clip target
-        # target = target.clamp(min=-1.0, max=1.0)
+        target = target.clamp(min=-1.0, max=1.0)
 
         # update the weights.
         self.__update_weights(q_a, target.unsqueeze(1))

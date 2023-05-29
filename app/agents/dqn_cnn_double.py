@@ -99,7 +99,7 @@ class DDQNCNNAgent(pl.LightningModule):
 
         # compute V(s_{t+1}) for all next states using target network, but choose the best action from the policy network.
         max_q_prime = (
-            self.target_model.forward(next_states)
+            self.target_model(next_states)
             .gather(1, policy_net_actions.unsqueeze(-1))
             .squeeze()
             .detach()

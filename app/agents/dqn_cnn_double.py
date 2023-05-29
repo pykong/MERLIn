@@ -97,17 +97,17 @@ class DDQNCNNAgent(pl.LightningModule):
         # compute V(s_{t+1}) for all next states.
         max_q_prime = self.target_model.forward(next_states).max(1)[0].detach()
 
-        # scale rewards
-        rewards /= 100
-
-        # clip rewards
-        rewards = rewards.clamp(min=-1.0, max=1.0)
-
         # mask dones
         dones = 1 - dones
 
         # compute the expected Q values (expected_state_action_values)
         target = rewards + max_q_prime * self.gamma * dones
+
+        # scale target
+        target /= 100
+
+        # clip target
+        target = target.clamp(min=-1.0, max=1.0)
 
         # update the weights.
         self.__update_weights(q_a, target.unsqueeze(1))

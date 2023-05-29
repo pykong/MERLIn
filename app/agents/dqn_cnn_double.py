@@ -1,4 +1,5 @@
 import random
+from copy import deepcopy
 from pathlib import Path
 from typing import Final, Self
 
@@ -31,19 +32,19 @@ class DDQNCNNAgent(pl.LightningModule):
     name: Final[str] = "double_dqn_cnn"
 
     def __init__(
-        self,
-        state_shape,
-        action_space,
-        alpha=0.001,
-        epsilon=1.0,
-        epsilon_min=0.01,
-        gamma=0.999,
-        memory_size=10_000,
-        batch_size=64,
+        self: Self,
+        state_shape: tuple[int, int, int],
+        action_space: int,
+        alpha: float = 0.001,
+        epsilon: float = 1.0,
+        epsilon_min: float = 0.01,
+        gamma: float = 0.999,  # epsilon decay
+        memory_size: int = 10_000,
+        batch_size: int = 64,
     ):
         super().__init__()
         self.state_shape = state_shape
-        self.action_space = action_space
+        self.num_actions = action_space
         self.alpha = alpha
         self.epsilon = epsilon
         self.epsilon_min = epsilon_min
@@ -51,32 +52,29 @@ class DDQNCNNAgent(pl.LightningModule):
         self.memory = ReplayMemory(capacity=memory_size)
         self.batch_size = batch_size
         self.device_: torch.device = get_torch_device()
-        self.model: nn.Sequential = self._build_model()
+        self.model = self._make_model(self.state_shape, self.num_actions, self.device_)
         self.optimizer = optim.Adam(self.model.parameters(), lr=alpha)
-        self.target_model: nn.Sequential = self._build_model()  # Target network
-        self.update_target()  # Initialize target network weights to be the same as policy network
+        self.target_model = deepcopy(self.model)  # init target network
 
     def update_target(self):
         """Copies the policy network parameters to the target network"""
         self.target_model.load_state_dict(self.model.state_dict())
 
-    def _build_model(self) -> nn.Sequential:
-        # Calculate the output size after the convolutional layers
-        conv_output_size = self.state_shape[1] // 4  # two conv layers with stride=2
-        conv_output_size *= self.state_shape[2] // 4  # two conv layers with stride=2
-        conv_output_size *= 16  # output channels of last conv layer
+    @staticmethod
+    def _make_model(
+        state_shape: tuple[int, int, int], num_actions: int, device: torch.device
+    ) -> nn.Sequential:
+        num_channels, x_dim, y_dim = state_shape  # you can replace with your dimensions
         model = nn.Sequential(
-            nn.Conv2d(self.state_shape[0], 16, kernel_size=3, stride=2, padding=1),
+            nn.Conv2d(num_channels, 16, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
-            nn.MaxPool2d(2, 2),
+            nn.MaxPool2d(kernel_size=2, stride=2),
             nn.Flatten(),
-            nn.Linear(conv_output_size, 32),
+            nn.Linear(16 * (x_dim // 2) * (y_dim // 2), 64),  # fully connected layer
             nn.ReLU(),
-            nn.Linear(32, 16),
-            nn.ReLU(),
-            nn.Linear(16, self.action_space),
+            nn.Linear(64, num_actions),
         )
-        model.to(self.device_)
+        model.to(device)
         return model
 
     def remember(self, experience: Experience) -> None:
@@ -84,7 +82,7 @@ class DDQNCNNAgent(pl.LightningModule):
 
     def act(self: Self, state):
         if np.random.rand() <= self.epsilon:
-            return random.randrange(self.action_space)
+            return random.randrange(self.num_actions)
         state = torch.from_numpy(state).float().unsqueeze(0).to(self.device_)
         act_values = self.forward(state)
         return int(torch.argmax(act_values[0]).item())

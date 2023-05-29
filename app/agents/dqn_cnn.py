@@ -33,7 +33,7 @@ class DQNCNNAgent(pl.LightningModule):
     def __init__(
         self: Self,
         state_shape: tuple[int, int, int],
-        action_space,
+        action_space: int,
         alpha: float = 0.001,
         epsilon: float = 1.0,
         epsilon_min: float = 0.01,

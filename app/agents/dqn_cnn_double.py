@@ -81,7 +81,7 @@ class DDQNCNNAgent(pl.LightningModule):
             return random.randrange(self.num_actions)
         state = torch.from_numpy(state).float().unsqueeze(0).to(self.device_)
         act_values = self.forward(state)
-        return int(torch.argmax(act_values[0]).item())
+        return act_values.argmax().item()
 
     def replay(self: Self) -> None:
         # sample memory

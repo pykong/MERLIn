@@ -50,12 +50,10 @@ class DDQNCNNAgent(pl.LightningModule):
         self.gamma = gamma
         self.memory = ReplayMemory(capacity=memory_size)
         self.batch_size = batch_size
-        self.model: nn.Sequential = self._build_model()
         self.device_: torch.device = get_torch_device()
-        self.model.to(self.device_)
+        self.model: nn.Sequential = self._build_model()
         self.optimizer = optim.Adam(self.model.parameters(), lr=alpha)
         self.target_model: nn.Sequential = self._build_model()  # Target network
-        self.target_model.to(self.device_)  # TODO: Neccessary?
         self.update_target()  # Initialize target network weights to be the same as policy network
 
     def update_target(self):
@@ -67,7 +65,7 @@ class DDQNCNNAgent(pl.LightningModule):
         conv_output_size = self.state_shape[1] // 4  # two conv layers with stride=2
         conv_output_size *= self.state_shape[2] // 4  # two conv layers with stride=2
         conv_output_size *= 16  # output channels of last conv layer
-        return nn.Sequential(
+        model = nn.Sequential(
             nn.Conv2d(self.state_shape[0], 16, kernel_size=3, stride=2, padding=1),
             nn.ReLU(),
             nn.MaxPool2d(2, 2),
@@ -78,6 +76,8 @@ class DDQNCNNAgent(pl.LightningModule):
             nn.ReLU(),
             nn.Linear(16, self.action_space),
         )
+        model.to(self.device_)
+        return model
 
     def remember(self, experience: Experience) -> None:
         self.memory.push(experience)

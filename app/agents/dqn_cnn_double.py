@@ -104,7 +104,6 @@ class DDQNCNNAgent(pl.LightningModule):
             .squeeze()
             .detach()
         )
-        max_q_prime = self.target_model.forward(next_states).max(1)[0].detach()
 
         # mask dones
         dones = 1 - dones

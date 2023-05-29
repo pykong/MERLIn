@@ -62,13 +62,13 @@ class DDQNCNNAgent(pl.LightningModule):
     ) -> nn.Sequential:
         channel_dim, x_dim, y_dim = state_shape  # unpack dimensions
         model = nn.Sequential(
-            nn.Conv2d(channel_dim, 16, kernel_size=3, stride=1, padding=1),
+            nn.Conv2d(channel_dim, 32, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2, stride=2),
+            nn.MaxPool2d(kernel_size=4, stride=4),
             nn.Flatten(),
-            nn.Linear(16 * (x_dim // 2) * (y_dim // 2), 64),  # fully connected layer
+            nn.Linear(32 * (x_dim // 4) * (y_dim // 4), 16),  # fully connected layer
             nn.ReLU(),
-            nn.Linear(64, num_actions),
+            nn.Linear(16, num_actions),
         )
         model.to(device)
         return model

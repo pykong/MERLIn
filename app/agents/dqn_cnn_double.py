@@ -56,7 +56,7 @@ class DDQNCNNAgent(pl.LightningModule):
         self.optimizer = optim.Adam(self.model.parameters(), lr=alpha)
         self.target_model = deepcopy(self.model)  # init target network
 
-    def update_target(self):
+    def update_target(self: Self) -> None:
         """Copies the policy network parameters to the target network"""
         self.target_model.load_state_dict(self.model.state_dict())
 
@@ -77,17 +77,17 @@ class DDQNCNNAgent(pl.LightningModule):
         model.to(device)
         return model
 
-    def remember(self, experience: Experience) -> None:
+    def remember(self: Self, experience: Experience) -> None:
         self.memory.push(experience)
 
-    def act(self: Self, state):
+    def act(self: Self, state) -> int:
         if np.random.rand() <= self.epsilon:
             return random.randrange(self.num_actions)
         state = torch.from_numpy(state).float().unsqueeze(0).to(self.device_)
         act_values = self.forward(state)
         return int(torch.argmax(act_values[0]).item())
 
-    def replay(self) -> None:
+    def replay(self: Self) -> None:
         # sample memory
         minibatch = self.memory.sample(self.batch_size)
 
@@ -116,7 +116,7 @@ class DDQNCNNAgent(pl.LightningModule):
         # update the weights.
         self.__update_weights(q_a, target.unsqueeze(1))
 
-    def __update_weights(self, q_a, target) -> None:
+    def __update_weights(self: Self, q_a, target) -> None:
         self.optimizer.zero_grad()
         loss = F.smooth_l1_loss(q_a, target)
         loss.backward()

@@ -41,7 +41,7 @@ MODEL_SAVE_INTERVAL: Final[int] = 1024
 RECORD_INTERVAL: Final[int] = 256
 STEP_PENALTY: Final[float] = 0.01
 TARGET_NETWORK_UPDATE_INTERVAL: Final[int] = 16
-NUM_STACKED_FRAMES: Final[int] = 2
+NUM_STACKED_FRAMES: Final[int] = 1
 INPUT_DIM: Final[int] = 80
 INPUT_SHAPE: Final[tuple[int, int, int]] = (
     1,

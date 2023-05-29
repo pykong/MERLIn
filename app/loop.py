@@ -111,6 +111,8 @@ def loop():
             state = next_state
             episode_log.reward += reward
 
+            # TODO: save state as image for interrogation
+
         # update epsilon
         agent.update_epsilon()
 

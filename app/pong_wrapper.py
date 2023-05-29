@@ -18,12 +18,14 @@ class Step(NamedTuple):
 def preprocess_state(state):
     """Shapes the observation space."""
     state = state[35:195]  # crop irrelevant parts of the image (top and bottom)
+    # TODO: dynamize dimensions
     state = cv.resize(state, (80, 80), interpolation=cv.INTER_AREA)  # downsample
-    _, state = cv.threshold(state, 128, 255, cv.THRESH_BINARY)  # make binary
     state = cv.normalize(
         state, None, alpha=0, beta=1, norm_type=cv.NORM_MINMAX, dtype=cv.CV_32F
     )
     state = cv.cvtColor(state, cv.COLOR_BGR2GRAY)  # remove channrl dim
+    # TODO: put threshold value into constant
+    _, state = cv.threshold(state, 0.25, 1, cv.THRESH_BINARY)  # make binary
     state = np.expand_dims(state, axis=0)  # prepend channel dimension
     return state
 

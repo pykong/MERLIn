@@ -12,7 +12,7 @@ __all__ = ["PongWrapper"]
 class Step(NamedTuple):
     state: np.ndarray
     reward: float
-    don: bool
+    done: bool
 
 
 def preprocess_state(state):

@@ -104,10 +104,10 @@ class DDQNCNNAgent(pl.LightningModule):
         target = rewards + max_q_prime * self.gamma * dones
 
         # scale target
-        target /= 100
+        # target /= 100
 
         # clip target
-        target = target.clamp(min=-1.0, max=1.0)
+        # target = target.clamp(min=-1.0, max=1.0)
 
         # update the weights.
         self.__update_weights(q_a, target.unsqueeze(1))

@@ -32,7 +32,7 @@ VIDEO_DIR: Final[Path] = Path("video")
 # hyperparameters
 MAX_EPISODES: Final[int] = 20_000
 FRAME_SKIP: Final[int] = 4
-LEARNING_RATE: Final[float] = 5e-3
+LEARNING_RATE: Final[float] = 5e-4
 MEMORY_SIZE: Final[int] = 32_000
 BATCH_SIZE: Final[int] = 64
 EPSILON_DECAY: Final[float] = 1 - 5e-4  # discount factor gamma

@@ -64,9 +64,9 @@ class DDQNCNNAgent(pl.LightningModule):
     def _make_model(
         state_shape: tuple[int, int, int], num_actions: int, device: torch.device
     ) -> nn.Sequential:
-        num_channels, x_dim, y_dim = state_shape  # you can replace with your dimensions
+        channel_dim, x_dim, y_dim = state_shape  # you can replace with your dimensions
         model = nn.Sequential(
-            nn.Conv2d(num_channels, 16, kernel_size=3, stride=1, padding=1),
+            nn.Conv2d(channel_dim, 16, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2),
             nn.Flatten(),

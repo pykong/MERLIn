@@ -56,10 +56,6 @@ class DDQNCNNAgent(pl.LightningModule):
         self.optimizer = optim.Adam(self.model.parameters(), lr=alpha)
         self.target_model = deepcopy(self.model)  # init target network
 
-    def update_target(self: Self) -> None:
-        """Copies the policy network parameters to the target network"""
-        self.target_model.load_state_dict(self.model.state_dict())
-
     @staticmethod
     def _make_model(
         state_shape: tuple[int, int, int], num_actions: int, device: torch.device
@@ -131,6 +127,10 @@ class DDQNCNNAgent(pl.LightningModule):
         next_states = torch.from_numpy(np.array(next_states)).float().to(self.device_)
         dones = torch.tensor(dones).float().to(self.device_)
         return states, actions, rewards, next_states, dones
+
+    def update_target(self: Self) -> None:
+        """Copies the policy network parameters to the target network"""
+        self.target_model.load_state_dict(self.model.state_dict())
 
     def forward(self: Self, x):
         return self.model(x)

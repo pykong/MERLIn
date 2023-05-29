@@ -55,9 +55,12 @@ class PongWrapper(gym.Wrapper):
         done = False
         for _ in range(self.skip):
             next_state, reward, done, _, _ = super().step(action)
-            total_reward += -self.step_penalty if reward == 0 else reward
+            total_reward += reward
             if done:
                 break
+
+        if total_reward == 0:
+            total_reward = -self.step_penalty
 
         self.state_buffer.append(preprocess_state(next_state))
         stacked_state = np.concatenate(self.state_buffer, axis=1)

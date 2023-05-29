@@ -116,6 +116,7 @@ def loop():
         episode_log.stop_timer()
         logger.log(episode_log)
 
+        # update target network
         if episode % TARGET_NETWORK_UPDATE_INTERVAL == 0:
             logger.log(f"Updating target network", LogLevel.GREEN)
             agent.update_target()

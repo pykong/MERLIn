@@ -20,12 +20,18 @@ def preprocess_state(state):
     state = state[34:194, 13:-13]  # crop irrelevant parts of the image (top and bottom)
     # TODO: dynamize dimensions
     state = cv.resize(state, (80, 80), interpolation=cv.INTER_AREA)  # downsample
-    state = cv.normalize(
-        state, None, alpha=0, beta=1, norm_type=cv.NORM_MINMAX, dtype=cv.CV_32F
-    )
     state = cv.cvtColor(state, cv.COLOR_BGR2GRAY)  # remove channrl dim
     # TODO: put threshold value into constant
-    _, state = cv.threshold(state, 0.0, 1, cv.THRESH_BINARY)  # make binary
+    _, state = cv.threshold(state, 64, 255, cv.THRESH_BINARY)  # make binary
+    # comment out normalization to create human readyble image
+    state = cv.normalize(
+        state,
+        None,
+        alpha=0,
+        beta=1,
+        norm_type=cv.NORM_MINMAX,
+        dtype=cv.CV_32F,
+    )
     state = np.expand_dims(state, axis=0)  # prepend channel dimension
     return state
 

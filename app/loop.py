@@ -51,7 +51,7 @@ INPUT_SHAPE: Final[tuple[int, int, int]] = (
     INPUT_DIM * NUM_STACKED_FRAMES,
     INPUT_DIM,
 )
-STATE_IMG_SAVE_INTERVAL = 100
+STATE_IMG_SAVE_INTERVAL = None
 
 
 def loop():

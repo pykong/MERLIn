@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 from typing import Final
 
+import cv2 as cv
 import numpy as np
 
 # from agents.dqn_cnn_double import DDQNCNNAgent
@@ -50,6 +51,7 @@ INPUT_SHAPE: Final[tuple[int, int, int]] = (
     INPUT_DIM * NUM_STACKED_FRAMES,
     INPUT_DIM,
 )
+STATE_IMG_SAVE_INTERVAL = 100
 
 
 def loop():
@@ -112,6 +114,12 @@ def loop():
             episode_log.reward += reward
 
             # TODO: save state as image for interrogation
+            if (
+                STATE_IMG_SAVE_INTERVAL is not None
+                and episode_log.steps % STATE_IMG_SAVE_INTERVAL == 0
+            ):
+                array_transposed = np.transpose(state, (1, 2, 0))
+                cv.imwrite(f"img/{episode}_{episode_log.steps}.png", array_transposed)
 
         # update epsilon
         agent.update_epsilon()

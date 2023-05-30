@@ -25,7 +25,7 @@ def preprocess_state(state):
     )
     state = cv.cvtColor(state, cv.COLOR_BGR2GRAY)  # remove channrl dim
     # TODO: put threshold value into constant
-    _, state = cv.threshold(state, 0.25, 1, cv.THRESH_BINARY)  # make binary
+    _, state = cv.threshold(state, 0.0, 1, cv.THRESH_BINARY)  # make binary
     state = np.expand_dims(state, axis=0)  # prepend channel dimension
     return state
 

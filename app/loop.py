@@ -21,7 +21,7 @@ from utils.replay_memory import Experience
 
 
 # suppress moviepy output: ultimata ratio :-|
-# sys.stdout = open(os.devnull, "w")
+sys.stdout = open(os.devnull, "w")
 
 # set random seeds for reproducibility
 RANDOM_SEED: Final[int] = 0

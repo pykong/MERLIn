@@ -110,8 +110,6 @@ class DDQNLinearAgent(pl.LightningModule):
         # compute the expected Q values (expected_state_action_values)
         target = rewards + max_q_prime * self.gamma * dones
 
-        print(f"targets: {target}")
-
         # scale target
         # target /= 100
 

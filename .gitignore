@@ -158,3 +158,4 @@ video/
 roms/
 *.h5
 *.pth
+img/*

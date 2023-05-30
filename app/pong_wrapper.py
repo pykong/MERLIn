@@ -17,7 +17,7 @@ class Step(NamedTuple):
 
 def preprocess_state(state):
     """Shapes the observation space."""
-    state = state[35:195]  # crop irrelevant parts of the image (top and bottom)
+    state = state[34:194, 13:-13]  # crop irrelevant parts of the image (top and bottom)
     # TODO: dynamize dimensions
     state = cv.resize(state, (80, 80), interpolation=cv.INTER_AREA)  # downsample
     state = cv.normalize(

@@ -93,19 +93,19 @@ def loop():
         episode_log.start_timer()
 
         # set up the video recorder
-        video = None
+        recorder = None
         if episode % RECORD_INTERVAL == 0:
             video_path = str(VIDEO_DIR / f"{env.name}_{agent.name}_{episode}.mp4")
             logger.log(f"Recording video: {video_path}", LogLevel.VIDEO)
-            video = vr.VideoRecorder(env, video_path)
+            recorder = vr.VideoRecorder(env, video_path)
 
         # run episode
         done = False
         while not done:
             # prepare step
             episode_log.steps += 1
-            if video:
-                video.capture_frame()
+            if recorder:
+                recorder.capture_frame()
 
             # act & observe
             action = agent.act(state)
@@ -146,8 +146,8 @@ def loop():
             agent.save(model_file)
 
         # close the video recorder
-        if video:
-            video.close()
+        if recorder:
+            recorder.close()
 
 
 if __name__ == "__main__":

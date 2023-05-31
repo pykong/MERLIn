@@ -60,6 +60,7 @@ def loop():
     # create environment
     env = PongWrapper(
         "ALE/Pong-v5",
+        state_dims=(INPUT_DIM, INPUT_DIM),
         skip=FRAME_SKIP,
         step_penalty=STEP_PENALTY,
         stack_size=NUM_STACKED_FRAMES,

@@ -15,26 +15,6 @@ class Step(NamedTuple):
     done: bool
 
 
-def preprocess_state(state):
-    """Shapes the observation space."""
-    state = state[34:194, 13:-13]  # crop irrelevant parts of the image (top and bottom)
-    # TODO: dynamize dimensions
-    state = cv.resize(state, (80, 80), interpolation=cv.INTER_AREA)  # downsample
-    state = cv.cvtColor(state, cv.COLOR_BGR2GRAY)  # remove channrl dim
-    # TODO: put threshold value into constant
-    _, state = cv.threshold(state, 64, 255, cv.THRESH_BINARY)  # make binary
-    state = cv.normalize(
-        state,
-        None,
-        alpha=0,
-        beta=1,
-        norm_type=cv.NORM_MINMAX,
-        dtype=cv.CV_32F,
-    )
-    state = np.expand_dims(state, axis=0)  # prepend channel dimension
-    return state
-
-
 class PongWrapper(gym.Wrapper):
     # https://gymnasium.farama.org/environments/atari/pong/#actions
     name: Final[str] = "pong"
@@ -44,6 +24,7 @@ class PongWrapper(gym.Wrapper):
     def __init__(
         self: Self,
         env_name: str,
+        state_dims: tuple[int, int],
         skip: int = 1,
         step_penalty: float = 0,
         stack_size: int = 1,
@@ -51,6 +32,7 @@ class PongWrapper(gym.Wrapper):
         env = gym.make(env_name, render_mode="rgb_array")
         env.metadata["render_fps"] = 25
         super().__init__(env)
+        self.state_dims = state_dims
         self.action_space = Discrete(len(self.valid_actions))
         self.skip = skip
         self.step_penalty = step_penalty
@@ -73,11 +55,30 @@ class PongWrapper(gym.Wrapper):
         if total_reward == 0:
             total_reward = -self.step_penalty
 
-        self.state_buffer.append(preprocess_state(next_state))
+        self.state_buffer.append(self.__preprocess_state(next_state, self.state_dims))
         stacked_state = np.concatenate(self.state_buffer, axis=1)
         return Step(stacked_state, total_reward, done)
 
     def reset(self: Self) -> np.ndarray:
-        state = preprocess_state(self.env.reset()[0])
+        state = self.__preprocess_state(self.env.reset()[0], self.state_dims)
         self.state_buffer = deque([state] * self.stack_size, maxlen=self.stack_size)
         return np.concatenate(self.state_buffer, axis=1)
+
+    @staticmethod
+    def __preprocess_state(state, state_dims: tuple[int, int]):
+        """Shapes the observation space."""
+        state = state[34:194, 13:-13]  # crop irrelevant parts of the image
+        state = cv.resize(state, state_dims, interpolation=cv.INTER_AREA)  # downsample
+        state = cv.cvtColor(state, cv.COLOR_BGR2GRAY)  # remove channrl dim
+        # TODO: put threshold value into constant
+        _, state = cv.threshold(state, 64, 255, cv.THRESH_BINARY)  # make binary
+        state = cv.normalize(
+            state,
+            None,
+            alpha=0,
+            beta=1,
+            norm_type=cv.NORM_MINMAX,
+            dtype=cv.CV_32F,
+        )
+        state = np.expand_dims(state, axis=0)  # prepend channel dimension
+        return state

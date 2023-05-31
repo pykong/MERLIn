@@ -1,4 +1,5 @@
 import os
+import random
 import sys
 from pathlib import Path
 from typing import Final
@@ -51,7 +52,7 @@ INPUT_SHAPE: Final[tuple[int, int, int]] = (
     INPUT_DIM * NUM_STACKED_FRAMES,
     INPUT_DIM,
 )
-STATE_IMG_SAVE_INTERVAL = None
+SAVE_STATE_IMG: Final[bool] = True
 
 
 def loop():
@@ -113,11 +114,8 @@ def loop():
             state = next_state
             episode_log.reward += reward
 
-            # TODO: save state as image for interrogation
-            if (
-                STATE_IMG_SAVE_INTERVAL is not None
-                and episode_log.steps % STATE_IMG_SAVE_INTERVAL == 0
-            ):
+            # take picture of state randomly
+            if SAVE_STATE_IMG and random.choices([True, False], [1, 512], k=1)[0]:
                 array_transposed = np.transpose(state, (1, 2, 0))
                 cv.imwrite(f"img/{episode}_{episode_log.steps}.png", array_transposed)
 

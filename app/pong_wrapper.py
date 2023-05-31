@@ -23,7 +23,6 @@ def preprocess_state(state):
     state = cv.cvtColor(state, cv.COLOR_BGR2GRAY)  # remove channrl dim
     # TODO: put threshold value into constant
     _, state = cv.threshold(state, 64, 255, cv.THRESH_BINARY)  # make binary
-    # comment out normalization to create human readyble image
     state = cv.normalize(
         state,
         None,

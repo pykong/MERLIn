@@ -118,7 +118,7 @@ def loop():
             # take picture of state randomly
             if SAVE_STATE_IMG and random.choices([True, False], [1, 512], k=1)[0]:
                 state_transposed = np.transpose(state, (1, 2, 0))
-                state_transposed *= 255
+                state_transposed *= 255  # enhance pixel brightness
                 img_file = IMG_DIR / f"{episode}_{episode_log.steps}.png"
                 cv.imwrite(str(img_file), state_transposed)
 

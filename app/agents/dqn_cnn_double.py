@@ -66,7 +66,9 @@ class DDQNCNNAgent(pl.LightningModule):
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=4, stride=4),
             nn.Flatten(),
-            nn.Linear(32 * (x_dim // 4) * (y_dim // 4), 16),  # fully connected layer
+            nn.Linear(32 * (x_dim // 4) * (y_dim // 4), 32),
+            nn.ReLU(),
+            nn.Linear(32, 16),  # fully connected layer
             nn.ReLU(),
             nn.Linear(16, num_actions),
         )
@@ -112,10 +114,10 @@ class DDQNCNNAgent(pl.LightningModule):
         target = rewards + max_q_prime * self.gamma * dones
 
         # scale target
-        target /= 100
+        # target /= 100
 
         # clip target
-        target = target.clamp(min=-1.0, max=1.0)
+        # target = target.clamp(min=-1.0, max=1.0)
 
         # update the weights.
         self.__update_weights(q_a, target.unsqueeze(1))

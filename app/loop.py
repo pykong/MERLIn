@@ -6,9 +6,7 @@ from typing import Final
 
 import cv2 as cv
 import numpy as np
-
-# from agents.dqn_cnn_double import DDQNCNNAgent
-from agents.dqn_linear_double import DDQNLinearAgent
+from agents.dqn_cnn_double import DDQNCNNAgent
 
 # from agents.dqn_cnn_duelling import DuellingQNCNNAgent
 from gym.wrappers.monitoring import video_recorder as vr
@@ -16,6 +14,9 @@ from pong_wrapper import PongWrapper
 from utils.file_utils import empty_directories
 from utils.logging import EpisodeLog, EpisodeLogger, LogLevel
 from utils.replay_memory import Experience
+
+# from agents.dqn_linear_double import DDQNLinearAgent
+
 
 # from agents.dqn_torch import DQN
 # from agents.dqn_cnn import DQNCNNAgent
@@ -38,22 +39,22 @@ IMG_DIR: Final[Path] = Path("img")
 MAX_EPISODES: Final[int] = 20_000
 FRAME_SKIP: Final[int] = 4
 LEARNING_RATE: Final[float] = 5e-3
-MEMORY_SIZE: Final[int] = 32_000
+MEMORY_SIZE: Final[int] = 64_000
 BATCH_SIZE: Final[int] = 64
 EPSILON_DECAY: Final[float] = 1 - 1e-4  # discount factor gamma
 EPSILON_MIN: Final[float] = 0.1
 MODEL_SAVE_INTERVAL: Final[int] = 1024
-RECORD_INTERVAL: Final[int] = 256
+RECORD_INTERVAL: Final[int] = 512
 STEP_PENALTY: Final[float] = 0.01
-TARGET_NETWORK_UPDATE_INTERVAL: Final[int] = 4
-NUM_STACKED_FRAMES: Final[int] = 1
+TARGET_NETWORK_UPDATE_INTERVAL: Final[int] = 8
+NUM_STACKED_FRAMES: Final[int] = 2
 INPUT_DIM: Final[int] = 80
 INPUT_SHAPE: Final[tuple[int, int, int]] = (
     1,
     INPUT_DIM * NUM_STACKED_FRAMES,
     INPUT_DIM,
 )
-SAVE_STATE_IMG: Final[bool] = True
+SAVE_STATE_IMG: Final[bool] = False
 
 
 def take_picture_of_state(state: np.ndarray, f_name: Path) -> None:
@@ -73,7 +74,7 @@ def loop():
     )
 
     # create the policy network
-    agent = DDQNLinearAgent(
+    agent = DDQNCNNAgent(
         state_shape=INPUT_SHAPE,
         action_space=env.action_space.n,  # type: ignore
         gamma=EPSILON_DECAY,

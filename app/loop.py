@@ -32,6 +32,7 @@ np.random.seed(RANDOM_SEED)
 CHECKPOINTS_DIR: Final[Path] = Path("checkpoints")
 LOG_DIR: Final[Path] = Path("log")
 VIDEO_DIR: Final[Path] = Path("video")
+IMG_DIR: Final[Path] = Path("img")
 
 # hyperparameters
 MAX_EPISODES: Final[int] = 20_000
@@ -116,8 +117,9 @@ def loop():
 
             # take picture of state randomly
             if SAVE_STATE_IMG and random.choices([True, False], [1, 512], k=1)[0]:
-                array_transposed = np.transpose(state, (1, 2, 0))
-                cv.imwrite(f"img/{episode}_{episode_log.steps}.png", array_transposed)
+                state_transposed = np.transpose(state, (1, 2, 0))
+                img_file = IMG_DIR / f"{episode}_{episode_log.steps}.png"
+                cv.imwrite(str(img_file), state_transposed)
 
         # update epsilon
         agent.update_epsilon()
@@ -143,5 +145,5 @@ def loop():
 
 
 if __name__ == "__main__":
-    empty_directories(CHECKPOINTS_DIR, LOG_DIR, VIDEO_DIR)
+    empty_directories(CHECKPOINTS_DIR, LOG_DIR, VIDEO_DIR, IMG_DIR)
     loop()

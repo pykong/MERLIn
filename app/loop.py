@@ -56,6 +56,12 @@ INPUT_SHAPE: Final[tuple[int, int, int]] = (
 SAVE_STATE_IMG: Final[bool] = True
 
 
+def take_picture_of_state(state: np.ndarray, f_name: Path) -> None:
+    state_transposed = np.transpose(state, (1, 2, 0))
+    state_transposed *= 255  # enhance pixel brightness
+    cv.imwrite(str(f_name), state_transposed)
+
+
 def loop():
     # create environment
     env = PongWrapper(
@@ -118,10 +124,8 @@ def loop():
 
             # take picture of state randomly
             if SAVE_STATE_IMG and random.choices([True, False], [1, 512], k=1)[0]:
-                state_transposed = np.transpose(state, (1, 2, 0))
-                state_transposed *= 255  # enhance pixel brightness
                 img_file = IMG_DIR / f"{episode}_{episode_log.steps}.png"
-                cv.imwrite(str(img_file), state_transposed)
+                take_picture_of_state(state, img_file)
 
         # update epsilon
         agent.update_epsilon()

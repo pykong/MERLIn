@@ -128,8 +128,8 @@ class DuellingQNCNNAgent(pl.LightningModule):
         )
 
     def update_epsilon(self) -> None:
-        if self.epsilon > self.epsilon_min:  # epsilon is adjusted to often!!!git
-            self.epsilon *= self.gamma
+        if self.epsilon > self.epsilon_min:
+            self.epsilon *= self.epsilon - self.gamma
 
     def _update_weights(self, state_action_values, expected_state_action_values):
         # self.optimizers().zero_grad()

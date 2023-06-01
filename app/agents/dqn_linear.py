@@ -84,8 +84,8 @@ class DQNLinearAgent(L.LightningModule):
             self._update_weights(state, target)
 
     def update_epsilon(self) -> None:
-        if self.epsilon > self.epsilon_min:  # epsilon is adjusted to often!!!git
-            self.epsilon *= self.epsilon_decay
+        if self.epsilon > self.epsilon_min:
+            self.epsilon *= self.epsilon - self.gamma
 
     def _update_weights(self, state, target):
         # self.optimizer.zero_grad()

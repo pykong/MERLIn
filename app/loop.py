@@ -6,21 +6,12 @@ from typing import Final
 
 import cv2 as cv
 import numpy as np
-# from agents.dqn_cnn_double import DDQNCNNAgent
-
 from agents.dqn_cnn_duelling import DuellingQNCNNAgent
 from gym.wrappers.monitoring import video_recorder as vr
 from pong_wrapper import PongWrapper
 from utils.file_utils import empty_directories
 from utils.logging import EpisodeLog, EpisodeLogger, LogLevel
 from utils.replay_memory import Experience
-
-# from agents.dqn_linear_double import DDQNLinearAgent
-
-
-# from agents.dqn_torch import DQN
-# from agents.dqn_cnn import DQNCNNAgent
-
 
 # suppress moviepy output: ultimata ratio :-|
 sys.stdout = open(os.devnull, "w")
@@ -134,11 +125,6 @@ def loop():
         # log episode
         episode_log.stop_timer()
         logger.log(episode_log)
-
-        # update target network
-        # if episode % TARGET_NETWORK_UPDATE_INTERVAL == 0:
-        #     logger.log(f"Updating target network", LogLevel.GREEN)
-        #     agent.update_target()
 
         # periodically save model
         if episode % MODEL_SAVE_INTERVAL == 0:

@@ -41,6 +41,7 @@ class DDQNCNNAgent(pl.LightningModule):
         gamma: float = 0.999,  # epsilon decay
         memory_size: int = 10_000,
         batch_size: int = 64,
+        target_net_update_interval=10000,
     ):
         super().__init__()
         self.state_shape = state_shape
@@ -55,6 +56,8 @@ class DDQNCNNAgent(pl.LightningModule):
         self.model = self._make_model(self.state_shape, self.num_actions, self.device_)
         self.optimizer = optim.Adam(self.model.parameters(), lr=alpha)
         self.target_model = deepcopy(self.model)  # init target network
+        self.target_net_update_interval = target_net_update_interval
+        self._step_counter: int = 0
 
     @staticmethod
     def _make_model(
@@ -123,6 +126,11 @@ class DDQNCNNAgent(pl.LightningModule):
         # update the weights.
         self.__update_weights(q_a, target.unsqueeze(1))
 
+        # target update logic
+        self._step_counter += 1
+        if self._step_counter % self.target_net_update_interval == 0:
+            self.__update_target()
+
     def __update_weights(self: Self, q_a, target) -> None:
         self.optimizer.zero_grad()
         loss = F.smooth_l1_loss(q_a, target)
@@ -139,7 +147,7 @@ class DDQNCNNAgent(pl.LightningModule):
         dones = torch.tensor(dones).float().to(self.device_)
         return states, actions, rewards, next_states, dones
 
-    def update_target(self: Self) -> None:
+    def __update_target(self: Self) -> None:
         """Copies the policy network parameters to the target network"""
         self.target_model.load_state_dict(self.model.state_dict())
 

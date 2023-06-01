@@ -35,7 +35,7 @@ class DuellingQNCNNAgent(pl.LightningModule):
         alpha=0.001,
         epsilon=1.0,
         epsilon_min=0.01,
-        epsilon_decay=0.999,
+        gamma=0.999,
         memory_size=10_000,
         batch_size=64,
     ):
@@ -45,7 +45,7 @@ class DuellingQNCNNAgent(pl.LightningModule):
         self.alpha = alpha
         self.epsilon = epsilon
         self.epsilon_min = epsilon_min
-        self.epsilon_decay = epsilon_decay
+        self.gamma = gamma
         self.memory = ReplayMemory(capacity=memory_size)
         self.batch_size = batch_size
         # TODO: rename model -> feature
@@ -117,9 +117,9 @@ class DuellingQNCNNAgent(pl.LightningModule):
         next_state_values = self.model(next_states).max(1)[0].detach()
 
         # Compute the expected Q values.
-        expected_state_action_values = (
-            next_state_values * self.epsilon_decay + rewards
-        ) * (1 - dones)
+        expected_state_action_values = (next_state_values * self.gamma + rewards) * (
+            1 - dones
+        )
 
         # Update the weights.
         self._update_weights(
@@ -128,7 +128,7 @@ class DuellingQNCNNAgent(pl.LightningModule):
 
     def update_epsilon(self) -> None:
         if self.epsilon > self.epsilon_min:  # epsilon is adjusted to often!!!git
-            self.epsilon *= self.epsilon_decay
+            self.epsilon *= self.gamma
 
     def _update_weights(self, state_action_values, expected_state_action_values):
         # self.optimizers().zero_grad()

@@ -156,7 +156,7 @@ class DDQNCNNAgent(pl.LightningModule):
 
     def update_epsilon(self: Self) -> None:
         if self.epsilon > self.epsilon_min:
-            self.epsilon *= self.gamma
+            self.epsilon *= self.epsilon * self.gamma
 
     def load(self: Self, name: Path) -> None:
         self.load_state_dict(torch.load(name))

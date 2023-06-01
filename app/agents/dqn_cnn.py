@@ -61,6 +61,7 @@ class DQNCNNAgent(pl.LightningModule):
         conv_output_size *= 16  # output channels of last conv layer
         return nn.Sequential(
             nn.Conv2d(self.state_shape[0], 16, kernel_size=3, stride=2, padding=1),
+            nn.BatchNorm2d(16),
             nn.ReLU(),
             nn.MaxPool2d(2, 2),
             nn.Flatten(),

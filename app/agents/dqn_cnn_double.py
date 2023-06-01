@@ -63,6 +63,7 @@ class DDQNCNNAgent(pl.LightningModule):
         channel_dim, x_dim, y_dim = state_shape  # unpack dimensions
         model = nn.Sequential(
             nn.Conv2d(channel_dim, 32, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(32),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=4, stride=4),
             nn.Flatten(),

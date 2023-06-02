@@ -69,16 +69,14 @@ class DDQNCNNAgent(pl.LightningModule):
             nn.BatchNorm2d(64),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=4, stride=4),
-            nn.Conv2d(64, 32, kernel_size=3, stride=1, padding=1),
-            nn.BatchNorm2d(32),
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=4, stride=4),
             nn.Flatten(),
-            nn.Linear(32 * (x_dim // 16) * (y_dim // 16), 128),
+            nn.Linear(64 * (x_dim // 16) * (y_dim // 16), 128),
             nn.ReLU(),
             nn.Linear(128, 32),  # fully connected layer
             nn.ReLU(),
-            nn.Linear(32, num_actions),
+            nn.Linear(32, 16),
+            nn.ReLU(),
+            nn.Linear(16, num_actions),
         )
         model.to(device)
         return model

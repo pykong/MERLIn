@@ -54,6 +54,41 @@ def take_picture_of_state(state: np.ndarray, f_name: Path) -> None:
     cv.imwrite(str(f_name), state_transposed)
 
 
+def run_episode(agent, env, episode_log, recorder) -> None:
+    # reset environment
+    state = env.reset()
+
+    done = False
+    while not done:
+        # prepare step
+        episode_log.steps += 1
+        if recorder:
+            recorder.capture_frame()
+
+        # act & observe
+        action = agent.act(state)
+        next_state, reward, done = env.step(action)
+
+        # save experience
+        experience = Experience(state, action, reward, next_state, done)
+        agent.remember(experience)
+
+        # update policy network
+        agent.replay()
+
+        # ???
+        state = next_state
+        episode_log.reward += reward
+
+        # take picture of state randomly
+        if SAVE_STATE_IMG and random.choices([True, False], [1, 512], k=1)[0]:
+            img_file = IMG_DIR / f"{episode_log.episode}_{episode_log.steps}.png"
+            take_picture_of_state(state, img_file)
+
+    # update epsilon
+    agent.update_epsilon()
+
+
 def loop():
     # create environment
     env = PongWrapper(
@@ -78,9 +113,6 @@ def loop():
 
     # run main loop
     for episode in range(MAX_EPISODES):
-        # reset environment
-        state = env.reset()
-
         # init episode logger
         episode_log = EpisodeLog(episode=episode, epsilon=agent.epsilon)
         episode_log.start_timer()
@@ -93,35 +125,7 @@ def loop():
             recorder = vr.VideoRecorder(env, video_path)
 
         # run episode
-        done = False
-        while not done:
-            # prepare step
-            episode_log.steps += 1
-            if recorder:
-                recorder.capture_frame()
-
-            # act & observe
-            action = agent.act(state)
-            next_state, reward, done = env.step(action)
-
-            # save experience
-            experience = Experience(state, action, reward, next_state, done)
-            agent.remember(experience)
-
-            # update policy network
-            agent.replay()
-
-            # ???
-            state = next_state
-            episode_log.reward += reward
-
-            # take picture of state randomly
-            if SAVE_STATE_IMG and random.choices([True, False], [1, 512], k=1)[0]:
-                img_file = IMG_DIR / f"{episode}_{episode_log.steps}.png"
-                take_picture_of_state(state, img_file)
-
-        # update epsilon
-        agent.update_epsilon()
+        run_episode(agent, env, episode_log, recorder)
 
         # log episode
         episode_log.stop_timer()

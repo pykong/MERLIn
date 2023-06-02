@@ -65,16 +65,20 @@ class DDQNCNNAgent(pl.LightningModule):
     ) -> nn.Sequential:
         channel_dim, x_dim, y_dim = state_shape  # unpack dimensions
         model = nn.Sequential(
-            nn.Conv2d(channel_dim, 32, kernel_size=3, stride=1, padding=1),
+            nn.Conv2d(channel_dim, 64, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(64),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=4, stride=4),
+            nn.Conv2d(64, 32, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(32),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=4, stride=4),
             nn.Flatten(),
-            nn.Linear(32 * (x_dim // 4) * (y_dim // 4), 128),
+            nn.Linear(32 * (x_dim // 16) * (y_dim // 16), 128),
             nn.ReLU(),
-            nn.Linear(128, 16),  # fully connected layer
+            nn.Linear(128, 32),  # fully connected layer
             nn.ReLU(),
-            nn.Linear(16, num_actions),
+            nn.Linear(32, num_actions),
         )
         model.to(device)
         return model
@@ -156,7 +160,7 @@ class DDQNCNNAgent(pl.LightningModule):
 
     def update_epsilon(self: Self) -> None:
         if self.epsilon > self.epsilon_min:
-            self.epsilon *= self.epsilon - self.gamma
+            self.epsilon *= self.gamma
 
     def load(self: Self, name: Path) -> None:
         self.load_state_dict(torch.load(name))

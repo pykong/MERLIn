@@ -29,16 +29,16 @@ IMG_DIR: Final[Path] = Path("img")
 # hyperparameters
 MAX_EPISODES: Final[int] = 20_000
 FRAME_SKIP: Final[int] = 4
-LEARNING_RATE: Final[float] = 5e-3
+LEARNING_RATE: Final[float] = 1e-3
 MEMORY_SIZE: Final[int] = 64_000
 BATCH_SIZE: Final[int] = 64
-GAMMA: Final[float] = 1e-5  # discount factor gamma
+GAMMA: Final[float] = 1 - 1e-3  # discount factor gamma
 EPSILON_MIN: Final[float] = 0.1
 MODEL_SAVE_INTERVAL: Final[int] = 1024
-RECORD_INTERVAL: Final[int] = 512
-STEP_PENALTY: Final[float] = 0.01
-TARGET_NETWORK_UPDATE_INTERVAL: Final[int] = 8
-NUM_STACKED_FRAMES: Final[int] = 2
+RECORD_INTERVAL: Final[int] = 1024
+STEP_PENALTY: Final[float] = 0.00
+TARGET_NETWORK_UPDATE_INTERVAL: Final[int] = 1000
+NUM_STACKED_FRAMES: Final[int] = 1
 INPUT_DIM: Final[int] = 80
 INPUT_SHAPE: Final[tuple[int, int, int]] = (
     1,

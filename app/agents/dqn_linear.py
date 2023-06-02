@@ -83,9 +83,9 @@ class DQNLinearAgent(L.LightningModule):
                 target[0][action] = reward + q_future * self.epsilon_decay
             self._update_weights(state, target)
 
-    def update_epsilon(self) -> None:
+    def update_epsilon(self: Self) -> None:
         if self.epsilon > self.epsilon_min:
-            self.epsilon *= self.epsilon - self.gamma
+            self.epsilon *= self.gamma
 
     def _update_weights(self, state, target):
         # self.optimizer.zero_grad()

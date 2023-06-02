@@ -70,9 +70,9 @@ class DDQNCNNAgent(pl.LightningModule):
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=4, stride=4),
             nn.Flatten(),
-            nn.Linear(32 * (x_dim // 4) * (y_dim // 4), 32),
+            nn.Linear(32 * (x_dim // 4) * (y_dim // 4), 128),
             nn.ReLU(),
-            nn.Linear(32, 16),  # fully connected layer
+            nn.Linear(128, 16),  # fully connected layer
             nn.ReLU(),
             nn.Linear(16, num_actions),
         )

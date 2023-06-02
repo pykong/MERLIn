@@ -54,7 +54,9 @@ def take_picture_of_state(state: np.ndarray, f_name: Path) -> None:
     cv.imwrite(str(f_name), state_transposed)
 
 
-def run_episode(agent, env, episode_log, recorder) -> None:
+def run_episode(
+    agent, env: PongWrapper, episode_log: EpisodeLog, recorder: vr.VideoRecorder | None
+) -> None:
     # reset environment
     state = env.reset()
 

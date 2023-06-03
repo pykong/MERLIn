@@ -41,6 +41,14 @@ def take_picture_of_state(state: np.ndarray, f_name: Path) -> None:
     cv.imwrite(str(f_name), state_transposed)
 
 
+def make_agent(name: str, load_agent: bool, **kwargs) -> BaseAgent:
+    """Factory method to create agent."""
+    print(f"DDQNCNNAgent.name: {DDQNCNNAgent.name()}")
+    registry = [DDQNCNNAgent]
+    agent = [a for a in registry if a.name() == name][0]
+    return agent(**kwargs)
+
+
 def run_episode(
     agent, env: PongWrapper, episode_log: EpisodeLog, recorder: vr.VideoRecorder | None
 ) -> None:
@@ -93,7 +101,9 @@ def loop(config: Config):
     )
 
     # create the policy network
-    agent: BaseAgent = DDQNCNNAgent(
+    agent: BaseAgent = make_agent(
+        config.agent_name,
+        config.load_agent,
         state_shape=INPUT_SHAPE,
         action_space=env.action_space.n,  # type: ignore
         gamma=config.gamma,

@@ -11,6 +11,8 @@ class Config:
     step_penalty: float = 0.0
 
     # agent parameters
+    agent_name: str = "double_dqn_cnn"
+    load_agent: bool = False
     alpha: float = 1e-2
     epsilon_min: float = 0.1
     gamma: float = 1 - 1e-3  # discount factor gamma

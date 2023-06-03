@@ -19,8 +19,9 @@ class DDQNCNNAgent(BaseAgent):
         super().__init__(*args, **kwargs)
         self.target_model = deepcopy(self.model)
 
-    @property
-    def name(self: Self) -> str:
+    # @property
+    @classmethod
+    def name(cls) -> str:
         return "double_dqn_cnn"
 
     @staticmethod

@@ -62,8 +62,9 @@ class BaseAgent(ABC, pl.LightningModule):
         pass
 
     @property
-    @abstractmethod
-    def name(self) -> str:
+    @classmethod
+    #  TODO: Make this a class property
+    def name(cls) -> str:
         pass
 
     def _prepare_minibatch(self: Self, minibatch: list[Transition]):

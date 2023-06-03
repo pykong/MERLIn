@@ -30,33 +30,28 @@ class DDQNCNNAgent(BaseAgent):
     ) -> nn.Sequential:
         channel_dim, x_dim, y_dim = state_shape  # unpack dimensions
         model = nn.Sequential(
-            # 1 - conv
             nn.Conv2d(channel_dim, 32, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(32),
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=4, stride=4),
-            # 2 - conv
-            # nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1),
-            # nn.BatchNorm2d(128),
-            # nn.ReLU(),
-            # nn.MaxPool2d(kernel_size=4, stride=4),
-            # # 3 - conv
-            # nn.Conv2d(128, 256, kernel_size=3, stride=1, padding=1),
-            # nn.BatchNorm2d(256),
-            # nn.ReLU(),
-            # nn.MaxPool2d(kernel_size=4, stride=4),
-            # 4 - fc
+            nn.LeakyReLU(),
+            nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(64),
+            nn.LeakyReLU(),
+            nn.Conv2d(
+                64, 64, kernel_size=3, stride=2, padding=1
+            ),  # replace MaxPool with a Conv layer with stride 2
+            nn.BatchNorm2d(64),
+            nn.LeakyReLU(),
             nn.Flatten(),
-            nn.Linear(32 * (x_dim // 4) * (y_dim // 4), 64),
+            nn.Linear(64 * (x_dim // 2) * (y_dim // 2), 128),  # increased layer size
+            nn.ELU(),
+            nn.Dropout(0.5),  # added Dropout
+            nn.Linear(128, 64),
             nn.ReLU(),
-            # 5 - fc
-            nn.Linear(64, 8),
+            nn.Dropout(0.5),  # added Dropout
+            nn.Linear(64, 32),
             nn.ReLU(),
-            # 6 - fc
-            # nn.Linear(32, 8),
-            # nn.ReLU(),
-            # 7 - fc (output layer)
-            nn.Linear(8, num_actions),
+            nn.Dropout(0.5),  # added Dropout
+            nn.Linear(32, num_actions),
         )
         model.to(device)
         return model

@@ -37,6 +37,7 @@ class BaseAgent(ABC, pl.LightningModule):
         gamma: float = 0.999,  # epsilon decay
         memory_size: int = 10_000,
         batch_size: int = 64,
+        weight_decay=1e-5,
     ):
         super().__init__()
         self.state_shape = state_shape
@@ -49,7 +50,9 @@ class BaseAgent(ABC, pl.LightningModule):
         self.batch_size = batch_size
         self.device_: torch.device = get_torch_device()
         self.model = self._make_model(self.state_shape, self.num_actions, self.device_)
-        self.optimizer = optim.Adam(self.model.parameters(), lr=alpha)
+        self.optimizer = optim.Adam(
+            self.model.parameters(), lr=alpha, weight_decay=weight_decay
+        )
 
     @abstractmethod
     def _make_model(

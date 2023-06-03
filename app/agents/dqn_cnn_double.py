@@ -1,17 +1,9 @@
-import random
 from copy import deepcopy
-from pathlib import Path
 from typing import Final, Self
 
-import lightning.pytorch as pl
-import numpy as np
 import torch
-import torch.nn.functional as F
-import torch.optim as optim
 from agents.base_agent import BaseAgent
 from torch import nn
-from utils.logging import LogLevel, logger
-from utils.replay_memory import ReplayMemory, Transition
 
 
 class DDQNCNNAgent(BaseAgent):

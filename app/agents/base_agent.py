@@ -1,7 +1,7 @@
 import random
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Final, Self
+from typing import Self
 
 import lightning.pytorch as pl
 import numpy as np

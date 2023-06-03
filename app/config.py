@@ -11,7 +11,7 @@ class Config:
     step_penalty: float = 0.005
 
     # agent parameters
-    agent_name: str = "double_dqn_cnn"
+    agent_name: str = "double_linear_dqn"
     load_agent: bool = False
     alpha: float = 5e-3
     epsilon_min: float = 0.1

@@ -88,11 +88,11 @@ class BaseAgent(ABC, pl.LightningModule):
             next_states.append(transition.next_state)
             dones.append([transition.done])
 
-        states = torch.tensor(states, dtype=torch.float).to(self.device_)
+        states = torch.from_numpy(np.array(states)).float().to(self.device_)
         actions = torch.tensor(actions).to(self.device_)
         rewards = torch.tensor(rewards).to(self.device_)
-        next_states = torch.tensor(next_states, dtype=torch.float).to(self.device_)
-        dones = torch.tensor(dones, dtype=torch.float).to(self.device_)
+        next_states = torch.from_numpy(np.array(next_states)).float().to(self.device_)
+        dones = torch.tensor(dones).float().to(self.device_)
 
         return states, actions, rewards, next_states, dones
 

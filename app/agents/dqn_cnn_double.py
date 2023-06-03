@@ -76,6 +76,9 @@ class DDQNCNNAgent(BaseAgent):
 
         max_q_prime = self.target_model(next_states).max(1)[0].unsqueeze(1)
 
+        # scale rewards
+        rewards /= 100
+
         # mask dones
         dones = 1 - dones
 

@@ -33,11 +33,8 @@ class DDQNCNNAgent(BaseAgent):
             nn.Conv2d(channel_dim, 32, kernel_size=3, stride=1, padding=1),
             nn.BatchNorm2d(32),
             nn.LeakyReLU(),
-            nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1),
-            nn.BatchNorm2d(64),
-            nn.LeakyReLU(),
             nn.Conv2d(
-                64, 64, kernel_size=3, stride=2, padding=1
+                32, 64, kernel_size=3, stride=2, padding=1
             ),  # replace MaxPool with a Conv layer with stride 2
             nn.BatchNorm2d(64),
             nn.LeakyReLU(),
@@ -45,10 +42,7 @@ class DDQNCNNAgent(BaseAgent):
             nn.Linear(64 * (x_dim // 2) * (y_dim // 2), 128),  # increased layer size
             nn.ELU(),
             nn.Dropout(0.5),  # added Dropout
-            nn.Linear(128, 64),
-            nn.ReLU(),
-            nn.Dropout(0.5),  # added Dropout
-            nn.Linear(64, 32),
+            nn.Linear(128, 32),
             nn.ReLU(),
             nn.Dropout(0.5),  # added Dropout
             nn.Linear(32, num_actions),

@@ -1,7 +1,7 @@
 import random
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Self
+from typing import NamedTuple, Self
 
 import lightning.pytorch as pl
 import numpy as np
@@ -11,6 +11,14 @@ import torch.optim as optim
 from torch import nn
 from utils.logging import LogLevel, logger
 from utils.replay_memory import ReplayMemory, Transition
+
+
+class Minibatch(NamedTuple):
+    states: torch.Tensor
+    actions: torch.Tensor
+    rewards: torch.Tensor
+    next_states: torch.Tensor
+    dones: torch.Tensor
 
 
 def get_torch_device() -> torch.device:
@@ -70,7 +78,7 @@ class BaseAgent(ABC, pl.LightningModule):
     def name(cls) -> str:
         raise NotImplementedError()
 
-    def _prepare_minibatch(self: Self, minibatch: list[Transition]):
+    def _prepare_minibatch(self: Self, minibatch: list[Transition]) -> Minibatch:
         # states, actions, rewards, next_states, dones = zip(*minibatch)
         # states = torch.from_numpy(np.array(states)).float().to(self.device_)
         # actions = torch.tensor(actions).unsqueeze(1).to(self.device_)
@@ -94,7 +102,7 @@ class BaseAgent(ABC, pl.LightningModule):
         next_states = torch.from_numpy(np.array(next_states)).float().to(self.device_)
         dones = torch.tensor(dones).float().to(self.device_)
 
-        return states, actions, rewards, next_states, dones
+        return Minibatch(states, actions, rewards, next_states, dones)
 
     def _update_weights(self, q_a, target) -> None:
         self.optimizer.zero_grad()

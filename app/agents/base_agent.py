@@ -71,13 +71,29 @@ class BaseAgent(ABC, pl.LightningModule):
         raise NotImplementedError()
 
     def _prepare_minibatch(self: Self, minibatch: list[Transition]):
-        # TODO: make private
-        states, actions, rewards, next_states, dones = zip(*minibatch)
-        states = torch.from_numpy(np.array(states)).float().to(self.device_)
-        actions = torch.tensor(actions).unsqueeze(1).to(self.device_)
-        rewards = torch.tensor(rewards).float().to(self.device_)
-        next_states = torch.from_numpy(np.array(next_states)).float().to(self.device_)
-        dones = torch.tensor(dones).float().to(self.device_)
+        # states, actions, rewards, next_states, dones = zip(*minibatch)
+        # states = torch.from_numpy(np.array(states)).float().to(self.device_)
+        # actions = torch.tensor(actions).unsqueeze(1).to(self.device_)
+        # rewards = torch.tensor(rewards).float().to(self.device_)
+        # next_states = torch.from_numpy(np.array(next_states)).float().to(self.device_)
+        # dones = torch.tensor(dones).float().to(self.device_)
+        # return states, actions, rewards, next_states, dones
+
+        states, actions, rewards, next_states, dones = [], [], [], [], []
+
+        for transition in minibatch:
+            states.append(transition.state)
+            actions.append([transition.action])
+            rewards.append([transition.reward])
+            next_states.append(transition.next_state)
+            dones.append([transition.done])
+
+        states = torch.tensor(states, dtype=torch.float).to(self.device_)
+        actions = torch.tensor(actions).to(self.device_)
+        rewards = torch.tensor(rewards).to(self.device_)
+        next_states = torch.tensor(next_states, dtype=torch.float).to(self.device_)
+        dones = torch.tensor(dones, dtype=torch.float).to(self.device_)
+
         return states, actions, rewards, next_states, dones
 
     def _update_weights(self, q_a, target) -> None:

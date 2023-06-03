@@ -70,21 +70,23 @@ class DDQNCNNAgent(BaseAgent):
         q_a = q_out.gather(1, actions)  # state_action_values
 
         # get indices of maximum values according to the policy network
-        _, policy_net_actions = self.forward(next_states).max(1)
+        # _, policy_net_actions = self.forward(next_states).max(1)
 
         # compute V(s_{t+1}) for all next states using target network, but choose the best action from the policy network.
-        max_q_prime = (
-            self.target_model(next_states)
-            .gather(1, policy_net_actions.unsqueeze(-1))
-            .squeeze()
-            .detach()
-        )
+        # max_q_prime = (
+        #     self.target_model(next_states)
+        #     .gather(1, policy_net_actions.unsqueeze(-1))
+        #     .squeeze()
+        #     .detach()
+        # )
+
+        max_q_prime = self.target_model(next_states).max(1)[0].unsqueeze(1)
 
         # mask dones
         dones = 1 - dones
 
         # compute the expected Q values (expected_state_action_values)
-        target = rewards + max_q_prime * self.gamma * dones
+        target = rewards + self.gamma * max_q_prime * dones
 
         # scale target
         # target /= 100
@@ -93,7 +95,7 @@ class DDQNCNNAgent(BaseAgent):
         # target = target.clamp(min=-1.0, max=1.0)
 
         # update the weights.
-        self._update_weights(q_a, target.unsqueeze(1))
+        self._update_weights(q_a, target)
 
         # target update logic
         self._step_counter += 1

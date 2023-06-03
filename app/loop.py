@@ -12,7 +12,7 @@ from config import Config
 from gym.wrappers.monitoring import video_recorder as vr
 from pong_wrapper import PongWrapper
 from utils.file_utils import empty_directories
-from utils.logging import EpisodeLog, EpisodeLogger, LogLevel
+from utils.logging import EpisodeLog, EpisodeLogger, LogLevel, logger
 from utils.replay_memory import Transition
 
 # set random seeds for reproducibility
@@ -44,12 +44,16 @@ def take_picture_of_state(state: np.ndarray, f_name: Path) -> None:
 def make_agent(name: str, load_agent: bool, **kwargs) -> BaseAgent:
     """Factory method to create agent."""
     registry = [DDQNCNNAgent]
-    agent = [a for a in registry if a.name == name][0]
+    agent_ = [a for a in registry if a.name == name][0]
+    agent = agent_(**kwargs)
     if load_agent:
         models = CHECKPOINTS_DIR.glob("*.pth")
         models = [m for m in models if name in m.name]
-        print(f"found models: {models}")
-    return agent(**kwargs)
+        sorted(models)
+        latest_model = models[0]
+        agent.load(latest_model)
+        logger.log(str(LogLevel.GREEN), f"Loading checkpoint: {latest_model.name}")
+    return agent
 
 
 def run_episode(

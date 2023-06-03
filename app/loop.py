@@ -72,8 +72,8 @@ def run_episode(
         next_state, reward, done = env.step(action)
 
         # save experience
-        experience = Transition(state, action, reward, next_state, done)
-        agent.remember(experience)
+        transition = Transition(state, action, reward, next_state, done)
+        agent.remember(transition)
 
         # update policy network
         agent.replay()

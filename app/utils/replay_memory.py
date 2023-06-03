@@ -18,13 +18,13 @@ class ReplayMemory:
         self.capacity = capacity
         self.buffer = deque(maxlen=capacity)
 
-    def push(self: Self, experience: Transition) -> None:
-        self.buffer.append(experience)
+    def push(self: Self, transition: Transition) -> None:
+        self.buffer.append(transition)
 
     def sample(self: Self, batch_size: int) -> list[Transition]:
         sample_size = min(len(self.buffer), batch_size)
         batch = random.sample(self.buffer, sample_size)
         return batch
 
-    def __len__(self):
+    def __len__(self: Self) -> int:
         return len(self.buffer)

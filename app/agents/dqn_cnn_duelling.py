@@ -88,8 +88,8 @@ class DuellingQNCNNAgent(pl.LightningModule):
 
         return features, advantage, value
 
-    def remember(self, experience: Transition) -> None:
-        self.memory.push(experience)
+    def remember(self, transition: Transition) -> None:
+        self.memory.push(transition)
 
     def act(self, state):
         if np.random.rand() <= self.epsilon:

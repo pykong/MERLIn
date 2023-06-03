@@ -70,8 +70,8 @@ class DQNCNNAgent(pl.LightningModule):
             nn.Linear(64, self.action_space),
         )
 
-    def remember(self: Self, experience: Transition) -> None:
-        self.memory.push(experience)
+    def remember(self: Self, transition: Transition) -> None:
+        self.memory.push(transition)
 
     def act(self: Self, state):
         if np.random.rand() <= self.epsilon:

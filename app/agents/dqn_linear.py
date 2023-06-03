@@ -59,8 +59,8 @@ class DQNLinearAgent(L.LightningModule):
             nn.Linear(64, self.action_space),
         )
 
-    def remember(self, experience: Transition) -> None:
-        self.memory.push(experience)
+    def remember(self, transition: Transition) -> None:
+        self.memory.push(transition)
 
     def act(self, state):
         if np.random.rand() <= self.epsilon:
@@ -71,8 +71,8 @@ class DQNLinearAgent(L.LightningModule):
 
     def replay(self) -> None:
         minibatch = self.memory.sample(self.batch_size)
-        for experience in minibatch:
-            state, action, reward, next_state, done = experience
+        for transition in minibatch:
+            state, action, reward, next_state, done = transition
             state = torch.from_numpy(state).float().unsqueeze(0).to(self.gpu)
             next_state = torch.from_numpy(next_state).float().unsqueeze(0).to(self.gpu)
             target = self.model(state)

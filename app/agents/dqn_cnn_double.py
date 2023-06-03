@@ -96,8 +96,8 @@ class DDQNCNNAgent(pl.LightningModule):
         model.to(device)
         return model
 
-    def remember(self: Self, experience: Transition) -> None:
-        self.memory.push(experience)
+    def remember(self: Self, transition: Transition) -> None:
+        self.memory.push(transition)
 
     def act(self: Self, state) -> int:
         if np.random.rand() <= self.epsilon:

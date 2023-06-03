@@ -6,19 +6,19 @@ class Config:
     """A configuration object holding all parameters for an experiment."""
 
     # environment parameters
-    max_episodes: int = 1
+    max_episodes: int = 5_000
     frame_skip: int = 4
     step_penalty: float = 0.0
 
     # agent parameters
-    alpha: float = 1e-3
+    alpha: float = 1e-2
     epsilon_min: float = 0.1
-    gamma: float = 1 - 1e-4  # discount factor gamma
+    gamma: float = 1 - 1e-3  # discount factor gamma
     memory_size: int = 64_000
     batch_size: int = 64
 
     # extra agent parameters
-    target_net_update_interval: int = 1000
+    target_net_update_interval: int = 2000
 
     # save parameter
     model_save_interval: int = 1024

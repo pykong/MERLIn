@@ -66,30 +66,30 @@ class DDQNCNNAgent(pl.LightningModule):
         channel_dim, x_dim, y_dim = state_shape  # unpack dimensions
         model = nn.Sequential(
             # 1 - conv
-            nn.Conv2d(channel_dim, 64, kernel_size=3, stride=1, padding=1),
-            nn.BatchNorm2d(64),
+            nn.Conv2d(channel_dim, 32, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(32),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=4, stride=4),
             # 2 - conv
-            nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1),
-            nn.BatchNorm2d(128),
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=4, stride=4),
-            # 3 - conv
-            nn.Conv2d(128, 256, kernel_size=3, stride=1, padding=1),
-            nn.BatchNorm2d(256),
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=4, stride=4),
+            # nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1),
+            # nn.BatchNorm2d(128),
+            # nn.ReLU(),
+            # nn.MaxPool2d(kernel_size=4, stride=4),
+            # # 3 - conv
+            # nn.Conv2d(128, 256, kernel_size=3, stride=1, padding=1),
+            # nn.BatchNorm2d(256),
+            # nn.ReLU(),
+            # nn.MaxPool2d(kernel_size=4, stride=4),
             # 4 - fc
             nn.Flatten(),
-            nn.Linear(256 * (x_dim // 64) * (y_dim // 64), 64),
+            nn.Linear(32 * (x_dim // 4) * (y_dim // 4), 64),
             nn.ReLU(),
             # 5 - fc
-            nn.Linear(64, 32),
+            nn.Linear(64, 8),
             nn.ReLU(),
             # 6 - fc
-            nn.Linear(32, 8),
-            nn.ReLU(),
+            # nn.Linear(32, 8),
+            # nn.ReLU(),
             # 7 - fc (output layer)
             nn.Linear(8, num_actions),
         )

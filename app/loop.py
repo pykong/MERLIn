@@ -97,7 +97,7 @@ def loop(config: Config):
         action_space=env.action_space.n,  # type: ignore
         gamma=config.gamma,
         alpha=config.alpha,
-        epsilon=config.epsilon_min,
+        epsilon_min=config.epsilon_min,
         memory_size=config.memory_size,
         batch_size=config.batch_size,
         target_net_update_interval=config.target_net_update_interval,

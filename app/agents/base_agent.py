@@ -61,6 +61,11 @@ class BaseAgent(ABC, pl.LightningModule):
     def replay(self: Self) -> None:
         pass
 
+    @property
+    @abstractmethod
+    def name(self) -> str:
+        pass
+
     def _prepare_minibatch(self: Self, minibatch: list[Transition]):
         # TODO: make private
         states, actions, rewards, next_states, dones = zip(*minibatch)

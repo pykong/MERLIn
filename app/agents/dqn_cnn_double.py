@@ -9,8 +9,6 @@ from torch import nn
 class DDQNCNNAgent(BaseAgent):
     """An double deep-Q-network agent with a convolutional neural network structure."""
 
-    name: Final[str] = "double_dqn_cnn"
-
     def __init__(
         self: Self,
         *args,
@@ -20,6 +18,10 @@ class DDQNCNNAgent(BaseAgent):
         self._step_counter: int = 0
         super().__init__(*args, **kwargs)
         self.target_model = deepcopy(self.model)
+
+    @property
+    def name(self: Self) -> str:
+        return "double_dqn_cnn"
 
     @staticmethod
     def _make_model(
@@ -104,4 +106,4 @@ class DDQNCNNAgent(BaseAgent):
 
     def __update_target(self: Self) -> None:
         """Copies the policy network parameters to the target network"""
-        self.target_model.load_state_dict(self.model.state_dict())
+        self.target_model = deepcopy(self.model)

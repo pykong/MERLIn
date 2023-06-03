@@ -6,6 +6,7 @@ from typing import Final
 
 import cv2 as cv
 import numpy as np
+from agents.base_agent import BaseAgent
 from agents.dqn_cnn_double import DDQNCNNAgent
 from config import Config
 from gym.wrappers.monitoring import video_recorder as vr
@@ -13,8 +14,6 @@ from pong_wrapper import PongWrapper
 from utils.file_utils import empty_directories
 from utils.logging import EpisodeLog, EpisodeLogger, LogLevel
 from utils.replay_memory import Transition
-
-from app.agents.base_agent import BaseAgent
 
 # set random seeds for reproducibility
 RANDOM_SEED: Final[int] = 0

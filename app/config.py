@@ -13,11 +13,11 @@ class Config:
     # agent parameters
     agent_name: str = "double_linear_dqn"
     load_agent: bool = False
-    alpha: float = 3e-3
+    alpha: float = 0.0005
     epsilon_min: float = 0.1
-    gamma: float = 1 - 2e-4  # discount factor gamma
-    memory_size: int = 64_000
-    batch_size: int = 64
+    gamma: float = 0.98  # discount factor gamma
+    memory_size: int = 50_000
+    batch_size: int = 32
 
     # extra agent parameters
     target_net_update_interval: int = 1_000

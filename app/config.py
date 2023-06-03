@@ -27,5 +27,5 @@ class Config:
     video_record_interval: int = 1024
 
     # debugging
-    verbose: bool = False
+    verbose: bool = True
     save_state_img: bool = False

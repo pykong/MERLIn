@@ -1,5 +1,6 @@
 import os
 import random
+import re
 import sys
 from pathlib import Path
 from typing import Final
@@ -48,11 +49,16 @@ def make_agent(name: str, load_agent: bool, **kwargs) -> BaseAgent:
     agent = agent_(**kwargs)
     if load_agent:
         models = CHECKPOINTS_DIR.glob("*.pth")
-        models = [m for m in models if name in m.name]
-        sorted(models)
-        latest_model = models[0]
-        agent.load(latest_model)
-        logger.log(str(LogLevel.GREEN), f"Loading checkpoint: {latest_model.name}")
+        env = "pong"  # TODO: Dynamize env name
+        pattern = re.compile(f"{env}_{name}_\\d+\\.pth")
+        models = [m for m in models if pattern.match(m.name)]
+        if not models:
+            logger.log(str(LogLevel.GREEN), f"No checkpoint found for: {name}")
+        else:
+            sorted(models)
+            latest_model = models[0]
+            agent.load(latest_model)
+            logger.log(str(LogLevel.GREEN), f"Loading checkpoint: {latest_model.name}")
     return agent
 
 

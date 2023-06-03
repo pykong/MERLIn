@@ -14,9 +14,6 @@ from utils.file_utils import empty_directories
 from utils.logging import EpisodeLog, EpisodeLogger, LogLevel
 from utils.replay_memory import Transition
 
-# suppress moviepy output: ultimata ratio :-|
-sys.stdout = open(os.devnull, "w")
-
 # set random seeds for reproducibility
 RANDOM_SEED: Final[int] = 0
 np.random.seed(RANDOM_SEED)
@@ -28,17 +25,6 @@ VIDEO_DIR: Final[Path] = Path("video")
 IMG_DIR: Final[Path] = Path("img")
 
 # hyperparameters
-MAX_EPISODES: Final[int] = 20_000
-FRAME_SKIP: Final[int] = 4
-LEARNING_RATE: Final[float] = 1e-3
-MEMORY_SIZE: Final[int] = 64_000
-BATCH_SIZE: Final[int] = 64
-GAMMA: Final[float] = 1 - 1e-4  # discount factor gamma
-EPSILON_MIN: Final[float] = 0.1
-MODEL_SAVE_INTERVAL: Final[int] = 1024
-RECORD_INTERVAL: Final[int] = 1024
-STEP_PENALTY: Final[float] = 0.00
-TARGET_NETWORK_UPDATE_INTERVAL: Final[int] = 2000
 NUM_STACKED_FRAMES: Final[int] = 1
 INPUT_DIM: Final[int] = 80
 INPUT_SHAPE: Final[tuple[int, int, int]] = (
@@ -46,7 +32,6 @@ INPUT_SHAPE: Final[tuple[int, int, int]] = (
     INPUT_DIM * NUM_STACKED_FRAMES,
     INPUT_DIM,
 )
-SAVE_STATE_IMG: Final[bool] = False
 
 
 def take_picture_of_state(state: np.ndarray, f_name: Path) -> None:
@@ -84,7 +69,7 @@ def run_episode(
         episode_log.reward += reward
 
         # take picture of state randomly
-        if SAVE_STATE_IMG and random.choices([True, False], [1, 512], k=1)[0]:
+        if config.save_state_img and random.choices([True, False], [1, 512], k=1)[0]:
             img_file = IMG_DIR / f"{episode_log.episode}_{episode_log.steps}.png"
             take_picture_of_state(state, img_file)
 
@@ -93,12 +78,16 @@ def run_episode(
 
 
 def loop(config: Config):
+    # suppress moviepy output: ultimata ratio :-|
+    if not config.verbose:
+        sys.stdout = open(os.devnull, "w")
+
     # create environment
     env = PongWrapper(
         "ALE/Pong-v5",
         state_dims=(INPUT_DIM, INPUT_DIM),
-        skip=FRAME_SKIP,
-        step_penalty=STEP_PENALTY,
+        skip=config.frame_skip,
+        step_penalty=config.step_penalty,
         stack_size=NUM_STACKED_FRAMES,
     )
 
@@ -106,9 +95,12 @@ def loop(config: Config):
     agent = DDQNCNNAgent(
         state_shape=INPUT_SHAPE,
         action_space=env.action_space.n,  # type: ignore
-        gamma=GAMMA,
-        alpha=LEARNING_RATE,
-        target_net_update_interval=TARGET_NETWORK_UPDATE_INTERVAL,
+        gamma=config.gamma,
+        alpha=config.alpha,
+        epsilon=config.epsilon_min,
+        memory_size=config.memory_size,
+        batch_size=config.batch_size,
+        target_net_update_interval=config.target_net_update_interval,
     )
 
     # init logger
@@ -122,7 +114,7 @@ def loop(config: Config):
 
         # set up the video recorder
         recorder = None
-        if episode % RECORD_INTERVAL == 0:
+        if episode % config.video_record_interval == 0:
             video_path = str(VIDEO_DIR / f"{env.name}_{agent.name}_{episode}.mp4")
             logger.log(f"Recording video: {video_path}", LogLevel.VIDEO)
             recorder = vr.VideoRecorder(env, video_path)
@@ -135,7 +127,7 @@ def loop(config: Config):
         logger.log(episode_log)
 
         # periodically save model
-        if episode % MODEL_SAVE_INTERVAL == 0:
+        if episode % config.model_save_interval == 0:
             model_file = CHECKPOINTS_DIR / f"{env.name}_{agent.name}_{episode}.pth"
             logger.log(f"Saving model: {model_file}", LogLevel.SAVE)
             agent.save(model_file)

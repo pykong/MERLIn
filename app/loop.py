@@ -7,6 +7,7 @@ from typing import Final
 import cv2 as cv
 import numpy as np
 from agents.dqn_cnn_double import DDQNCNNAgent
+from config import Config
 from gym.wrappers.monitoring import video_recorder as vr
 from pong_wrapper import PongWrapper
 from utils.file_utils import empty_directories
@@ -91,7 +92,7 @@ def run_episode(
     agent.update_epsilon()
 
 
-def loop():
+def loop(config: Config):
     # create environment
     env = PongWrapper(
         "ALE/Pong-v5",
@@ -114,7 +115,7 @@ def loop():
     logger = EpisodeLogger(log_file=LOG_DIR / f"{env.name}_{agent.name}.csv")
 
     # run main loop
-    for episode in range(MAX_EPISODES):
+    for episode in range(config.max_episodes):
         # init episode logger
         episode_log = EpisodeLog(episode=episode, epsilon=agent.epsilon)
         episode_log.start_timer()
@@ -146,4 +147,5 @@ def loop():
 
 if __name__ == "__main__":
     empty_directories(CHECKPOINTS_DIR, LOG_DIR, VIDEO_DIR, IMG_DIR)
-    loop()
+    config = Config()
+    loop(config)

@@ -43,9 +43,12 @@ def take_picture_of_state(state: np.ndarray, f_name: Path) -> None:
 
 def make_agent(name: str, load_agent: bool, **kwargs) -> BaseAgent:
     """Factory method to create agent."""
-    print(f"DDQNCNNAgent.name: {DDQNCNNAgent.name()}")
     registry = [DDQNCNNAgent]
-    agent = [a for a in registry if a.name() == name][0]
+    agent = [a for a in registry if a.name == name][0]
+    if load_agent:
+        models = CHECKPOINTS_DIR.glob("*.pth")
+        models = [m for m in models if name in m.name]
+        print(f"found models: {models}")
     return agent(**kwargs)
 
 
@@ -149,6 +152,6 @@ def loop(config: Config):
 
 
 if __name__ == "__main__":
-    empty_directories(CHECKPOINTS_DIR, LOG_DIR, VIDEO_DIR, IMG_DIR)
+    empty_directories(LOG_DIR, VIDEO_DIR, IMG_DIR)  # CHECKPOINTS_DIR
     config = Config()
     loop(config)

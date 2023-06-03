@@ -61,11 +61,11 @@ class BaseAgent(ABC, pl.LightningModule):
     def replay(self: Self) -> None:
         pass
 
-    @property
     @classmethod
-    #  TODO: Make this a class property
+    @property
+    @abstractmethod
     def name(cls) -> str:
-        pass
+        raise NotImplementedError()
 
     def _prepare_minibatch(self: Self, minibatch: list[Transition]):
         # TODO: make private

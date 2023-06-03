@@ -23,7 +23,7 @@ class Config:
     target_net_update_interval: int = 2000
 
     # save parameter
-    model_save_interval: int = 1024
+    model_save_interval: int = 1
     video_record_interval: int = 1024
 
     # debugging

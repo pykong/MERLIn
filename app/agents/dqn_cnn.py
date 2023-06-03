@@ -9,7 +9,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torch import nn
 from utils.logging import LogLevel, logger
-from utils.replay_memory import Experience, ReplayMemory
+from utils.replay_memory import ReplayMemory, Transition
 
 
 def get_torch_device() -> torch.device:
@@ -70,7 +70,7 @@ class DQNCNNAgent(pl.LightningModule):
             nn.Linear(64, self.action_space),
         )
 
-    def remember(self: Self, experience: Experience) -> None:
+    def remember(self: Self, experience: Transition) -> None:
         self.memory.push(experience)
 
     def act(self: Self, state):
@@ -115,7 +115,7 @@ class DQNCNNAgent(pl.LightningModule):
         loss.backward()
         self.optimizer.step()
 
-    def prepare_minibatch(self: Self, minibatch: list[Experience]):
+    def prepare_minibatch(self: Self, minibatch: list[Transition]):
         # TODO: make private
         states, actions, rewards, next_states, dones = zip(*minibatch)
         states = torch.from_numpy(np.array(states)).float().to(self.device_)

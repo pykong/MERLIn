@@ -7,7 +7,7 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 from utils.logging import LogLevel, logger
-from utils.replay_memory import Experience, ReplayMemory
+from utils.replay_memory import ReplayMemory, Transition
 
 
 def get_torch_device() -> torch.device:
@@ -88,7 +88,7 @@ class DuellingQNCNNAgent(pl.LightningModule):
 
         return features, advantage, value
 
-    def remember(self, experience: Experience) -> None:
+    def remember(self, experience: Transition) -> None:
         self.memory.push(experience)
 
     def act(self, state):

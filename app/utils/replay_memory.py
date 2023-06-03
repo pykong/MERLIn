@@ -5,7 +5,7 @@ from typing import NamedTuple, Self
 from numpy import ndarray
 
 
-class Experience(NamedTuple):
+class Transition(NamedTuple):
     state: ndarray
     action: int
     reward: float
@@ -18,10 +18,10 @@ class ReplayMemory:
         self.capacity = capacity
         self.buffer = deque(maxlen=capacity)
 
-    def push(self: Self, experience: Experience) -> None:
+    def push(self: Self, experience: Transition) -> None:
         self.buffer.append(experience)
 
-    def sample(self: Self, batch_size: int) -> list[Experience]:
+    def sample(self: Self, batch_size: int) -> list[Transition]:
         sample_size = min(len(self.buffer), batch_size)
         batch = random.sample(self.buffer, sample_size)
         return batch

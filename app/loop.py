@@ -11,7 +11,7 @@ from gym.wrappers.monitoring import video_recorder as vr
 from pong_wrapper import PongWrapper
 from utils.file_utils import empty_directories
 from utils.logging import EpisodeLog, EpisodeLogger, LogLevel
-from utils.replay_memory import Experience
+from utils.replay_memory import Transition
 
 # suppress moviepy output: ultimata ratio :-|
 sys.stdout = open(os.devnull, "w")
@@ -72,7 +72,7 @@ def run_episode(
         next_state, reward, done = env.step(action)
 
         # save experience
-        experience = Experience(state, action, reward, next_state, done)
+        experience = Transition(state, action, reward, next_state, done)
         agent.remember(experience)
 
         # update policy network

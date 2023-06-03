@@ -14,6 +14,8 @@ from utils.file_utils import empty_directories
 from utils.logging import EpisodeLog, EpisodeLogger, LogLevel
 from utils.replay_memory import Transition
 
+from app.agents.base_agent import BaseAgent
+
 # set random seeds for reproducibility
 RANDOM_SEED: Final[int] = 0
 np.random.seed(RANDOM_SEED)
@@ -92,7 +94,7 @@ def loop(config: Config):
     )
 
     # create the policy network
-    agent = DDQNCNNAgent(
+    agent: BaseAgent = DDQNCNNAgent(
         state_shape=INPUT_SHAPE,
         action_space=env.action_space.n,  # type: ignore
         gamma=config.gamma,

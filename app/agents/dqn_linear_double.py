@@ -68,9 +68,6 @@ class DDQNLinearAgent(BaseAgent):
             with torch.no_grad():
                 max_q_prime = self.target_model(next_states).max(1)[0].unsqueeze(1)
 
-            # scale rewards
-            rewards /= 100
-
             # compute the expected Q values (expected_state_action_values)
             target = rewards + self.gamma * max_q_prime * dones
 

@@ -118,7 +118,7 @@ class BaseAgent(ABC, pl.LightningModule):
         if np.random.rand() <= self.epsilon:
             return random.randrange(self.num_actions)
         state = torch.from_numpy(state).to(self.device_)
-        act_values = self.forward(state)
+        act_values = self.forward(state.unsqueeze(0))
         return act_values.argmax().item()
 
     def forward(self: Self, x):

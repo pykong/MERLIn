@@ -11,9 +11,11 @@ class DDQNCNNAgent(BaseAgent):
 
     def __init__(
         self: Self,
+        epochs: int = 1,
         *args,
         **kwargs,
     ):
+        self.epochs = epochs
         self.target_net_update_interval = kwargs.pop("target_net_update_interval")
         self._step_counter: int = 0
         super().__init__(*args, **kwargs)
@@ -60,8 +62,8 @@ class DDQNCNNAgent(BaseAgent):
         )
 
         # predict Q-values for the initial states.
-        q_out = self.forward(states)
-        q_a = q_out.gather(1, actions)  # state_action_values
+        # q_out = self.forward(states)
+        # q_a = q_out.gather(1, actions)  # state_action_values
 
         # get indices of maximum values according to the policy network
         # _, policy_net_actions = self.forward(next_states).max(1)
@@ -74,25 +76,21 @@ class DDQNCNNAgent(BaseAgent):
         #     .detach()
         # )
 
-        max_q_prime = self.target_model(next_states).max(1)[0].unsqueeze(1)
-
-        # scale rewards
-        rewards /= 100
-
         # mask dones
         dones = 1 - dones
+        for _ in range(self.epochs):
+            # predict Q-values for the initial states.
+            q_out = self.forward(states)
+            q_a = q_out.gather(1, actions)  # state_action_values
 
-        # compute the expected Q values (expected_state_action_values)
-        target = rewards + self.gamma * max_q_prime * dones
+            with torch.no_grad():
+                max_q_prime = self.target_model(next_states).max(1)[0].unsqueeze(1)
 
-        # scale target
-        # target /= 100
+            # compute the expected Q values (expected_state_action_values)
+            target = rewards + self.gamma * max_q_prime * dones
 
-        # clip target
-        # target = target.clamp(min=-1.0, max=1.0)
-
-        # update the weights.
-        self._update_weights(q_a, target)
+            # update the weights.
+            self._update_weights(q_a, target)
 
         # target update logic
         self._step_counter += 1

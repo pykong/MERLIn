@@ -79,7 +79,7 @@ class BaseAgent(ABC, pl.LightningModule):
     def name(cls) -> str:
         raise NotImplementedError()
 
-    def _prepare_minibatch(self: Self, minibatch: list[Transition]) -> Minibatch:
+    def _prepare_minibatch(self: Self, transitions: list[Transition]) -> Minibatch:
         # states, actions, rewards, next_states, dones = zip(*minibatch)
         # states = torch.from_numpy(np.array(states)).float().to(self.device_)
         # actions = torch.tensor(actions).unsqueeze(1).to(self.device_)
@@ -90,12 +90,12 @@ class BaseAgent(ABC, pl.LightningModule):
 
         states, actions, rewards, next_states, dones = [], [], [], [], []
 
-        for transition in minibatch:
-            states.append(transition.state)
-            actions.append([transition.action])
-            rewards.append([transition.reward])
-            next_states.append(transition.next_state)
-            dones.append([transition.done])
+        for t in transitions:
+            states.append(t.state)
+            actions.append([t.action])
+            rewards.append([t.reward])
+            next_states.append(t.next_state)
+            dones.append([t.done])
 
         states = torch.from_numpy(np.array(states)).float().to(self.device_)
         actions = torch.tensor(actions).to(self.device_)

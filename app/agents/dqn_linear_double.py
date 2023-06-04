@@ -13,10 +13,11 @@ class DDQNLinearAgent(BaseAgent):
     def __init__(
         self: Self,
         *args,
+        epochs: int = 10,
         **kwargs,
     ):
         self.target_net_update_interval = kwargs.pop("target_net_update_interval")
-        self.epochs = kwargs.pop("epochs")
+        self.epochs = epochs
         self._step_counter: int = 0
         super().__init__(*args, **kwargs)
         self.target_model = deepcopy(self.model)

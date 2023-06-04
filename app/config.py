@@ -10,14 +10,14 @@ class Config:
     frame_skip: int = 4
     step_penalty: float = 0.005
 
-    start_epsilon_decay: int = 0
+    start_epsilon_decay: int = 300
 
     # agent parameters
     agent_name: str = "double_linear_dqn"
     load_agent: bool = False
-    alpha: float = 0.0005
+    alpha: float = 0.001
     epsilon_min: float = 0.1
-    gamma: float = 0.9999  # discount factor gamma
+    gamma: float = 0.999  # discount factor gamma
     memory_size: int = 50_000
     batch_size: int = 32
     epochs: int = 5

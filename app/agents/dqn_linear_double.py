@@ -61,7 +61,8 @@ class DDQNLinearAgent(BaseAgent):
             q_out = self.forward(states)
             q_a = q_out.gather(1, actions)  # state_action_values
 
-            max_q_prime = self.target_model(next_states).max(1)[0].unsqueeze(1)
+            with torch.no_grad():
+                max_q_prime = self.target_model(next_states).max(1)[0].unsqueeze(1)
 
             # scale rewards
             rewards /= 100

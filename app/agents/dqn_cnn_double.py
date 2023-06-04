@@ -41,13 +41,13 @@ class DDQNCNNAgent(BaseAgent):
             nn.BatchNorm2d(64),
             nn.LeakyReLU(),
             nn.Flatten(),
-            nn.Linear(64 * (x_dim // 2) * (y_dim // 2), 128),  # increased layer size
+            nn.Linear(64 * (x_dim // 2) * (y_dim // 2), 256),  # increased layer size
             nn.ELU(),
             nn.Dropout(0.5),  # added Dropout
-            nn.Linear(128, 32),
+            nn.Linear(256, 64),
             nn.ReLU(),
             nn.Dropout(0.5),  # added Dropout
-            nn.Linear(32, num_actions),
+            nn.Linear(64, num_actions),
         )
         model.to(device)
         return model

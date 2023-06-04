@@ -44,7 +44,7 @@ class BaseAgent(ABC, pl.LightningModule):
         gamma: float = 0.999,  # epsilon decay
         memory_size: int = 10_000,
         batch_size: int = 64,
-        weight_decay=1e-6,
+        weight_decay=0,
         **kwargs,
     ):
         super().__init__()

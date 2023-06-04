@@ -80,4 +80,5 @@ class DDQNLinearAgent(BaseAgent):
 
     def __update_target(self: Self) -> None:
         """Copies the policy network parameters to the target network"""
-        self.target_model = deepcopy(self.model)
+        # self.target_model = deepcopy(self.model)
+        self.target_model.load_state_dict(self.model.state_dict())

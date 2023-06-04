@@ -10,7 +10,7 @@ class Config:
     frame_skip: int = 4
     step_penalty: float = 0.005
 
-    start_epsilon_decay: int = 100
+    start_epsilon_decay: int = 0
 
     # agent parameters
     agent_name: str = "double_linear_dqn"
@@ -29,5 +29,5 @@ class Config:
     video_record_interval: int = 2048
 
     # debugging
-    verbose: bool = False
+    verbose: bool = True
     save_state_img: bool = False

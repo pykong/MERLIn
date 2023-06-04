@@ -6,7 +6,7 @@ from typing import NamedTuple, Self
 import lightning.pytorch as pl
 import numpy as np
 import torch
-import torch.nn.functional as F
+
 import torch.optim as optim
 from torch import nn
 from utils.logging import LogLevel, logger
@@ -105,10 +105,11 @@ class BaseAgent(ABC, pl.LightningModule):
 
         return Minibatch(states, actions, rewards, next_states, dones)
 
-    def _update_weights(self, q_a, target) -> None:
+    def _update_weights(self, losses) -> None:
         self.optimizer.zero_grad()
-        loss = F.smooth_l1_loss(q_a, target)
-        loss.backward()
+        losses.backward()
+        # clip gradients to prevent explosion
+        nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=1.0)
         self.optimizer.step()
 
     def remember(self: Self, transition: Transition) -> None:

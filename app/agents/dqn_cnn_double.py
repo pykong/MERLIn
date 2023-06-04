@@ -2,6 +2,7 @@ from copy import deepcopy
 from typing import Final, Self
 
 import torch
+import torch.nn.functional as F
 from agents.base_agent import BaseAgent
 from torch import nn
 
@@ -52,7 +53,7 @@ class DDQNCNNAgent(BaseAgent):
         model.to(device)
         return model
 
-    def replay(self: Self) -> None:
+    def replay(self: Self) -> float:
         # sample memory
         minibatch = self.memory.sample(self.batch_size)
 
@@ -89,13 +90,17 @@ class DDQNCNNAgent(BaseAgent):
             # compute the expected Q values (expected_state_action_values)
             target = rewards + self.gamma * max_q_prime * dones
 
+            losses = F.smooth_l1_loss(q_a, target)
+
             # update the weights.
-            self._update_weights(q_a, target)
+            self._update_weights(losses)
 
         # target update logic
         self._step_counter += 1
         if self._step_counter % self.target_net_update_interval == 0:
             self.__update_target()
+
+        return losses.mean().item()
 
     def __update_target(self: Self) -> None:
         """Copies the policy network parameters to the target network"""

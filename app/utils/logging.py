@@ -70,6 +70,7 @@ class EpisodeLog:
     episode: int
     epsilon: float
     reward: float = 0.0
+    loss: float = 0.0
     steps: int = 0
     time: float = field(init=False)
 
@@ -86,6 +87,7 @@ class EpisodeLog:
             f"{self.episode:05d}",
             f"{self.epsilon:.3f}",
             f"{self.reward:.2f}",
+            f"{self.loss:.2f}",
             f"{self.steps:04d}",
             f"{self.time:.2f}",
         )

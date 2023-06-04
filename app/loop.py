@@ -85,7 +85,7 @@ def run_episode(
         agent.remember(transition)
 
         # update policy network
-        agent.replay()
+        episode_log.loss += agent.replay()
 
         # ???
         state = next_state

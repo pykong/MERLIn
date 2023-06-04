@@ -89,7 +89,7 @@ class EpisodeLog:
             f"{self.reward:.2f}",
             f"{self.loss:.2f}",
             f"{self.steps:04d}",
-            f"{self.time:.2f}",
+            f"{self.time:05.2f}",
         )
         return " | ".join(fields)
 

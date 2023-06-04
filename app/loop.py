@@ -28,8 +28,8 @@ VIDEO_DIR: Final[Path] = Path("video")
 IMG_DIR: Final[Path] = Path("img")
 
 # hyperparameters
-NUM_STACKED_FRAMES: Final[int] = 1
-INPUT_DIM: Final[int] = 80
+NUM_STACKED_FRAMES: Final[int] = 4
+INPUT_DIM: Final[int] = 84
 INPUT_SHAPE: Final[tuple[int, int, int]] = (
     1,
     INPUT_DIM * NUM_STACKED_FRAMES,

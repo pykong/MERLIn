@@ -32,23 +32,24 @@ class DDQNCNNAgent(BaseAgent):
         state_shape: tuple[int, int, int], num_actions: int, device: torch.device
     ) -> nn.Sequential:
         channel_dim, x_dim, y_dim = state_shape  # unpack dimensions
+        # adapted from: https://github.com/KaleabTessera/DQN-Atari#dqn-neurips-architecture-implementation
         model = nn.Sequential(
-            nn.Conv2d(channel_dim, 32, kernel_size=3, stride=1, padding=1),
+            # conv1
+            nn.Conv2d(channel_dim, 16, kernel_size=8, stride=4, padding=1),
+            nn.BatchNorm2d(16),
+            nn.LeakyReLU(),
+            # conv2
+            nn.Conv2d(16, 32, kernel_size=4, stride=2, padding=1),
             nn.BatchNorm2d(32),
             nn.LeakyReLU(),
-            nn.Conv2d(
-                32, 64, kernel_size=3, stride=2, padding=1
-            ),  # replace MaxPool with a Conv layer with stride 2
-            nn.BatchNorm2d(64),
-            nn.LeakyReLU(),
+            # fc 1
             nn.Flatten(),
-            nn.Linear(64 * (x_dim // 2) * (y_dim // 2), 256),  # increased layer size
-            nn.ELU(),
-            nn.Dropout(0.5),  # added Dropout
-            nn.Linear(256, 64),
+            # nn.Linear(32 * (x_dim // 16) * (y_dim // 16), 256),
+            nn.Linear(32 * 410, 256),  # TODO Dynamically correct input size
             nn.ReLU(),
-            nn.Dropout(0.5),  # added Dropout
-            nn.Linear(64, num_actions),
+            nn.Dropout(0.2),
+            # output
+            nn.Linear(256, num_actions),
         )
         model.to(device)
         return model

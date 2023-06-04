@@ -20,6 +20,7 @@ class Config:
     gamma: float = 0.9999  # discount factor gamma
     memory_size: int = 50_000
     batch_size: int = 32
+    epochs: int = 5
 
     # extra agent parameters
     target_net_update_interval: int = 4_000
@@ -29,5 +30,5 @@ class Config:
     video_record_interval: int = 2048
 
     # debugging
-    verbose: bool = True
+    verbose: bool = False
     save_state_img: bool = False

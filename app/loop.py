@@ -122,6 +122,7 @@ def loop(config: Config):
         epsilon_min=config.epsilon_min,
         memory_size=config.memory_size,
         batch_size=config.batch_size,
+        epochs=config.epochs,
         target_net_update_interval=config.target_net_update_interval,
     )
 

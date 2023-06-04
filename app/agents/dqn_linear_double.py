@@ -16,6 +16,7 @@ class DDQNLinearAgent(BaseAgent):
         **kwargs,
     ):
         self.target_net_update_interval = kwargs.pop("target_net_update_interval")
+        self.epochs = kwargs.pop("epochs")
         self._step_counter: int = 0
         super().__init__(*args, **kwargs)
         self.target_model = deepcopy(self.model)
@@ -52,40 +53,23 @@ class DDQNLinearAgent(BaseAgent):
             minibatch
         )
 
-        # predict Q-values for the initial states.
-        q_out = self.forward(states)
-        q_a = q_out.gather(1, actions)  # state_action_values
-
-        # get indices of maximum values according to the policy network
-        # _, policy_net_actions = self.forward(next_states).max(1)
-
-        # compute V(s_{t+1}) for all next states using target network, but choose the best action from the policy network.
-        # max_q_prime = (
-        #     self.target_model(next_states)
-        #     .gather(1, policy_net_actions.unsqueeze(-1))
-        #     .squeeze()
-        #     .detach()
-        # )
-
-        max_q_prime = self.target_model(next_states).max(1)[0].unsqueeze(1)
-
-        # scale rewards
-        rewards /= 100
-
         # mask dones
         dones = 1 - dones
+        for _ in range(self.epochs):
+            # predict Q-values for the initial states.
+            q_out = self.forward(states)
+            q_a = q_out.gather(1, actions)  # state_action_values
 
-        # compute the expected Q values (expected_state_action_values)
-        target = rewards + self.gamma * max_q_prime * dones
+            max_q_prime = self.target_model(next_states).max(1)[0].unsqueeze(1)
 
-        # scale target
-        # target /= 100
+            # scale rewards
+            rewards /= 100
 
-        # clip target
-        # target = target.clamp(min=-1.0, max=1.0)
+            # compute the expected Q values (expected_state_action_values)
+            target = rewards + self.gamma * max_q_prime * dones
 
-        # update the weights.
-        self._update_weights(q_a, target)
+            # update the weights.
+            self._update_weights(q_a, target)
 
         # target update logic
         self._step_counter += 1

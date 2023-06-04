@@ -46,6 +46,7 @@ class BaseAgent(ABC, pl.LightningModule):
         memory_size: int = 10_000,
         batch_size: int = 64,
         weight_decay=1e-5,
+        **kwargs,
     ):
         super().__init__()
         self.state_shape = state_shape

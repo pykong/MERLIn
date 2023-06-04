@@ -96,9 +96,6 @@ def run_episode(
             img_file = IMG_DIR / f"{episode_log.episode}_{episode_log.steps}.png"
             take_picture_of_state(state, img_file)
 
-    # update epsilon
-    agent.update_epsilon()
-
 
 def loop(config: Config):
     # suppress moviepy output: ultimata ratio :-|
@@ -150,6 +147,11 @@ def loop(config: Config):
         # log episode
         episode_log.stop_timer()
         logger.log(episode_log)
+
+        # update epsilon
+        if episode >= config.start_epsilon_decay:
+            # TODO: Implement some form of logging
+            agent.update_epsilon()
 
         # periodically save model
         if episode % config.model_save_interval == 0:

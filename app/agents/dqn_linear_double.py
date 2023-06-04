@@ -20,7 +20,11 @@ class DDQNLinearAgent(BaseAgent):
         self.epochs = epochs
         self._step_counter: int = 0
         super().__init__(*args, **kwargs)
-        self.target_model = deepcopy(self.model)
+        # self.target_model = deepcopy(self.model)
+        self.target_model = self._make_model(
+            self.state_shape, self.num_actions, self.device_
+        )
+        self.target_model.load_state_dict(self.model.state_dict())
 
     @classmethod
     @property

@@ -48,8 +48,11 @@ class DDQNCNNAgent(BaseAgent):
             nn.Linear(32 * 410, 256),  # TODO Dynamically correct input size
             nn.ReLU(),
             nn.Dropout(0.2),
+            # fc 2 - additional layer in contrast to NeuroIPS paper
+            nn.Linear(256, 32),
+            nn.ReLU(),
             # output
-            nn.Linear(256, num_actions),
+            nn.Linear(32, num_actions),
         )
         model.to(device)
         return model

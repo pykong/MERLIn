@@ -15,7 +15,7 @@ class Config:
     # agent parameters
     agent_name: str = "double_dqn_cnn"
     load_agent: bool = False
-    alpha: float = 0.0005
+    alpha: float = 0.001
     epsilon_min: float = 0.1
     gamma: float = 0.999  # discount factor gamma
     memory_size: int = 50_000

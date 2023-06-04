@@ -6,7 +6,6 @@ from typing import NamedTuple, Self
 import lightning.pytorch as pl
 import numpy as np
 import torch
-
 import torch.optim as optim
 from torch import nn
 from utils.logging import LogLevel, logger
@@ -45,7 +44,7 @@ class BaseAgent(ABC, pl.LightningModule):
         gamma: float = 0.999,  # epsilon decay
         memory_size: int = 10_000,
         batch_size: int = 64,
-        weight_decay=1e-5,
+        weight_decay=1e-6,
         **kwargs,
     ):
         super().__init__()
@@ -59,7 +58,7 @@ class BaseAgent(ABC, pl.LightningModule):
         self.batch_size = batch_size
         self.device_: torch.device = get_torch_device()
         self.model = self._make_model(self.state_shape, self.num_actions, self.device_)
-        self.optimizer = optim.Adam(
+        self.optimizer = optim.RMSprop(
             self.model.parameters(), lr=alpha, weight_decay=weight_decay
         )
 

@@ -67,7 +67,7 @@ class PongWrapper(gym.Wrapper):
     @staticmethod
     def __preprocess_state(state, state_dims: tuple[int, int]):
         """Shapes the observation space."""
-        state = state[34:194, 13:-13]  # crop irrelevant parts of the image
+        state = state[33:194, 16:-16]  # crop irrelevant parts of the image
         state = cv.resize(state, state_dims, interpolation=cv.INTER_AREA)  # downsample
         state = cv.cvtColor(state, cv.COLOR_BGR2GRAY)  # remove channrl dim
         # TODO: put threshold value into constant

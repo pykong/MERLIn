@@ -32,6 +32,13 @@ class DDQNCNNAgent(BaseAgent):
         state_shape: tuple[int, int, int], num_actions: int, device: torch.device
     ) -> nn.Sequential:
         channel_dim, x_dim, y_dim = state_shape  # unpack dimensions
+        # calculate the size of the output of the last conv layer:
+        h_out_1 = ((y_dim + 2 * 1 - 8) // 4) + 1
+        w_out_1 = ((x_dim + 2 * 1 - 8) // 4) + 1
+        h_out_2 = ((h_out_1 + 2 * 1 - 4) // 2) + 1
+        w_out_2 = ((w_out_1 + 2 * 1 - 4) // 2) + 1
+        num_flat_features = h_out_2 * w_out_2
+
         # adapted from: https://github.com/KaleabTessera/DQN-Atari#dqn-neurips-architecture-implementation
         model = nn.Sequential(
             # conv1
@@ -44,8 +51,7 @@ class DDQNCNNAgent(BaseAgent):
             nn.LeakyReLU(),
             # fc 1
             nn.Flatten(),
-            # nn.Linear(32 * (x_dim // 16) * (y_dim // 16), 256),
-            nn.Linear(32 * 410, 256),  # TODO Dynamically correct input size
+            nn.Linear(32 * num_flat_features, 256),
             nn.ReLU(),
             nn.Dropout(0.2),
             # fc 2 - additional layer in contrast to NeuroIPS paper

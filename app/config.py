@@ -5,12 +5,15 @@ from dataclasses import dataclass
 class Config:
     """A configuration object holding all parameters for an experiment."""
 
-    # environment parameters
+    # training parameters
     max_episodes: int = 64_000
-    frame_skip: int = 4
-    step_penalty: float = 0.0
-
     start_epsilon_decay: int = 1_000
+
+    # environment parameters
+    frame_skip: int = 4
+    input_dim: int = 64
+    num_stacked_frames: int = 4
+    step_penalty: float = 0.0
 
     # agent parameters
     agent_name: str = "double_dqn_cnn"
@@ -31,4 +34,4 @@ class Config:
 
     # debugging
     verbose: bool = False
-    save_state_img: bool = True
+    save_state_img: bool = False

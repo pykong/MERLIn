@@ -27,15 +27,6 @@ LOG_DIR: Final[Path] = Path("log")
 VIDEO_DIR: Final[Path] = Path("video")
 IMG_DIR: Final[Path] = Path("img")
 
-# hyperparameters
-NUM_STACKED_FRAMES: Final[int] = 4
-INPUT_DIM: Final[int] = 84
-INPUT_SHAPE: Final[tuple[int, int, int]] = (
-    1,
-    INPUT_DIM * NUM_STACKED_FRAMES,
-    INPUT_DIM,
-)
-
 
 def take_picture_of_state(state: np.ndarray, f_name: Path) -> None:
     state_transposed = np.transpose(state, (1, 2, 0))
@@ -102,20 +93,27 @@ def loop(config: Config):
     if not config.verbose:
         sys.stdout = open(os.devnull, "w")
 
+    # calculate input shape
+    input_shape: Final[tuple[int, int, int]] = (
+        1,
+        config.input_dim * config.num_stacked_frames,
+        config.input_dim,
+    )
+
     # create environment
     env = PongWrapper(
         "ALE/Pong-v5",
-        state_dims=(INPUT_DIM, INPUT_DIM),
+        state_dims=(config.input_dim, config.input_dim),
         skip=config.frame_skip,
         step_penalty=config.step_penalty,
-        stack_size=NUM_STACKED_FRAMES,
+        stack_size=config.num_stacked_frames,
     )
 
     # create the policy network
     agent: BaseAgent = make_agent(
         config.agent_name,
         config.load_agent,
-        state_shape=INPUT_SHAPE,
+        state_shape=input_shape,
         action_space=env.action_space.n,  # type: ignore
         gamma=config.gamma,
         alpha=config.alpha,

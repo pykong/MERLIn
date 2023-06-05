@@ -32,11 +32,15 @@ class DDQNCNNAgent(BaseAgent):
         state_shape: tuple[int, int, int], num_actions: int, device: torch.device
     ) -> nn.Sequential:
         channel_dim, x_dim, y_dim = state_shape  # unpack dimensions
+
         # calculate the size of the output of the last conv layer:
-        h_out_1 = ((y_dim + 2 * 1 - 8) // 4) + 1
-        w_out_1 = ((x_dim + 2 * 1 - 8) // 4) + 1
-        h_out_2 = ((h_out_1 + 2 * 1 - 4) // 2) + 1
-        w_out_2 = ((w_out_1 + 2 * 1 - 4) // 2) + 1
+        def calc_dim(dim: int, kernel_size: int, stride: int, padding: int) -> int:
+            return ((dim + 2 * padding - kernel_size) // stride) + 1
+
+        h_out_1 = calc_dim(y_dim, 8, 4, 1)
+        w_out_1 = calc_dim(x_dim, 8, 4, 1)
+        h_out_2 = calc_dim(h_out_1, 4, 2, 1)
+        w_out_2 = calc_dim(w_out_1, 4, 2, 1)
         num_flat_features = h_out_2 * w_out_2
 
         # adapted from: https://github.com/KaleabTessera/DQN-Atari#dqn-neurips-architecture-implementation

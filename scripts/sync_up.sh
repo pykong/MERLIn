@@ -2,8 +2,7 @@
 
 # Script to upload sources to a cloud destination for training
 # Edit sync.cfg accordingly.
-# You can also overwrite the destination.ip via command line arg.
-# ./sync_vm.sh new.destination.ip
+
 
 # Get the directory where the script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

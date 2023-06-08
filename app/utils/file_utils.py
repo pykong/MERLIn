@@ -1,15 +1,26 @@
 import shutil
 from pathlib import Path
+from typing import Collection
+
+__all__ = ["ensure_empty_dirs"]
 
 
-def empty_directories(*dirs):
+def empty_dir(dir: Path) -> None:
+    """Empties directory."""
+    for item in dir.iterdir():
+        if item.is_dir():
+            shutil.rmtree(item)
+        else:
+            item.unlink()
+
+
+def ensure_empty_dirs(*dirs: str | Path) -> None:
+    """Creates directories if not existing, else empties them."""
     for dir in dirs:
         p = Path(dir)
-        if p.is_dir():
-            for item in p.iterdir():
-                if item.is_dir():
-                    shutil.rmtree(item)
-                else:
-                    item.unlink()
-        else:
+        if not p.exists():
+            p.mkdir(parents=True, exist_ok=False)
+        elif not p.is_dir():
             print(f"{dir} is not a valid directory")
+        else:
+            empty_dir(p)

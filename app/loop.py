@@ -13,7 +13,7 @@ from agents.dqn_linear_double import DDQNLinearAgent
 from config import Config
 from gym.wrappers.monitoring import video_recorder as vr
 from pong_wrapper import PongWrapper
-from utils.file_utils import empty_directories
+from utils.file_utils import ensure_empty_dirs
 from utils.logging import EpisodeLog, EpisodeLogger, LogLevel, logger
 from utils.replay_memory import Transition
 
@@ -164,6 +164,6 @@ def loop(config: Config):
 
 
 if __name__ == "__main__":
-    empty_directories(LOG_DIR, VIDEO_DIR, IMG_DIR)  # CHECKPOINTS_DIR
+    ensure_empty_dirs(CHECKPOINTS_DIR, LOG_DIR, VIDEO_DIR, IMG_DIR)
     config = Config()
     loop(config)

@@ -18,15 +18,15 @@ class Config:
     # agent parameters
     agent_name: str = "double_dqn_cnn"
     load_agent: bool = False
-    alpha: float = 0.001
+    alpha: float = 0.0001
     epsilon_min: float = 0.1
     gamma: float = 0.999  # discount factor gamma
-    memory_size: int = 64_000
-    batch_size: int = 64
+    memory_size: int = 5_000
+    batch_size: int = 32
     epochs: int = 1
 
     # extra agent parameters
-    target_net_update_interval: int = 8192
+    target_net_update_interval: int = 1024
 
     # save parameter
     model_save_interval: int = 2048

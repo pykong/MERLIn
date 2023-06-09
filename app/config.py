@@ -12,7 +12,7 @@ class Config:
     # environment parameters
     frame_skip: int = 4
     input_dim: int = 64
-    frame_stack_gap: int = 4
+    frame_stack_gap: int = 2
     step_penalty: float = 0.01
 
     # agent parameters
@@ -34,4 +34,4 @@ class Config:
 
     # debugging
     verbose: bool = False
-    save_state_img: bool = False
+    save_state_img: bool = True

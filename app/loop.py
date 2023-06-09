@@ -128,7 +128,7 @@ def loop(config: Config):
     logger = EpisodeLogger(log_file=LOG_DIR / f"{env.name}_{agent.name}.csv")
 
     # run main loop
-    for episode in range(config.max_episodes):
+    for episode in range(1, config.max_episodes + 1):
         # init episode logger
         episode_log = EpisodeLog(episode=episode, epsilon=agent.epsilon)
         episode_log.start_timer()
@@ -152,8 +152,10 @@ def loop(config: Config):
             # TODO: Implement some form of logging
             agent.update_epsilon()
 
-        # periodically save model
-        if episode > 0 and episode % config.model_save_interval == 0:
+        # save model
+        if episode > 0 and (
+            episode % config.model_save_interval == 0 or episode == config.max_episodes
+        ):
             model_file = CHECKPOINTS_DIR / f"{env.name}_{agent.name}_{episode}.pth"
             logger.log(f"Saving model: {model_file}", LogLevel.SAVE)
             agent.save(model_file)

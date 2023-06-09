@@ -6,7 +6,7 @@ class Config:
     """A configuration object holding all parameters for an experiment."""
 
     # training parameters
-    max_episodes: int = 5_000
+    max_episodes: int = 3
     start_epsilon_decay: int = 1_000
 
     # environment parameters

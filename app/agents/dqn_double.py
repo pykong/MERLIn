@@ -7,7 +7,7 @@ from agents.base_agent import BaseAgent
 from torch import nn
 
 
-class DDQNCNNAgent(BaseAgent):
+class DoubleDQNAgent(BaseAgent):
     """An double deep-Q-network agent with a convolutional neural network structure."""
 
     def __init__(
@@ -25,7 +25,7 @@ class DDQNCNNAgent(BaseAgent):
     @classmethod
     @property
     def name(cls) -> str:
-        return "double_dqn_cnn"
+        return "double_dqn"
 
     @staticmethod
     def _make_model(

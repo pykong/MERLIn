@@ -8,8 +8,9 @@ from typing import Final
 import cv2 as cv
 import numpy as np
 from agents.base_agent import BaseAgent
-from agents.dqn_cnn_double import DDQNCNNAgent
-from agents.dqn_linear_double import DDQNLinearAgent
+from agents.dqn_double import DoubleDQNAgent
+from agents.dqn_duelling import DuellingDQNAgent
+from agents.dqn_vanilla import VanillaDQNAgent
 from config import Config
 from gym.wrappers.monitoring import video_recorder as vr
 from pong_wrapper import PongWrapper
@@ -36,7 +37,7 @@ def take_picture_of_state(state: np.ndarray, f_name: Path) -> None:
 
 def make_agent(name: str, load_agent: bool, **kwargs) -> BaseAgent:
     """Factory method to create agent."""
-    registry = [DDQNCNNAgent, DDQNLinearAgent]
+    registry = [VanillaDQNAgent, DoubleDQNAgent, DuellingDQNAgent]
     agent_ = [a for a in registry if a.name == name][0]
     agent = agent_(**kwargs)
     if load_agent:

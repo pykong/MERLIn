@@ -13,10 +13,10 @@ class Config:
     frame_skip: int = 4
     input_dim: int = 64
     num_stacked_frames: int = 4
-    step_penalty: float = 0.01
+    step_penalty: float = 0.0
 
     # agent parameters
-    agent_name: str = "double_dqn_cnn"
+    agent_name: str = "double_dqn"
     load_agent: bool = False
     alpha: float = 0.0001
     epsilon_min: float = 0.1

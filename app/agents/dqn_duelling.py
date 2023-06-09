@@ -23,10 +23,10 @@ def get_torch_device() -> torch.device:
         return torch.device("cpu")
 
 
-class DuellingQNCNNAgent(pl.LightningModule):
+class DuellingDQNAgent(pl.LightningModule):
     """An duelling deep-Q-network agent with a convolutional neural network structure."""
 
-    name: Final[str] = "duelling_dqn_cnn"
+    name: Final[str] = "duelling_dqn"
 
     def __init__(
         self,

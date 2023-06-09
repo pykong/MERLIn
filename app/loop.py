@@ -153,7 +153,7 @@ def loop(config: Config):
             agent.update_epsilon()
 
         # periodically save model
-        if episode % config.model_save_interval == 0:
+        if episode > 0 and episode % config.model_save_interval == 0:
             model_file = CHECKPOINTS_DIR / f"{env.name}_{agent.name}_{episode}.pth"
             logger.log(f"Saving model: {model_file}", LogLevel.SAVE)
             agent.save(model_file)

@@ -23,7 +23,6 @@ class Config:
     gamma: float = 0.999  # discount factor gamma
     memory_size: int = 5_000
     batch_size: int = 32
-    epochs: int = 1
 
     # extra agent parameters
     target_net_update_interval: int = 1024

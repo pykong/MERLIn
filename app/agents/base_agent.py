@@ -6,6 +6,7 @@ from typing import NamedTuple, Self
 import lightning.pytorch as pl
 import numpy as np
 import torch
+import torch.nn.functional as F
 import torch.optim as optim
 from torch import nn
 from utils.logging import LogLevel, logger
@@ -71,9 +72,49 @@ class BaseAgent(ABC, pl.LightningModule):
     ) -> nn.Sequential:
         pass
 
-    @abstractmethod
     def replay(self: Self) -> None:
-        pass
+        # sample memory
+        minibatch = self.memory.sample(self.batch_size)
+
+        # convert the minibatch to a more convenient format
+        states, actions, rewards, next_states, dones = self._prepare_minibatch(
+            minibatch
+        )
+
+        # get indices of maximum values according to the policy network
+        # _, policy_net_actions = self.forward(next_states).max(1)
+
+        # compute V(s_{t+1}) for all next states using target network, but choose the best action from the policy network.
+        # max_q_prime = (
+        #     self.target_model(next_states)
+        #     .gather(1, policy_net_actions.unsqueeze(-1))
+        #     .squeeze()
+        #     .detach()
+        # )
+
+        # mask dones
+        dones = 1 - dones
+
+        # predict Q-values for the initial states.
+        q_out = self.forward(states)
+        q_a = q_out.gather(1, actions)  # state_action_values
+
+        max_q_prime = self._calc_max_q_prime(next_states)
+
+        # compute the expected Q values (expected_state_action_values)
+        target = rewards + self.gamma * max_q_prime * dones
+
+        losses = F.smooth_l1_loss(q_a, target)
+
+        # update the weights.
+        self._update_weights(losses)
+
+        # return losses
+        return losses.mean().item()
+
+    @abstractmethod
+    def _calc_max_q_prime(self: Self, next_states) -> float:
+        raise NotImplementedError
 
     @classmethod
     @property

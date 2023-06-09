@@ -12,7 +12,7 @@ class Config:
     # environment parameters
     frame_skip: int = 4
     input_dim: int = 64
-    num_stacked_frames: int = 4
+    frame_stack_gap: int = 4
     step_penalty: float = 0.01
 
     # agent parameters

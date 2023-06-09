@@ -21,4 +21,4 @@ class DuellingDQNAgent(BaseAgent):
             self.forward(next_states), [1, self.num_actions - 1], dim=1
         )
         max_q_prime = value + advantage - advantage.mean(dim=1, keepdim=True)
-        return max_q_prime.squeeze().detach()
+        return max_q_prime.max(dim=1)[0].unsqueeze(1).detach()

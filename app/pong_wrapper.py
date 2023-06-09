@@ -27,7 +27,7 @@ class PongWrapper(gym.Wrapper):
         state_dims: tuple[int, int],
         skip: int = 1,
         step_penalty: float = 0,
-        state_buffer_len: int = 1,
+        stack_size: int = 1,
     ):
         env = gym.make(env_name, render_mode="rgb_array")
         env.metadata["render_fps"] = 25
@@ -36,8 +36,8 @@ class PongWrapper(gym.Wrapper):
         self.action_space = Discrete(len(self.valid_actions))
         self.skip = skip
         self.step_penalty = step_penalty
-        self.state_buffer_len = state_buffer_len
-        self.state_buffer = deque([], maxlen=self.state_buffer_len)
+        self.stack_size = stack_size
+        self.state_buffer = deque([], maxlen=self.stack_size)
 
     def step(self: Self, action: int) -> Step:
         action = self.default_action if action not in self.valid_actions else action
@@ -61,15 +61,12 @@ class PongWrapper(gym.Wrapper):
 
     def reset(self: Self) -> np.ndarray:
         state = self.__preprocess_state(self.env.reset()[0], self.state_dims)
-        buffer_fill = [state] * self.state_buffer_len
-        self.state_buffer = deque(buffer_fill, maxlen=self.state_buffer_len)
+        self.state_buffer = deque([state] * self.stack_size, maxlen=self.stack_size)
         return self.__stack_frames(self.state_buffer)
 
     @staticmethod
     def __stack_frames(state_buffer: deque) -> np.ndarray:
-        """Stacks first and last frame from the state buffer."""
-        selected_frames = [state_buffer[-1], state_buffer[0]]
-        return np.concatenate(selected_frames, axis=1)
+        return np.concatenate(state_buffer, axis=1)
 
     @staticmethod
     def __preprocess_state(state, state_dims: tuple[int, int]) -> np.ndarray:

@@ -96,7 +96,7 @@ def loop(config: Config):
     # calculate input shape
     input_shape: Final[tuple[int, int, int]] = (
         1,
-        config.input_dim * 2,  # we always stack two frames
+        config.input_dim * config.num_stacked_frames,
         config.input_dim,
     )
 
@@ -106,7 +106,7 @@ def loop(config: Config):
         state_dims=(config.input_dim, config.input_dim),
         skip=config.frame_skip,
         step_penalty=config.step_penalty,
-        state_buffer_len=config.frame_stack_gap,
+        stack_size=config.num_stacked_frames,
     )
 
     # create the policy network

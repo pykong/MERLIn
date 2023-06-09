@@ -16,7 +16,7 @@ class Config:
     step_penalty: float = 0.0
 
     # agent parameters
-    agent_name: str = "double_dqn"
+    agent_name: str = "duelling_dqn"
     load_agent: bool = False
     alpha: float = 0.0001
     epsilon_min: float = 0.1

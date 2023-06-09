@@ -19,4 +19,4 @@ echo "$SYNC_UP_PATTERN" | tr ',' '\n' > "$include_file"
 
 # Command
 # Use --dry-run for debugging purposes
-rsync -avz --delete --files-from="$include_file" "$LOCAL_DIR" "$REMOTE_USER"@"$REMOTE_IP":"$REMOTE_DIR"
+rsync -avzr --delete --files-from="$include_file" "$LOCAL_DIR" "$REMOTE_USER"@"$REMOTE_IP":"$REMOTE_DIR"

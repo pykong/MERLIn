@@ -44,19 +44,19 @@ class DDQNCNNAgent(BaseAgent):
         # adapted from: https://github.com/KaleabTessera/DQN-Atari#dqn-neurips-architecture-implementation
         model = nn.Sequential(
             # conv1 - only single conv layer
-            nn.Conv2d(channel_dim, 32, kernel_size=4, stride=2, padding=1),
-            nn.BatchNorm2d(32),
+            nn.Conv2d(channel_dim, 16, kernel_size=4, stride=2, padding=1),
+            nn.BatchNorm2d(16),
             nn.LeakyReLU(),
             # fc 1 - 512 output nodes versus 256
             nn.Flatten(),
-            nn.Linear(32 * num_flat_features, 384),
+            nn.Linear(16 * num_flat_features, 256),
             nn.LeakyReLU(),
-            nn.Dropout(0.5),
+            # nn.Dropout(0.5),
             # fc 2 - additional layer in contrast to NeuroIPS paper
-            nn.Linear(384, 64),
+            nn.Linear(256, 32),
             nn.ELU(),
             # fc 3 - additional layer in contrast to NeuroIPS paper
-            nn.Linear(64, 16),
+            nn.Linear(32, 16),
             nn.ReLU(),
             # output
             nn.Linear(16, num_actions),

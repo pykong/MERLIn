@@ -23,8 +23,9 @@ class ReplayMemory:
 
     def sample(self: Self, batch_size: int) -> list[Transition]:
         sample_size = min(len(self.buffer), batch_size)
-        indices = np.random.choice(len(self.buffer), sample_size, replace=False)
+        indices = np.random.choice(len(self.buffer), sample_size - 1, replace=False)
         batch = [self.buffer[i] for i in indices]
+        batch.append(self.buffer[-1])
         return batch
 
     def __len__(self: Self) -> int:

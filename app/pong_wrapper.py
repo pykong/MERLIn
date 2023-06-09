@@ -56,16 +56,20 @@ class PongWrapper(gym.Wrapper):
             total_reward = -self.step_penalty
 
         self.state_buffer.append(self.__preprocess_state(next_state, self.state_dims))
-        stacked_state = np.concatenate(self.state_buffer, axis=1)
+        stacked_state = self.__stack_frames(self.state_buffer)
         return Step(stacked_state, total_reward, done)
 
     def reset(self: Self) -> np.ndarray:
         state = self.__preprocess_state(self.env.reset()[0], self.state_dims)
         self.state_buffer = deque([state] * self.stack_size, maxlen=self.stack_size)
-        return np.concatenate(self.state_buffer, axis=1)
+        return self.__stack_frames(self.state_buffer)
 
     @staticmethod
-    def __preprocess_state(state, state_dims: tuple[int, int]):
+    def __stack_frames(state_buffer: deque) -> np.ndarray:
+        return np.concatenate(state_buffer, axis=1)
+
+    @staticmethod
+    def __preprocess_state(state, state_dims: tuple[int, int]) -> np.ndarray:
         """Shapes the observation space."""
         state = state[33:194, 16:-16]  # crop irrelevant parts of the image
         state = cv.resize(state, state_dims, interpolation=cv.INTER_AREA)  # downsample

@@ -58,6 +58,9 @@ class BaseAgent(ABC, pl.LightningModule):
         self.batch_size = batch_size
         self.device_: torch.device = get_torch_device()
         self.model = self._make_model(self.state_shape, self.num_actions, self.device_)
+        if torch.cuda.device_count() > 1:
+            logger.log(str(LogLevel.GREEN), "CUDA running on Multi-GPU.")
+            self.model = nn.DataParallel(self.model)
         self.optimizer = optim.RMSprop(
             self.model.parameters(), lr=alpha, weight_decay=weight_decay
         )

@@ -23,7 +23,7 @@ class Config:
     alpha: float = 0.0001
     epsilon_min: float = 0.1
     gamma: float = 0.999  # discount factor gamma
-    memory_size: int = 8192
+    memory_size: int = 5_000
     batch_size: int = 32
 
     # extra agent parameters

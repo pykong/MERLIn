@@ -7,10 +7,10 @@ from typing import Final
 
 import cv2 as cv
 import numpy as np
-from agents import *
+from agents import BaseAgent, agent_registry
 from config import Config
 from gym.wrappers.monitoring import video_recorder as vr
-from nets import *
+from nets import BaseNet, net_registry
 from pong_wrapper import PongWrapper
 from utils.file_utils import ensure_empty_dirs
 from utils.logging import EpisodeLog, EpisodeLogger, LogLevel, logger
@@ -36,15 +36,13 @@ def take_picture_of_state(state: np.ndarray, f_name: Path) -> None:
 
 def make_net(name: str) -> BaseNet:
     """Factory method to create neural net."""
-    registry = [BenNet]
-    net = [net for net in registry if net.name == name][0]
+    net = [net for net in net_registry if net.name == name][0]
     return net()
 
 
 def make_agent(agent_name: str, net_name: str, load_agent: bool, **kwargs) -> BaseAgent:
     """Factory method to create agent."""
-    registry = [VanillaDQNAgent, DoubleDQNAgent, DuellingDQNAgent]
-    agent_ = [a for a in registry if a.name == agent_name][0]
+    agent_ = [a for a in agent_registry if a.name == agent_name][0]
     kwargs["net"] = make_net(net_name)  # TODO: This is dirty
     agent = agent_(**kwargs)
     if load_agent:

@@ -8,6 +8,7 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 import torch.optim as optim
+from nets._base_net import BaseNet
 from torch import nn
 from utils.logging import LogLevel, logger
 from utils.replay_memory import ReplayMemory, Transition
@@ -39,6 +40,7 @@ class BaseAgent(ABC, pl.LightningModule):
         self: Self,
         state_shape: tuple[int, int, int],
         action_space: int,
+        net: BaseNet,
         alpha: float = 0.001,
         epsilon: float = 1.0,
         epsilon_min: float = 0.01,
@@ -58,55 +60,14 @@ class BaseAgent(ABC, pl.LightningModule):
         self.memory = ReplayMemory(capacity=memory_size)
         self.batch_size = batch_size
         self.device_: torch.device = get_torch_device()
-        self.model = self._make_model(self.state_shape, self.num_actions, self.device_)
+        self.net_name = net.name
+        self.model = net.build_net(self.state_shape, self.num_actions, self.device_)
         if torch.cuda.device_count() > 1:
             logger.log(str(LogLevel.GREEN), "CUDA running on Multi-GPU.")
             self.model = nn.DataParallel(self.model)
         self.optimizer = optim.RMSprop(
             self.model.parameters(), lr=alpha, weight_decay=weight_decay
         )
-
-    def _make_model(
-        self, state_shape: tuple[int, int, int], num_actions: int, device: torch.device
-    ) -> nn.Sequential:
-        channel_dim, x_dim, y_dim = state_shape  # unpack dimensions
-
-        # calculate the size of the output of the last conv layer:
-        def calc_dim(dim: int, kernel_size: int, stride: int, padding: int) -> int:
-            return ((dim + 2 * padding - kernel_size) // stride) + 1
-
-        h_out_1 = calc_dim(x_dim, 8, 4, 1)
-        w_out_1 = calc_dim(y_dim, 8, 4, 1)
-        h_out_2 = calc_dim(h_out_1, 4, 2, 1)
-        w_out_2 = calc_dim(w_out_1, 4, 2, 1)
-        num_flat_features = h_out_2 * w_out_2
-
-        # adapted from: https://github.com/KaleabTessera/DQN-Atari#dqn-neurips-architecture-implementation
-        model = nn.Sequential(
-            # conv1
-            nn.Conv2d(channel_dim, 16, kernel_size=8, stride=4, padding=1),
-            nn.BatchNorm2d(16),
-            nn.LeakyReLU(),
-            # conv2
-            nn.Conv2d(16, 32, kernel_size=4, stride=2, padding=1),
-            nn.BatchNorm2d(32),
-            nn.LeakyReLU(),
-            # fc 1
-            nn.Flatten(),
-            nn.Linear(32 * num_flat_features, 256),
-            nn.LeakyReLU(),
-            # nn.Dropout(0.5),
-            # fc 2 - additional layer in contrast to NeuroIPS paper
-            nn.Linear(256, 32),
-            nn.ELU(),
-            # fc 3 - additional layer in contrast to NeuroIPS paper
-            nn.Linear(32, 16),
-            nn.ReLU(),
-            # output
-            nn.Linear(16, num_actions),
-        )
-        model.to(device)
-        return model
 
     def replay(self: Self) -> None:
         # sample memory
@@ -212,4 +173,5 @@ class BaseAgent(ABC, pl.LightningModule):
         self.load_state_dict(torch.load(name))
 
     def save(self: Self, name: Path) -> None:
+        # TODO: put net into file name
         torch.save(self.state_dict(), name)

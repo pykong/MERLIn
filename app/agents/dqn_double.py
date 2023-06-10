@@ -2,7 +2,7 @@ from copy import deepcopy
 from typing import Self
 
 import torch
-from agents.base_agent import BaseAgent
+from agents._base_agent import BaseAgent
 from torch import nn
 
 

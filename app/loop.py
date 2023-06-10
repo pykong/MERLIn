@@ -7,12 +7,14 @@ from typing import Final
 
 import cv2 as cv
 import numpy as np
-from agents.base_agent import BaseAgent
+from agents._base_agent import BaseAgent
 from agents.dqn_double import DoubleDQNAgent
 from agents.dqn_duelling import DuellingDQNAgent
 from agents.dqn_vanilla import VanillaDQNAgent
 from config import Config
 from gym.wrappers.monitoring import video_recorder as vr
+from nets._base_net import BaseNet
+from nets.ben_net import BenNet
 from pong_wrapper import PongWrapper
 from utils.file_utils import ensure_empty_dirs
 from utils.logging import EpisodeLog, EpisodeLogger, LogLevel, logger
@@ -36,18 +38,26 @@ def take_picture_of_state(state: np.ndarray, f_name: Path) -> None:
     cv.imwrite(str(f_name), state_transposed)
 
 
-def make_agent(name: str, load_agent: bool, **kwargs) -> BaseAgent:
+def make_net(name: str) -> BaseNet:
+    """Factory method to create neural net."""
+    registry = [BenNet]
+    net = [net for net in registry if net.name == name][0]
+    return net()
+
+
+def make_agent(agent_name: str, net_name: str, load_agent: bool, **kwargs) -> BaseAgent:
     """Factory method to create agent."""
     registry = [VanillaDQNAgent, DoubleDQNAgent, DuellingDQNAgent]
-    agent_ = [a for a in registry if a.name == name][0]
+    agent_ = [a for a in registry if a.name == agent_name][0]
+    kwargs["net"] = make_net(net_name)  # TODO: This is dirty
     agent = agent_(**kwargs)
     if load_agent:
         models = CHECKPOINTS_DIR.glob("*.pth")
         env = "pong"  # TODO: Dynamize env name
-        pattern = re.compile(f"{env}_{name}_\\d+\\.pth")
+        pattern = re.compile(f"{env}_{agent_name}_{net_name}\\d+\\.pth")
         models = [m for m in models if pattern.match(m.name)]
         if not models:
-            logger.log(str(LogLevel.GREEN), f"No checkpoint found for: {name}")
+            logger.log(str(LogLevel.GREEN), f"No checkpoint found for: {agent_name}")
         else:
             sorted(models)
             latest_model = models[0]
@@ -114,6 +124,7 @@ def loop(config: Config):
     # create the policy network
     agent: BaseAgent = make_agent(
         config.agent_name,
+        config.net_name,
         config.load_agent,
         state_shape=input_shape,
         action_space=env.action_space.n,  # type: ignore

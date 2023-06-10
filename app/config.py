@@ -17,6 +17,7 @@ class Config:
 
     # agent parameters
     agent_name: str = "duelling_dqn"
+    net_name: str = "ben_net"
     load_agent: bool = False
     alpha: float = 0.0001
     epsilon_min: float = 0.1

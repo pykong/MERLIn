@@ -1,8 +1,6 @@
 from typing import Self
 
-import torch
-from agents.base_agent import BaseAgent
-from torch import nn
+from agents._base_agent import BaseAgent
 
 
 class VanillaDQNAgent(BaseAgent):

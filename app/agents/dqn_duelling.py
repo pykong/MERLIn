@@ -5,7 +5,7 @@ import lightning.pytorch as pl
 import numpy as np
 import torch
 import torch.nn.functional as F
-from agents.base_agent import BaseAgent
+from agents._base_agent import BaseAgent
 from torch import nn
 from utils.logging import LogLevel, logger
 from utils.replay_memory import ReplayMemory, Transition

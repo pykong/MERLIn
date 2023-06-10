@@ -11,8 +11,7 @@ license = "MIT"
     gym = {extras = ["atari"], version = "*"}
     autorom = {extras = ["accept-rom-license"], version = "*"}
     opencv-python = "*"
-    # nvidia-cudnn-cu11 = "*"
-    torch = "*"
+    torch = "2.0.0"  # update once solved: https://github.com/pytorch/pytorch/issues/100974
     lightning = {extras = ["extra"], version = "*"}
     moviepy = "^1.0.3"
     loguru = "^0.7.0"

@@ -34,4 +34,4 @@ class Config:
 
     # debugging
     verbose: bool = False
-    save_state_img: bool = False
+    save_state_img: bool = True

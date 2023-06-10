@@ -1,35 +1,59 @@
+from abc import ABC, abstractmethod
 from collections import deque
-from typing import Final, NamedTuple, Self, Set
+from typing import Self
 
 import cv2 as cv
 import gym
 import numpy as np
 from gym.spaces import Discrete
 
-__all__ = ["PongWrapper"]
+from .step import Step
 
 
-class Step(NamedTuple):
-    state: np.ndarray
-    reward: float
-    done: bool
+class BaseEnvWrapper(gym.Wrapper, ABC):
+    @classmethod
+    @property
+    @abstractmethod
+    def name(cls) -> str:
+        """String to represent wrapper to the outside."""
+        raise NotImplementedError()
 
+    @classmethod
+    @property
+    @abstractmethod
+    def env_name(cls) -> str:
+        """String to identify Atari environment."""
+        raise NotImplementedError()
 
-class PongWrapper(gym.Wrapper):
-    # https://gymnasium.farama.org/environments/atari/pong/#actions
-    name: Final[str] = "pong"
-    default_action: Final[int] = 0
-    valid_actions: Final[Set[int]] = {0, 1, 2, 3}
+    @classmethod
+    @property
+    @abstractmethod
+    def default_action(cls) -> int:
+        """Default action to chose."""
+        raise NotImplementedError()
+
+    @classmethod
+    @property
+    @abstractmethod
+    def valid_actions(cls) -> set[int]:
+        """Set of valid actions to chose."""
+        raise NotImplementedError()
+
+    @classmethod
+    @abstractmethod
+    def _crop_state(cls, state: np.ndarray) -> np.ndarray:
+        """Crop state to informative region."""
+        # TODO: Make getter returning slice
+        raise NotImplementedError()
 
     def __init__(
         self: Self,
-        env_name: str,
         state_dims: tuple[int, int],
         skip: int = 1,
         step_penalty: float = 0,
         stack_size: int = 1,
     ):
-        env = gym.make(env_name, render_mode="rgb_array")
+        env = gym.make(self.env_name, render_mode="rgb_array")
         env.metadata["render_fps"] = 25
         super().__init__(env)
         self.state_dims = state_dims
@@ -68,10 +92,10 @@ class PongWrapper(gym.Wrapper):
     def __stack_frames(state_buffer: deque) -> np.ndarray:
         return np.concatenate(state_buffer, axis=1)
 
-    @staticmethod
-    def __preprocess_state(state, state_dims: tuple[int, int]) -> np.ndarray:
+    @classmethod
+    def __preprocess_state(cls, state, state_dims: tuple[int, int]) -> np.ndarray:
         """Shapes the observation space."""
-        state = state[33:194, 16:-16]  # crop irrelevant parts of the image
+        state = cls._crop_state(state)
         state = cv.resize(state, state_dims, interpolation=cv.INTER_AREA)  # downsample
         state = cv.cvtColor(state, cv.COLOR_BGR2GRAY)  # remove channrl dim
         # TODO: put threshold value into constant

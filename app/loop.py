@@ -9,9 +9,9 @@ import cv2 as cv
 import numpy as np
 from agents import BaseAgent, agent_registry
 from config import Config
+from envs import BaseEnvWrapper, PongEnvWrapper
 from gym.wrappers.monitoring import video_recorder as vr
 from nets import BaseNet, net_registry
-from pong_wrapper import PongWrapper
 from utils.file_utils import ensure_empty_dirs
 from utils.logging import EpisodeLog, EpisodeLogger, LogLevel, logger
 from utils.replay_memory import Transition
@@ -61,7 +61,10 @@ def make_agent(agent_name: str, net_name: str, load_agent: bool, **kwargs) -> Ba
 
 
 def run_episode(
-    agent, env: PongWrapper, episode_log: EpisodeLog, recorder: vr.VideoRecorder | None
+    agent,
+    env: BaseEnvWrapper,
+    episode_log: EpisodeLog,
+    recorder: vr.VideoRecorder | None,
 ) -> None:
     # reset environment
     state = env.reset()
@@ -107,8 +110,7 @@ def loop(config: Config):
     )
 
     # create environment
-    env = PongWrapper(
-        "ALE/Pong-v5",
+    env = PongEnvWrapper(
         state_dims=(config.input_dim, config.input_dim),
         skip=config.frame_skip,
         step_penalty=config.step_penalty,

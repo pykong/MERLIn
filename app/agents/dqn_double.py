@@ -2,7 +2,8 @@ from copy import deepcopy
 from typing import Self
 
 import torch
-from agents._base_agent import BaseAgent
+
+from ._base_agent import BaseAgent
 
 
 class DoubleDQNAgent(BaseAgent):

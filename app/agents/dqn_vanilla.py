@@ -1,6 +1,6 @@
 from typing import Self
 
-from agents._base_agent import BaseAgent
+from ._base_agent import BaseAgent
 
 
 class VanillaDQNAgent(BaseAgent):

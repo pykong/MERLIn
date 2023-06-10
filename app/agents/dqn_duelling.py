@@ -1,7 +1,8 @@
 from typing import Final, Self
 
 import torch
-from agents._base_agent import BaseAgent
+
+from ._base_agent import BaseAgent
 
 
 class DuellingDQNAgent(BaseAgent):

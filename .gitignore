@@ -155,5 +155,6 @@ dmypy.json
 # Custom/project specific
 roms/
 results/
+experiments/
 *.h5
 *.pth

@@ -1,6 +1,7 @@
 import torch
-from nets._base_net import BaseNet
 from torch import nn
+
+from ._base_net import BaseNet
 
 
 class BenNet(BaseNet):

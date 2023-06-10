@@ -8,10 +8,10 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 import torch.optim as optim
-from nets._base_net import BaseNet
 from torch import nn
-from utils.logging import LogLevel, logger
 
+from ..nets._base_net import BaseNet
+from ..utils.logging import LogLevel, logger
 from .replay_memory import ReplayMemory, Transition
 
 

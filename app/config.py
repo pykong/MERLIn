@@ -6,7 +6,7 @@ class Config:
     """A configuration object holding all parameters for an experiment."""
 
     # training parameters
-    max_episodes: int = 3
+    max_episodes: int = 5_000
     start_epsilon_decay: int = 1_000
 
     # environment parameters
@@ -20,14 +20,14 @@ class Config:
     agent_name: str = "duelling_dqn"
     net_name: str = "ben_net"
     load_agent: bool = False
-    alpha: float = 0.0001
+    alpha: float = 0.00005
     epsilon_min: float = 0.1
-    gamma: float = 0.999  # discount factor gamma
-    memory_size: int = 5_000
+    gamma: float = 0.9995  # discount factor gamma
+    memory_size: int = 8192
     batch_size: int = 32
 
     # extra agent parameters
-    target_net_update_interval: int = 1024
+    target_net_update_interval: int = 2048
 
     # save parameter
     model_save_interval: int = 2048

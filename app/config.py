@@ -27,7 +27,7 @@ class Config:
     batch_size: int = 32
 
     # extra agent parameters
-    target_net_update_interval: int = 2048
+    target_net_update_interval: int = 1024
 
     # save parameter
     model_save_interval: int = 2048

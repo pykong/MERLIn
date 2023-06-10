@@ -7,7 +7,6 @@ license = "MIT"
 
     [tool.poetry.dependencies]
     python = ">=3.11,<3.12"
-    typer = "*"
     gym = {extras = ["atari"], version = "*"}
     autorom = {extras = ["accept-rom-license"], version = "*"}
     opencv-python = "*"

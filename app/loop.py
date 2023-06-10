@@ -70,6 +70,7 @@ def run_episode(
     env: BaseEnvWrapper,
     episode_log: EpisodeLog,
     recorder: vr.VideoRecorder | None,
+    save_img: bool = False,
 ) -> None:
     # reset environment
     state = env.reset()
@@ -97,7 +98,7 @@ def run_episode(
         episode_log.reward += reward
 
         # take picture of state randomly
-        if config.save_state_img and random.choices([True, False], [1, 512], k=1)[0]:
+        if save_img and random.choices([True, False], [1, 512], k=1)[0]:
             img_file = IMG_DIR / f"{episode_log.episode}_{episode_log.steps}.png"
             take_picture_of_state(state, img_file)
 
@@ -155,7 +156,7 @@ def loop(config: Config):
             recorder = vr.VideoRecorder(env, video_path)
 
         # run episode
-        run_episode(agent, env, episode_log, recorder)
+        run_episode(agent, env, episode_log, recorder, config.save_state_img)
 
         # log episode
         episode_log.stop_timer()
@@ -177,9 +178,3 @@ def loop(config: Config):
         # close the video recorder
         if recorder:
             recorder.close()
-
-
-if __name__ == "__main__":
-    ensure_empty_dirs(CHECKPOINTS_DIR, LOG_DIR, VIDEO_DIR, IMG_DIR)
-    config = Config()
-    loop(config)

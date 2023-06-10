@@ -20,9 +20,9 @@ class Config:
     agent_name: str = "duelling_dqn"
     net_name: str = "ben_net"
     load_agent: bool = False
-    alpha: float = 0.00005
+    alpha: float = 0.0001
     epsilon_min: float = 0.1
-    gamma: float = 0.9995  # discount factor gamma
+    gamma: float = 0.999  # discount factor gamma
     memory_size: int = 8192
     batch_size: int = 32
 

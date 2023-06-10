@@ -7,14 +7,10 @@ from typing import Final
 
 import cv2 as cv
 import numpy as np
-from agents._base_agent import BaseAgent
-from agents.dqn_double import DoubleDQNAgent
-from agents.dqn_duelling import DuellingDQNAgent
-from agents.dqn_vanilla import VanillaDQNAgent
+from agents import *
 from config import Config
 from gym.wrappers.monitoring import video_recorder as vr
-from nets._base_net import BaseNet
-from nets.ben_net import BenNet
+from nets import *
 from pong_wrapper import PongWrapper
 from utils.file_utils import ensure_empty_dirs
 from utils.logging import EpisodeLog, EpisodeLogger, LogLevel, logger

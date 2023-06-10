@@ -23,10 +23,11 @@ RANDOM_SEED: Final[int] = 0
 np.random.seed(RANDOM_SEED)
 
 # checkpoints dir
-CHECKPOINTS_DIR: Final[Path] = Path("checkpoints")
-LOG_DIR: Final[Path] = Path("log")
-VIDEO_DIR: Final[Path] = Path("video")
-IMG_DIR: Final[Path] = Path("img")
+RESULTS_DIR: Final[Path] = Path("results")
+CHECKPOINTS_DIR: Final[Path] = RESULTS_DIR / "checkpoints"
+LOG_DIR: Final[Path] = RESULTS_DIR / "log"
+VIDEO_DIR: Final[Path] = RESULTS_DIR / "video"
+IMG_DIR: Final[Path] = RESULTS_DIR / "img"
 
 
 def take_picture_of_state(state: np.ndarray, f_name: Path) -> None:

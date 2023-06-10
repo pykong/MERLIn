@@ -9,7 +9,7 @@ import cv2 as cv
 import numpy as np
 from agents import BaseAgent, agent_registry
 from config import Config
-from envs import BaseEnvWrapper, PongEnvWrapper
+from envs import BaseEnvWrapper, env_registry
 from gym.wrappers.monitoring import video_recorder as vr
 from nets import BaseNet, net_registry
 from utils.file_utils import ensure_empty_dirs
@@ -32,6 +32,11 @@ def take_picture_of_state(state: np.ndarray, f_name: Path) -> None:
     state_transposed = np.transpose(state, (1, 2, 0))
     state_transposed *= 255  # enhance pixel brightness
     cv.imwrite(str(f_name), state_transposed)
+
+
+def make_env(name: str, **kwargs) -> BaseEnvWrapper:
+    env_ = [e for e in env_registry if e.name == name][0]
+    return env_(**kwargs)
 
 
 def make_net(name: str) -> BaseNet:
@@ -110,7 +115,8 @@ def loop(config: Config):
     )
 
     # create environment
-    env = PongEnvWrapper(
+    env = make_env(
+        config.env_name,
         state_dims=(config.input_dim, config.input_dim),
         skip=config.frame_skip,
         step_penalty=config.step_penalty,

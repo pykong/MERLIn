@@ -8,13 +8,13 @@ from typing import Final
 import cv2 as cv
 import numpy as np
 from agents import BaseAgent, agent_registry
+from agents.replay_memory import Transition
 from config import Config
 from envs import BaseEnvWrapper, env_registry
 from gym.wrappers.monitoring import video_recorder as vr
 from nets import BaseNet, net_registry
 from utils.file_utils import ensure_empty_dirs
 from utils.logging import EpisodeLog, EpisodeLogger, LogLevel, logger
-from utils.replay_memory import Transition
 
 # set random seeds for reproducibility
 RANDOM_SEED: Final[int] = 0

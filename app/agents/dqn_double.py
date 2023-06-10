@@ -3,7 +3,6 @@ from typing import Self
 
 import torch
 from agents._base_agent import BaseAgent
-from torch import nn
 
 
 class DoubleDQNAgent(BaseAgent):

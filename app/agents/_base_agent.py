@@ -11,7 +11,8 @@ import torch.optim as optim
 from nets._base_net import BaseNet
 from torch import nn
 from utils.logging import LogLevel, logger
-from utils.replay_memory import ReplayMemory, Transition
+
+from .replay_memory import ReplayMemory, Transition
 
 
 class Minibatch(NamedTuple):

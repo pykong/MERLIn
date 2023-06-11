@@ -37,27 +37,17 @@ ax1.set_ylabel("Reward")
 # Create a second y-axis for epsilon, sharing the x-axis with the first one
 ax2 = ax1.twinx()
 
-# Plot epsilon on the second y-axis, taking mean of the first run for each agent as representative epsilon value
-for j in range(1, 3):
-    agent = all_data[(all_data["agent"] == f"Agent {j}") & (all_data["run"] == "Run 1")]
-    sns.lineplot(
-        data=agent,
-        x="episode",
-        y="epsilon",
-        color="green" if j == 1 else "blue",
-        ax=ax2,
-        label=f"Epsilon Agent {j}",
-    )
+# Plot epsilon on the second y-axis, using the epsilon values from the first agent's first run as representative
+agent = all_data[(all_data["agent"] == "Agent 1") & (all_data["run"] == "Run 1")]
+sns.lineplot(data=agent, x="episode", y="epsilon", color="green", ax=ax2, legend=False)
 
 ax2.set_ylabel("Epsilon")
 
 # get the handles and labels for all lines
 handles, labels = ax1.get_legend_handles_labels()
-handles2, labels2 = ax2.get_legend_handles_labels()
 
-# add epsilon line to the legend
-handles += handles2
-labels += labels2
+# Manually add the Epsilon label
+labels += ["Epsilon"]
 
 # create a new legend with all lines
 ax1.legend(handles=handles, labels=labels)

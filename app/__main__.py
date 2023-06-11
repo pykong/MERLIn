@@ -1,5 +1,6 @@
 import json
 import sys
+from dataclasses import asdict
 
 sys.dont_write_bytecode = True
 
@@ -20,10 +21,16 @@ def load_experiments() -> Iterable[Config]:
         yield Config(**json_dict)
 
 
+def save_experiment(config: Config, file_path: Path) -> None:
+    with open(file_path, "w") as f:
+        json.dump(asdict(config), f, indent=4)
+
+
 def train():
     for i, experiment in enumerate(load_experiments()):
         print(f"Conducting experiment with: {experiment}")  # TODO: Improve logging
         result_dir = RESULTS_DIR / str(i)  # TODO: Make file name more speaking
+        save_experiment(experiment, result_dir / "experiment.json")  # save parameters
         loop(experiment, result_dir)
 
 

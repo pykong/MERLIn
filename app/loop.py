@@ -96,7 +96,7 @@ def loop(config: Config, result_dir: Path):
     model_dir: Final[Path] = result_dir / "model"
     video_dir: Final[Path] = result_dir / "video"
     img_dir: Final[Path] = result_dir / "img"
-    ensure_empty_dirs(model_dir, video_dir, img_dir)
+    ensure_empty_dirs(result_dir, model_dir, video_dir, img_dir)
 
     # calculate input shape
     input_shape: Final[tuple[int, int, int]] = (

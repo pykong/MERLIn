@@ -30,11 +30,25 @@ print(desc_stats["reward"])
 
 # %%
 
-# plot smoothed reward over time and save the plot to an SVG file
-sns.lineplot(data=all_data, x="episode", y="reward", hue="agent")
-plt.title("Reward over time")
-plt.axhline(0, color="grey", linestyle="--", linewidth=0.5)
-plt.savefig("out/smoothed_reward_over_time.svg")
+# create a figure and a first axis for the reward
+fig, ax1 = plt.subplots()
+
+# plot the reward on the first y-axis
+sns.lineplot(data=all_data, x="episode", y="reward", hue="agent", ax=ax1)
+
+# add a horizontal line at y=0
+ax1.axhline(0, color="grey", linestyle="--", linewidth=0.5)
+ax1.set_ylabel("Reward")
+
+# create a second y-axis for epsilon, sharing the x-axis with the first one
+ax2 = ax1.twinx()
+
+# plot epsilon on the second y-axis
+sns.lineplot(data=agent1, x="episode", y="epsilon", color="green", ax=ax2)
+ax2.set_ylabel("Epsilon")
+
+plt.title("Reward and epsilon over time")
+plt.savefig("out/smoothed_reward_epsilon_over_time.svg")
 plt.show()
 
 

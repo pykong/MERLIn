@@ -3,6 +3,9 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
+# window size for reward smoothing
+WINDOW_SIZE = 10  # Adjust this value based on your data
+
 # Initialize a list to hold all dataframes
 all_data = []
 
@@ -17,8 +20,7 @@ for i in range(1, 4):
         agent["agent"] = f"Agent {j}"
         agent["run"] = f"Run {i}"
         # Smooth the reward curve for this run
-        window_size = 10  # Adjust this value based on your data
-        agent["reward_smooth"] = agent["reward"].rolling(window_size).mean()
+        agent["reward_smooth"] = agent["reward"].rolling(WINDOW_SIZE).mean()
         all_data.append(agent)
 
 # Combine all dataframes

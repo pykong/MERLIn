@@ -20,6 +20,20 @@ agent2["agent"] = "Agent 2"
 all_data = pd.concat([agent1, agent2])
 
 # %%
+# Reset index before smoothing operation
+all_data.reset_index(drop=True, inplace=True)
+
+# Smooth the reward and epsilon curves
+window_size = 20  # Adjust this value based on your data
+all_data["reward_smooth"] = (
+    all_data.groupby("agent")["reward"]
+    .rolling(window_size)
+    .mean()
+    .reset_index(0, drop=True)
+)
+
+
+# %%
 
 # calculate descriptive statistics
 desc_stats = all_data.groupby("agent").describe()
@@ -34,7 +48,8 @@ print(desc_stats["reward"])
 fig, ax1 = plt.subplots()
 
 # plot the reward on the first y-axis
-sns.lineplot(data=all_data, x="episode", y="reward", hue="agent", ax=ax1)
+# sns.lineplot(data=all_data, x="episode", y="reward", hue="agent", ax=ax1)
+sns.lineplot(data=all_data, x="episode", y="reward_smooth", hue="agent", ax=ax1)
 
 # add a horizontal line at y=0
 ax1.axhline(0, color="grey", linestyle="--", linewidth=0.5)

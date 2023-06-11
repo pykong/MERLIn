@@ -60,7 +60,13 @@ ax2 = ax1.twinx()
 
 # plot epsilon on the second y-axis
 epsilon_line = sns.lineplot(
-    data=agent1, x="episode", y="epsilon", color="green", ax=ax2, label="Epsilon"
+    data=agent1,
+    x="episode",
+    y="epsilon",
+    color="green",
+    ax=ax2,
+    label="Epsilon",
+    legend=False,
 )
 ax2.set_ylabel("Epsilon")
 

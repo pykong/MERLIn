@@ -1,6 +1,5 @@
 import os
 import random
-import re
 import sys
 from pathlib import Path
 from typing import Final
@@ -15,18 +14,11 @@ from .config import Config
 from .envs import BaseEnvWrapper, env_registry
 from .nets import BaseNet, net_registry
 from .utils.file_utils import ensure_empty_dirs
-from .utils.logging import EpisodeLog, EpisodeLogger, LogLevel, logger
+from .utils.logging import EpisodeLog, EpisodeLogger, LogLevel
 
 # set random seeds for reproducibility
 RANDOM_SEED: Final[int] = 0
 np.random.seed(RANDOM_SEED)
-
-# checkpoints dir
-RESULTS_DIR: Final[Path] = Path("results")
-CHECKPOINTS_DIR: Final[Path] = RESULTS_DIR / "checkpoints"
-LOG_DIR: Final[Path] = RESULTS_DIR / "log"
-VIDEO_DIR: Final[Path] = RESULTS_DIR / "video"
-IMG_DIR: Final[Path] = RESULTS_DIR / "img"
 
 
 def take_picture_of_state(state: np.ndarray, f_name: Path) -> None:
@@ -52,17 +44,7 @@ def make_agent(agent_name: str, net_name: str, load_agent: bool, **kwargs) -> Ba
     kwargs["net"] = make_net(net_name)  # TODO: This is dirty
     agent = agent_(**kwargs)
     if load_agent:
-        models = CHECKPOINTS_DIR.glob("*.pth")
-        env = "pong"  # TODO: Dynamize env name
-        pattern = re.compile(f"{env}_{agent_name}_{net_name}\\d+\\.pth")
-        models = [m for m in models if pattern.match(m.name)]
-        if not models:
-            logger.log(str(LogLevel.GREEN), f"No checkpoint found for: {agent_name}")
-        else:
-            sorted(models)
-            latest_model = models[0]
-            agent.load(latest_model)
-            logger.log(str(LogLevel.GREEN), f"Loading checkpoint: {latest_model.name}")
+        raise NotImplementedError("Loading models currently not implemented.")
     return agent
 
 
@@ -71,6 +53,7 @@ def run_episode(
     env: BaseEnvWrapper,
     episode_log: EpisodeLog,
     recorder: vr.VideoRecorder | None,
+    img_dir: Path,
     save_img: bool = False,
 ) -> None:
     # reset environment
@@ -100,14 +83,21 @@ def run_episode(
 
         # take picture of state randomly
         if save_img and random.choices([True, False], [1, 512], k=1)[0]:
-            img_file = IMG_DIR / f"{episode_log.episode}_{episode_log.steps}.png"
+            img_file = img_dir / f"{episode_log.episode}_{episode_log.steps}.png"
             take_picture_of_state(state, img_file)
 
 
-def loop(config: Config):
+def loop(config: Config, result_dir: Path):
     # suppress moviepy output: ultimata ratio :-|
     if not config.verbose:
         sys.stdout = open(os.devnull, "w")
+
+    # define and prepare result dirs
+    model_dir: Final[Path] = result_dir / "model"
+    log_dir: Final[Path] = result_dir / "log"
+    video_dir: Final[Path] = result_dir / "video"
+    img_dir: Final[Path] = result_dir / "img"
+    ensure_empty_dirs(model_dir, log_dir, video_dir, img_dir)
 
     # calculate input shape
     input_shape: Final[tuple[int, int, int]] = (
@@ -141,7 +131,7 @@ def loop(config: Config):
     )
 
     # init logger
-    logger = EpisodeLogger(log_file=LOG_DIR / f"{env.name}_{agent.name}.csv")
+    logger = EpisodeLogger(log_file=log_dir / f"{env.name}_{agent.name}.csv")
 
     # run main loop
     for episode in range(1, config.max_episodes + 1):
@@ -152,12 +142,12 @@ def loop(config: Config):
         # set up the video recorder
         recorder = None
         if episode % config.video_record_interval == 0:
-            video_path = str(VIDEO_DIR / f"{env.name}_{agent.name}_{episode}.mp4")
+            video_path = str(video_dir / f"{env.name}_{agent.name}_{episode}.mp4")
             logger.log(f"Recording video: {video_path}", LogLevel.VIDEO)
             recorder = vr.VideoRecorder(env, video_path)
 
         # run episode
-        run_episode(agent, env, episode_log, recorder, config.save_state_img)
+        run_episode(agent, env, episode_log, recorder, img_dir, config.save_state_img)
 
         # log episode
         episode_log.stop_timer()
@@ -172,7 +162,7 @@ def loop(config: Config):
         if episode > 0 and (
             episode % config.model_save_interval == 0 or episode == config.max_episodes
         ):
-            model_file = CHECKPOINTS_DIR / f"{env.name}_{agent.name}_{episode}.pth"
+            model_file = model_dir / f"{env.name}_{agent.name}_{episode}.pth"
             logger.log(f"Saving model: {model_file}", LogLevel.SAVE)
             agent.save(model_file)
 

@@ -7,9 +7,10 @@ from pathlib import Path
 from typing import Final, Iterable
 
 from .config import Config
-from .loop import CHECKPOINTS_DIR, IMG_DIR, LOG_DIR, VIDEO_DIR, ensure_empty_dirs, loop
+from .loop import loop
 
 EXPERIMENT_DIR: Final[Path] = Path("experiments")
+RESULTS_DIR: Final[Path] = Path("results")
 
 
 def load_experiments() -> Iterable[Config]:
@@ -20,10 +21,10 @@ def load_experiments() -> Iterable[Config]:
 
 
 def train():
-    ensure_empty_dirs(CHECKPOINTS_DIR, LOG_DIR, VIDEO_DIR, IMG_DIR)
-    for experiment in load_experiments():
-        print(f"Conducting experiment with: {experiment}")
-        loop(experiment)
+    for i, experiment in enumerate(load_experiments()):
+        print(f"Conducting experiment with: {experiment}")  # TODO: Improve logging
+        result_dir = RESULTS_DIR / str(i)  # TODO: Make file name more speaking
+        loop(experiment, result_dir)
 
 
 if __name__ == "__main__":

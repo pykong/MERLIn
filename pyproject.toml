@@ -17,6 +17,8 @@ packages = [
     lightning = {extras = ["extra"], version = "*"}
     moviepy = "^1.0.3"
     loguru = "^0.7.0"
+    seaborn = "^0.12.2"
+    scipy = "^1.10.1"
 
     [tool.poetry.dev-dependencies]
     black = "*"
@@ -28,6 +30,9 @@ packages = [
 
     [tool.poetry.scripts]
     train = "app.__main__:train"
+
+[tool.poetry.group.dev.dependencies]
+ipykernel = "^6.23.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-from pandas import DataFrame
 from scipy.stats import ttest_ind
 
 # load the data
@@ -60,7 +59,7 @@ ttest_reward = ttest_ind(agent1["reward"], agent2["reward"])
 ttest_steps = ttest_ind(agent1["steps"], agent2["steps"])
 
 # create DataFrame for t-test results
-ttest_results = DataFrame(
+ttest_results = pd.DataFrame(
     {
         "t-statistic": [ttest_reward.statistic, ttest_steps.statistic],
         "p-value": [ttest_reward.pvalue, ttest_steps.pvalue],

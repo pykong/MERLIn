@@ -34,3 +34,19 @@ After defining at least one experiment as described in the previous section,
 start training by simply invoking the following command:
 
 `poetry run train`
+
+### 3. Results
+
+#### Console output
+
+During training the following outputs are continuously logged to the console:
+
+1. episode index
+2. epsilon
+3. reward
+4. train loss
+5. episode steps
+6. total episode time
+
+Special events like model saving or video recording will also be logged if they
+occur.

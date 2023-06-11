@@ -1,5 +1,3 @@
-"""Analyze data for multiple independent training runs per agent.
-"""
 # %%
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -18,22 +16,13 @@ for i in range(1, 4):
         # Add columns to identify the agent and run in each DataFrame
         agent["agent"] = f"Agent {j}"
         agent["run"] = f"Run {i}"
+        # Smooth the reward curve for this run
+        window_size = 10  # Adjust this value based on your data
+        agent["reward_smooth"] = agent["reward"].rolling(window_size).mean()
         all_data.append(agent)
 
 # Combine all dataframes
-all_data = pd.concat(all_data)
-
-# Reset index before smoothing operation
-all_data.reset_index(drop=True, inplace=True)
-
-# Smooth the reward and epsilon curves
-window_size = 10  # Adjust this value based on your data
-all_data["reward_smooth"] = (
-    all_data.groupby(["agent", "run"])["reward"]
-    .rolling(window_size)
-    .mean()
-    .reset_index(0, drop=True)
-)
+all_data = pd.concat(all_data, ignore_index=True)
 
 # Create a figure and a first axis for the reward
 fig, ax1 = plt.subplots()
@@ -76,3 +65,5 @@ ax1.legend(handles=handles, labels=labels)
 plt.title("Reward and Epsilon over time")
 plt.savefig("out/smoothed_reward_epsilon_over_time_multi.svg")
 plt.show()
+
+# %%

@@ -94,10 +94,9 @@ def loop(config: Config, result_dir: Path):
 
     # define and prepare result dirs
     model_dir: Final[Path] = result_dir / "model"
-    log_dir: Final[Path] = result_dir / "log"
     video_dir: Final[Path] = result_dir / "video"
     img_dir: Final[Path] = result_dir / "img"
-    ensure_empty_dirs(model_dir, log_dir, video_dir, img_dir)
+    ensure_empty_dirs(model_dir, video_dir, img_dir)
 
     # calculate input shape
     input_shape: Final[tuple[int, int, int]] = (
@@ -131,7 +130,7 @@ def loop(config: Config, result_dir: Path):
     )
 
     # init logger
-    logger = EpisodeLogger(log_file=log_dir / f"{env.name}_{agent.name}.csv")
+    logger = EpisodeLogger(log_file=result_dir / f"{env.name}_{agent.name}.csv")
 
     # run main loop
     for episode in range(1, config.max_episodes + 1):

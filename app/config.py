@@ -54,7 +54,7 @@ class Config:
     # environment parameters
     env_name: str = "pong"
     frame_skip: int = 4
-    input_dim: int = 64
+    input_dim: int = 84
     num_stacked_frames: int = 4
     step_penalty: float = 0.0
 
@@ -62,7 +62,7 @@ class Config:
     agent_name: str = "double_dqn"
     net_name: str = "neuroips_net"
     load_agent: bool = False
-    alpha: float = 0.0001
+    alpha: float = 0.001
     epsilon_min: float = 0.1
     gamma: float = 0.999  # discount factor gamma
     memory_size: int = 5_000
@@ -72,8 +72,8 @@ class Config:
     target_net_update_interval: int = 1024
 
     # save parameter
-    model_save_interval: int = 2048
-    video_record_interval: int = 2048
+    model_save_interval: int = 8192
+    video_record_interval: int = 1048
 
     # debugging
     verbose: bool = False

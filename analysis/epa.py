@@ -12,7 +12,7 @@ agent2 = pd.read_csv("log/pong_double_dqn_cnn_2.csv")
 agent1 = agent1.iloc[1000:]
 agent2 = agent2.iloc[1000:]
 
-# add a column to identify the agent in each DataFrame
+# add a column to identify the agen t in each DataFrame
 agent1["agent"] = "Agent 1"
 agent2["agent"] = "Agent 2"
 
@@ -24,7 +24,7 @@ all_data = pd.concat([agent1, agent2])
 all_data.reset_index(drop=True, inplace=True)
 
 # Smooth the reward and epsilon curves
-window_size = 20  # Adjust this value based on your data
+window_size = 10  # Adjust this value based on your data
 all_data["reward_smooth"] = (
     all_data.groupby("agent")["reward"]
     .rolling(window_size)

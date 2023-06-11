@@ -44,10 +44,23 @@ ax1.set_ylabel("Reward")
 ax2 = ax1.twinx()
 
 # plot epsilon on the second y-axis
-sns.lineplot(data=agent1, x="episode", y="epsilon", color="green", ax=ax2)
+epsilon_line = sns.lineplot(
+    data=agent1, x="episode", y="epsilon", color="green", ax=ax2, label="Epsilon"
+)
 ax2.set_ylabel("Epsilon")
 
-plt.title("Reward and epsilon over time")
+# get the handles and labels for all lines
+handles, labels = ax1.get_legend_handles_labels()
+handles2, labels2 = ax2.get_legend_handles_labels()
+
+# add epsilon line to the legend
+handles.append(handles2[0])
+labels.append(labels2[0])
+
+# create a new legend with all lines
+ax1.legend(handles=handles, labels=labels)
+
+plt.title("Reward over time")
 plt.savefig("out/smoothed_reward_epsilon_over_time.svg")
 plt.show()
 

@@ -62,3 +62,27 @@ that subfolder, the following files will be placed:
 3. Model checkpoints.
 4. Video files of selected episode runs.
 5. Images of the preprocessed state (optional).
+
+### Scripts
+
+The application comes with several bash scripts to help conduct certain
+functions.
+
+#### `check_cuda.sh` & `watch_gpu`
+
+Print out information regarding the current CUDA installation and GPU usage of
+the system. For sanity-checking and troubleshooting purposes.
+
+#### `install_atari.sh`
+
+Installs the Atari ROMs used by gym into the virtual environment.
+
+#### Sync scripts
+
+Typically you want to offload the training workload to cloud virtual machine. In
+this regard `sync_up.sh` will upload sources and experiments to that machine.
+Afterwards the training results can be downloaded to your local system using
+`sync_down.sh`.
+
+Configuration such as connection data for both sync scripts are situated within
+the `sync.cfg` file.

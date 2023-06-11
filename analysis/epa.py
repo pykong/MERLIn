@@ -36,11 +36,6 @@ plt.title("Smoothed reward over time")
 plt.savefig("out/smoothed_reward_over_time.svg")
 plt.show()
 
-# plot smoothed epsilon over time and save the plot to an SVG file
-sns.lineplot(data=all_data, x="episode", y="epsilon", hue="agent")
-plt.title("Smoothed epsilon over time")
-plt.savefig("out/smoothed_epsilon_over_time.svg")
-plt.show()
 
 # %%
 for col in ["reward", "steps", "loss"]:

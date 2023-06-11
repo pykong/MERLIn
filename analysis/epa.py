@@ -32,7 +32,8 @@ print(desc_stats["reward"])
 
 # plot smoothed reward over time and save the plot to an SVG file
 sns.lineplot(data=all_data, x="episode", y="reward", hue="agent")
-plt.title("Smoothed reward over time")
+plt.title("Reward over time")
+plt.axhline(0, color="grey", linestyle="--", linewidth=0.5)
 plt.savefig("out/smoothed_reward_over_time.svg")
 plt.show()
 

@@ -50,3 +50,15 @@ During training the following outputs are continuously logged to the console:
 
 Special events like model saving or video recording will also be logged if they
 occur.
+
+#### File output
+
+Each experiment will generate a subfolder in the `results/` directory. Within
+that subfolder, the following files will be placed:
+
+1. `experiment.json`: The exact parameters the experiment was run with
+2. A log holding the training logs, as printed out to the console (see section
+   before)
+3. Model checkpoints.
+4. Video files of selected episode runs.
+5. Images of the preprocessed state (optional).

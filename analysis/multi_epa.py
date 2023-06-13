@@ -13,8 +13,8 @@ os.chdir(Path(__file__).parent)
 # epsilon skip episode count
 START_EPSILON_DECAY: Final[int] = 1000
 
-# ] window size for reward smoothing
-WINDOW_SIZE: Final[int] = 10  # Adjust this value based on your data
+# window size for reward smoothing
+SMOOTH_WINDOW: Final[int] = 10  # Adjust this value based on your data
 
 # initialize a list to hold all dataframes
 all_data: Final[list[pd.DataFrame]] = []
@@ -23,15 +23,15 @@ all_data: Final[list[pd.DataFrame]] = []
 for run_idx in range(1, 4):
     for agent_idx in range(1, 3):
         # ingest data from CSV file
-        agent = pd.read_csv(f"log/multi/agent_{agent_idx}_run_{run_idx}.csv")
+        agent_df = pd.read_csv(f"log/multi/agent_{agent_idx}_run_{run_idx}.csv")
         # cut out the episodes for which epsilon was held constant
-        agent = agent.iloc[START_EPSILON_DECAY:]
+        agent_df = agent_df.iloc[START_EPSILON_DECAY:]
         # add columns to identify the agent and run in each DataFrame
-        agent["agent"] = f"Agent {agent_idx}"
-        agent["run"] = f"Run {run_idx}"
+        agent_df["agent"] = f"Agent {agent_idx}"
+        agent_df["run"] = f"Run {run_idx}"
         # smooth the reward curve for this run
-        agent["reward_smooth"] = agent["reward"].rolling(WINDOW_SIZE).mean()
-        all_data.append(agent)
+        agent_df["reward_smooth"] = agent_df["reward"].rolling(SMOOTH_WINDOW).mean()
+        all_data.append(agent_df)
 
 # combine all dataframes
 all_data = pd.concat(all_data, ignore_index=True)
@@ -51,8 +51,10 @@ ax2 = ax1.twinx()
 
 # plot epsilon on the second y-axis, using the epsilon values of
 #  the first agent's first run as representative
-agent = all_data[(all_data["agent"] == "Agent 1") & (all_data["run"] == "Run 1")]
-sns.lineplot(data=agent, x="episode", y="epsilon", color="green", ax=ax2, legend=False)
+agent_df = all_data[(all_data["agent"] == "Agent 1") & (all_data["run"] == "Run 1")]
+sns.lineplot(
+    data=agent_df, x="episode", y="epsilon", color="green", ax=ax2, legend=False
+)
 ax2.set_ylabel("Epsilon")
 
 # get the handles and labels for all lines

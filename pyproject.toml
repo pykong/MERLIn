@@ -5,7 +5,8 @@ description = "..."
 authors = ["Ben Felder <...@...>"]
 license = "MIT"
 packages = [
-    { include = "app" }
+    { include = "app" },
+    { include = "analysis" }
 ]
 
     [tool.poetry.dependencies]
@@ -30,6 +31,7 @@ packages = [
 
     [tool.poetry.scripts]
     train = "app.__main__:train"
+    eval = "analysis.multi_epa:eval"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.23.1"

@@ -120,15 +120,13 @@ class BaseAgent(ABC, pl.LightningModule):
             return torch.from_numpy(np.array(states)).float().to(self.device_)
 
         def encode_number(number) -> Tensor:
-            return torch.tensor(number).to(self.device_)
+            return torch.tensor(number).unsqueeze(-1).to(self.device_)
 
-        states, actions, rewards, next_states, dones = [], [], [], [], []
-        for t in transitions:
-            states.append(t.state)
-            actions.append([t.action])
-            rewards.append([t.reward])
-            next_states.append(t.next_state)
-            dones.append([float(t.done)])
+        states = [t.state for t in transitions]
+        actions = [t.action for t in transitions]
+        rewards = [t.reward for t in transitions]
+        next_states = [t.next_state for t in transitions]
+        dones = [float(t.done) for t in transitions]
 
         return Minibatch(
             states=encode_array(states),

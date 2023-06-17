@@ -144,6 +144,7 @@ class BaseAgent(ABC, pl.LightningModule):
     def remember(self: Self, transition: Transition) -> None:
         self.memory.push(transition)
 
+    @torch.no_grad()
     def act(self: Self, state) -> int:
         if np.random.rand() <= self.epsilon:
             return random.randrange(self.num_actions)

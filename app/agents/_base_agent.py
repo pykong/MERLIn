@@ -50,6 +50,7 @@ class BaseAgent(ABC, pl.LightningModule):
         gamma: float = 0.999,
         memory_size: int = 10_000,
         batch_size: int = 64,
+        use_amp: bool = False,
         **kwargs,
     ):
         super().__init__()
@@ -59,11 +60,13 @@ class BaseAgent(ABC, pl.LightningModule):
         self.epsilon = epsilon
         self.epsilon_min = epsilon_min
         self.gamma = gamma
+        self.use_amp = use_amp
         self.memory = ReplayMemory(capacity=memory_size, batch_size=batch_size)
         self.device_: torch.device = get_torch_device()
         self.model = net.build_net(self.state_shape, self.num_actions, self.device_)
         self.model = self._parallelize_net(self.model)
         self.optimizer = optim.RMSprop(self.model.parameters(), lr=alpha)
+        self.scaler = torch.cuda.amp.GradScaler(enabled=self.use_amp)  # type:ignore
 
     @staticmethod
     def _parallelize_net(model):
@@ -96,7 +99,8 @@ class BaseAgent(ABC, pl.LightningModule):
         target = rewards + self.gamma * max_q_prime * dones
 
         # calc losses
-        losses = F.smooth_l1_loss(q_a, target)
+        with torch.cuda.amp.autocast(enabled=self.use_amp):  # type:ignore
+            losses = F.smooth_l1_loss(q_a, target)
 
         # update the weights
         self._update_weights(losses)
@@ -137,9 +141,11 @@ class BaseAgent(ABC, pl.LightningModule):
 
     def _update_weights(self: Self, losses) -> None:
         self.optimizer.zero_grad(set_to_none=True)
-        losses.backward()
-        nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=1.0)  # type: ignore
         self.optimizer.step()
+        self.scaler.scale(losses).backward()  # type: ignore
+        nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=1.0)  # type: ignore
+        self.scaler.step(self.optimizer)
+        self.scaler.update()
 
     def remember(self: Self, transition: Transition) -> None:
         self.memory.push(transition)

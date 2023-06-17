@@ -67,6 +67,7 @@ class Config:
     gamma: float = 0.999  # discount factor gamma
     memory_size: int = 5_000
     batch_size: int = 32
+    use_amp: bool = False  # TODO: put in docstr
 
     # extra agent parameters
     target_net_update_interval: int = 1024

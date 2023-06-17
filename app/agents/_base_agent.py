@@ -58,8 +58,7 @@ class BaseAgent(ABC, pl.LightningModule):
         self.epsilon = epsilon
         self.epsilon_min = epsilon_min
         self.gamma = gamma
-        self.memory = ReplayMemory(capacity=memory_size)
-        self.batch_size = batch_size
+        self.memory = ReplayMemory(capacity=memory_size, batch_size=batch_size)
         self.device_: torch.device = get_torch_device()
         self.net_name = net.name
         self.model = net.build_net(self.state_shape, self.num_actions, self.device_)
@@ -76,7 +75,7 @@ class BaseAgent(ABC, pl.LightningModule):
 
     def replay(self: Self) -> float:
         # sample memory
-        sample = self.memory.sample(self.batch_size)
+        sample = self.memory.sample()
 
         # convert the minibatch to a more convenient format
         states, actions, rewards, next_states, dones = self._encode_minibatch(sample)

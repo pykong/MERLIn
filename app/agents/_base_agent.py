@@ -49,7 +49,6 @@ class BaseAgent(ABC, pl.LightningModule):
         gamma: float = 0.999,  # epsilon decay
         memory_size: int = 10_000,
         batch_size: int = 64,
-        weight_decay=0,
         **kwargs,
     ):
         super().__init__()
@@ -67,9 +66,7 @@ class BaseAgent(ABC, pl.LightningModule):
         if torch.cuda.device_count() > 1:
             logger.log(str(LogLevel.GREEN), "CUDA running on Multi-GPU.")
             self.model = nn.DataParallel(self.model)
-        self.optimizer = optim.RMSprop(
-            self.model.parameters(), lr=alpha, weight_decay=weight_decay
-        )
+        self.optimizer = optim.RMSprop(self.model.parameters(), lr=alpha)
 
     def replay(self: Self) -> float:
         # sample memory
@@ -136,7 +133,7 @@ class BaseAgent(ABC, pl.LightningModule):
 
         return Minibatch(states, actions, rewards, next_states, dones)
 
-    def _update_weights(self, losses) -> None:
+    def _update_weights(self: Self, losses) -> None:
         self.optimizer.zero_grad()
         losses.backward()
         # clip gradients to prevent explosion

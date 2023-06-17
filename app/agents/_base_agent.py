@@ -26,7 +26,8 @@ class Minibatch(NamedTuple):
 def get_torch_device() -> torch.device:
     """Provide best possible device for running PyTorch."""
     if torch.cuda.is_available():
-        logger.log(str(LogLevel.GREEN), f"CUDA is available (v{torch.version.cuda}).")
+        cuda_version = torch.version.cuda  # type: ignore
+        logger.log(str(LogLevel.GREEN), f"CUDA is available (v{cuda_version}).")
         for i in range(torch.cuda.device_count()):
             gpu = torch.cuda.get_device_name(i)
             logger.log(str(LogLevel.GREEN), f"cuda:{i} - {gpu}")
@@ -70,7 +71,7 @@ class BaseAgent(ABC, pl.LightningModule):
             self.model.parameters(), lr=alpha, weight_decay=weight_decay
         )
 
-    def replay(self: Self) -> None:
+    def replay(self: Self) -> float:
         # sample memory
         minibatch = self.memory.sample(self.batch_size)
 

@@ -75,9 +75,7 @@ class BaseAgent(ABC, pl.LightningModule):
         minibatch = self.memory.sample(self.batch_size)
 
         # convert the minibatch to a more convenient format
-        states, actions, rewards, next_states, dones = self._prepare_minibatch(
-            minibatch
-        )
+        states, actions, rewards, next_states, dones = self._encode_minibatch(minibatch)
 
         # get indices of maximum values according to the policy network
         # _, policy_net_actions = self.forward(next_states).max(1)
@@ -120,7 +118,7 @@ class BaseAgent(ABC, pl.LightningModule):
     def name(cls) -> str:
         raise NotImplementedError()
 
-    def _prepare_minibatch(self: Self, transitions: list[Transition]) -> Minibatch:
+    def _encode_minibatch(self: Self, transitions: list[Transition]) -> Minibatch:
         # states, actions, rewards, next_states, dones = zip(*minibatch)
         # states = torch.from_numpy(np.array(states)).float().to(self.device_)
         # actions = torch.tensor(actions).unsqueeze(1).to(self.device_)

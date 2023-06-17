@@ -12,10 +12,16 @@ class BaseNet(ABC):
         raise NotImplementedError()
 
     def build_net(
-        self, state_shape: tuple[int, int, int], num_actions: int, device: torch.device
+        self,
+        state_shape: tuple[int, int, int],
+        num_actions: int,
+        device: torch.device,
+        use_amp: bool = False,
     ) -> nn.Sequential:
         model = self._define_net(state_shape, num_actions)
-        model.to(device=device)
+        model = model.to(device=device)
+        if use_amp:
+            model = model.to(memory_format=torch.channels_last)  # type:ignore
         return model
 
     @abstractmethod

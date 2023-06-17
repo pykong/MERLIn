@@ -60,7 +60,6 @@ class BaseAgent(ABC, pl.LightningModule):
         self.gamma = gamma
         self.memory = ReplayMemory(capacity=memory_size, batch_size=batch_size)
         self.device_: torch.device = get_torch_device()
-        self.net_name = net.name
         self.model = net.build_net(self.state_shape, self.num_actions, self.device_)
         self.model = self._parallelize_net(self.model)
         self.optimizer = optim.RMSprop(self.model.parameters(), lr=alpha)
@@ -162,5 +161,4 @@ class BaseAgent(ABC, pl.LightningModule):
         self.load_state_dict(torch.load(name))
 
     def save(self: Self, name: Path) -> None:
-        # TODO: put net into file name
         torch.save(self.state_dict(), name)

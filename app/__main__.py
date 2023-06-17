@@ -38,9 +38,13 @@ def pretty_print_config(config: Config) -> None:
 def train():
     for i, experiment in enumerate(load_experiments()):
         pretty_print_config(experiment)
+
+        # create reult dir and persist experiment config
         result_dir = RESULTS_DIR / f"experiment_{i}"
         ensure_empty_dirs(result_dir)
         save_experiment(experiment, result_dir / "experiment.json")  # save parameters
+
+        # start training
         loop(experiment, result_dir)
         break
     else:

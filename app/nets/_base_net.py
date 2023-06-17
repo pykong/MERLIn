@@ -11,9 +11,16 @@ class BaseNet(ABC):
     def name(cls) -> str:
         raise NotImplementedError()
 
-    @abstractmethod
     def build_net(
         self, state_shape: tuple[int, int, int], num_actions: int, device: torch.device
+    ) -> nn.Sequential:
+        model = self._define_net(state_shape, num_actions)
+        model.to(device=device)
+        return model
+
+    @abstractmethod
+    def _define_net(
+        self, state_shape: tuple[int, int, int], num_actions: int
     ) -> nn.Sequential:
         raise NotImplementedError()
 

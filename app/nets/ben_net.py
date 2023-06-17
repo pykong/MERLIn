@@ -10,8 +10,8 @@ class BenNet(BaseNet):
     def name(cls) -> str:
         return "ben_net"
 
-    def build_net(
-        self, state_shape: tuple[int, int, int], num_actions: int, device: torch.device
+    def _define_net(
+        self, state_shape: tuple[int, int, int], num_actions: int
     ) -> nn.Sequential:
         channel_dim, x_dim, y_dim = state_shape  # unpack dimensions
 
@@ -22,7 +22,7 @@ class BenNet(BaseNet):
         num_flat_features = h_out_2 * w_out_2
 
         # adapted from: https://github.com/KaleabTessera/DQN-Atari#dqn-neurips-architecture-implementation
-        model = nn.Sequential(
+        return nn.Sequential(
             # conv1
             nn.Conv2d(channel_dim, 16, kernel_size=8, stride=4, padding=1, bias=False),
             nn.BatchNorm2d(16),
@@ -45,5 +45,3 @@ class BenNet(BaseNet):
             # output
             nn.Linear(16, num_actions),
         )
-        model.to(device)
-        return model

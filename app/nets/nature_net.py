@@ -10,8 +10,8 @@ class NatureNet(BaseNet):
     def name(cls) -> str:
         return "nature_net"
 
-    def build_net(
-        self, state_shape: tuple[int, int, int], num_actions: int, device: torch.device
+    def _define_net(
+        self, state_shape: tuple[int, int, int], num_actions: int
     ) -> nn.Sequential:
         channel_dim, x_dim, y_dim = state_shape  # unpack dimensions
 
@@ -24,7 +24,7 @@ class NatureNet(BaseNet):
         num_flat_features = h_out_3 * w_out_3
 
         # adapted from: https://github.com/KaleabTessera/DQN-Atari#dqn-neurips-architecture-implementation
-        model = nn.Sequential(
+        return nn.Sequential(
             # conv1
             nn.Conv2d(channel_dim, 32, kernel_size=8, stride=4, padding=1),
             nn.BatchNorm2d(32),
@@ -44,5 +44,3 @@ class NatureNet(BaseNet):
             # output layer
             nn.Linear(256, num_actions),
         )
-        model.to(device)
-        return model

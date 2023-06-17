@@ -10,8 +10,8 @@ class NeuroipsNet(BaseNet):
     def name(cls) -> str:
         return "neuroips_net"
 
-    def build_net(
-        self, state_shape: tuple[int, int, int], num_actions: int, device: torch.device
+    def _define_net(
+        self, state_shape: tuple[int, int, int], num_actions: int
     ) -> nn.Sequential:
         channel_dim, x_dim, y_dim = state_shape  # unpack dimensions
 
@@ -22,7 +22,7 @@ class NeuroipsNet(BaseNet):
         num_flat_features = h_out_2 * w_out_2
 
         # adapted from: https://github.com/KaleabTessera/DQN-Atari#dqn-neurips-architecture-implementation
-        model = nn.Sequential(
+        return nn.Sequential(
             # conv1
             nn.Conv2d(channel_dim, 16, kernel_size=8, stride=4, padding=1),
             nn.BatchNorm2d(16),
@@ -38,5 +38,3 @@ class NeuroipsNet(BaseNet):
             # output layer
             nn.Linear(256, num_actions),
         )
-        model.to(device)
-        return model

@@ -8,7 +8,7 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 import torch.optim as optim
-from torch import nn
+from torch import Tensor, nn
 
 from ..nets._base_net import BaseNet
 from ..utils.logging import LogLevel, logger
@@ -73,10 +73,10 @@ class BaseAgent(ABC, pl.LightningModule):
 
     def replay(self: Self) -> float:
         # sample memory
-        minibatch = self.memory.sample(self.batch_size)
+        sample = self.memory.sample(self.batch_size)
 
         # convert the minibatch to a more convenient format
-        states, actions, rewards, next_states, dones = self._encode_minibatch(minibatch)
+        states, actions, rewards, next_states, dones = self._encode_minibatch(sample)
 
         # get indices of maximum values according to the policy network
         # _, policy_net_actions = self.forward(next_states).max(1)
@@ -120,13 +120,11 @@ class BaseAgent(ABC, pl.LightningModule):
         raise NotImplementedError()
 
     def _encode_minibatch(self: Self, transitions: list[Transition]) -> Minibatch:
-        # states, actions, rewards, next_states, dones = zip(*minibatch)
-        # states = torch.from_numpy(np.array(states)).float().to(self.device_)
-        # actions = torch.tensor(actions).unsqueeze(1).to(self.device_)
-        # rewards = torch.tensor(rewards).float().to(self.device_)
-        # next_states = torch.from_numpy(np.array(next_states)).float().to(self.device_)
-        # dones = torch.tensor(dones).float().to(self.device_)
-        # return states, actions, rewards, next_states, dones
+        def encode_array(states) -> Tensor:
+            return torch.from_numpy(np.array(states)).float().to(self.device_)
+
+        def encode_number(number) -> Tensor:
+            return torch.tensor(number).to(self.device_)
 
         states, actions, rewards, next_states, dones = [], [], [], [], []
 
@@ -135,13 +133,13 @@ class BaseAgent(ABC, pl.LightningModule):
             actions.append([t.action])
             rewards.append([t.reward])
             next_states.append(t.next_state)
-            dones.append([t.done])
+            dones.append([float(t.done)])
 
-        states = torch.from_numpy(np.array(states)).float().to(self.device_)
-        actions = torch.tensor(actions).to(self.device_)
-        rewards = torch.tensor(rewards).to(self.device_)
-        next_states = torch.from_numpy(np.array(next_states)).float().to(self.device_)
-        dones = torch.tensor(dones).float().to(self.device_)
+        states = encode_array(states)
+        actions = encode_number(actions)
+        rewards = encode_number(rewards)
+        next_states = encode_array(next_states)
+        dones = encode_number(dones)
 
         return Minibatch(states, actions, rewards, next_states, dones)
 

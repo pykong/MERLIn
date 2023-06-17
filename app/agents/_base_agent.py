@@ -46,7 +46,7 @@ class BaseAgent(ABC, pl.LightningModule):
         alpha: float = 0.001,
         epsilon: float = 1.0,
         epsilon_min: float = 0.01,
-        gamma: float = 0.999,  # epsilon decay
+        gamma: float = 0.999,
         memory_size: int = 10_000,
         batch_size: int = 64,
         **kwargs,

@@ -63,10 +63,16 @@ class BaseAgent(ABC, pl.LightningModule):
         self.device_: torch.device = get_torch_device()
         self.net_name = net.name
         self.model = net.build_net(self.state_shape, self.num_actions, self.device_)
-        if torch.cuda.device_count() > 1:
-            logger.log(str(LogLevel.GREEN), "CUDA running on Multi-GPU.")
-            self.model = nn.DataParallel(self.model)
+        self.model = self._parallelize_net(self.model)
         self.optimizer = optim.RMSprop(self.model.parameters(), lr=alpha)
+
+    @staticmethod
+    def _parallelize_net(model):
+        if torch.cuda.device_count() == 1:
+            return model
+        else:
+            logger.log(str(LogLevel.GREEN), "CUDA running on Multi-GPU.")
+            return nn.DataParallel(model)
 
     def replay(self: Self) -> float:
         # sample memory
@@ -78,7 +84,7 @@ class BaseAgent(ABC, pl.LightningModule):
         # mask dones
         dones = 1 - dones
 
-        # predict Q-values for the initial states.
+        # predict Q-values for the initial states
         q_out = self.forward(states)
 
         # state_action_values
@@ -93,14 +99,14 @@ class BaseAgent(ABC, pl.LightningModule):
         # calc losses
         losses = F.smooth_l1_loss(q_a, target)
 
-        # update the weights.
+        # update the weights
         self._update_weights(losses)
 
         # return losses
         return losses.mean().item()
 
     @abstractmethod
-    def _calc_max_q_prime(self: Self, next_states) -> float:
+    def _calc_max_q_prime(self: Self, next_states: Tensor) -> float:
         raise NotImplementedError
 
     @classmethod

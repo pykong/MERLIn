@@ -78,17 +78,6 @@ class BaseAgent(ABC, pl.LightningModule):
         # convert the minibatch to a more convenient format
         states, actions, rewards, next_states, dones = self._encode_minibatch(sample)
 
-        # get indices of maximum values according to the policy network
-        # _, policy_net_actions = self.forward(next_states).max(1)
-
-        # compute V(s_{t+1}) for all next states using target network, but choose the best action from the policy network.
-        # max_q_prime = (
-        #     self.target_model(next_states)
-        #     .gather(1, policy_net_actions.unsqueeze(-1))
-        #     .squeeze()
-        #     .detach()
-        # )
-
         # mask dones
         dones = 1 - dones
 

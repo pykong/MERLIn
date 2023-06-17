@@ -31,6 +31,7 @@ def get_torch_device() -> torch.device:
         for i in range(torch.cuda.device_count()):
             gpu = torch.cuda.get_device_name(i)
             logger.log(str(LogLevel.GREEN), f"cuda:{i} - {gpu}")
+        torch.backends.cudnn.benchmark = True  # type: ignore
         return torch.device("cuda")
     else:
         logger.log(str(LogLevel.YELLOW), f"Running PyTorch on CPU.")

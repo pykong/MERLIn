@@ -1,4 +1,5 @@
 import json
+import pprint
 import sys
 from dataclasses import asdict
 
@@ -9,6 +10,7 @@ from typing import Final, Iterable
 
 from .config import Config
 from .loop import loop
+from .utils.file_utils import ensure_empty_dirs
 
 EXPERIMENT_DIR: Final[Path] = Path("experiments")
 RESULTS_DIR: Final[Path] = Path("results")
@@ -26,10 +28,18 @@ def save_experiment(config: Config, file_path: Path) -> None:
         json.dump(asdict(config), f, indent=4)
 
 
+def pretty_print_config(config: Config) -> None:
+    # Note: Will likely not print upon repeated test runs due to sys.stdout deactivated
+    print(f"Conducting experiment with:")
+    pprint.pprint(asdict(config), sort_dicts=False, indent=2)
+    print("\n")
+
+
 def train():
     for i, experiment in enumerate(load_experiments()):
-        print(f"Conducting experiment with: {experiment}")  # TODO: Improve logging
-        result_dir = RESULTS_DIR / str(i)  # TODO: Make file name more speaking
+        pretty_print_config(experiment)
+        result_dir = RESULTS_DIR / f"experiment_{i}"
+        ensure_empty_dirs(result_dir)
         save_experiment(experiment, result_dir / "experiment.json")  # save parameters
         loop(experiment, result_dir)
         break

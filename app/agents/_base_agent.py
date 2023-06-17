@@ -123,7 +123,6 @@ class BaseAgent(ABC, pl.LightningModule):
             return torch.tensor(number).to(self.device_)
 
         states, actions, rewards, next_states, dones = [], [], [], [], []
-
         for t in transitions:
             states.append(t.state)
             actions.append([t.action])
@@ -131,13 +130,13 @@ class BaseAgent(ABC, pl.LightningModule):
             next_states.append(t.next_state)
             dones.append([float(t.done)])
 
-        states = encode_array(states)
-        actions = encode_number(actions)
-        rewards = encode_number(rewards)
-        next_states = encode_array(next_states)
-        dones = encode_number(dones)
-
-        return Minibatch(states, actions, rewards, next_states, dones)
+        return Minibatch(
+            states=encode_array(states),
+            actions=encode_number(actions),
+            rewards=encode_number(rewards),
+            next_states=encode_array(next_states),
+            dones=encode_number(dones),
+        )
 
     def _update_weights(self: Self, losses) -> None:
         self.optimizer.zero_grad()

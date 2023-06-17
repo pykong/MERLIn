@@ -108,6 +108,7 @@ def loop(config: Config, result_dir: Path):
 
     # configure torch
     torch.autograd.profiler.emit_nvtx(enabled=False)
+    torch.autograd.profiler.profile(enabled=False)
 
     # create environment
     env = make_env(

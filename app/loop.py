@@ -107,6 +107,7 @@ def loop(config: Config, result_dir: Path):
     )
 
     # configure torch
+    torch.autograd.set_detect_anomaly(False)
     torch.autograd.profiler.emit_nvtx(enabled=False)
     torch.autograd.profiler.profile(enabled=False)
 

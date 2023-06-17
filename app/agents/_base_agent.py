@@ -139,7 +139,6 @@ class BaseAgent(ABC, pl.LightningModule):
     def _update_weights(self: Self, losses) -> None:
         self.optimizer.zero_grad()
         losses.backward()
-        # clip gradients to prevent explosion
         nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=1.0)  # type: ignore
         self.optimizer.step()
 

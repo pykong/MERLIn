@@ -83,13 +83,17 @@ class BaseAgent(ABC, pl.LightningModule):
 
         # predict Q-values for the initial states.
         q_out = self.forward(states)
-        q_a = q_out.gather(1, actions)  # state_action_values
 
+        # state_action_values
+        q_a = q_out.gather(1, actions)
+
+        # calc max q prime value
         max_q_prime = self._calc_max_q_prime(next_states)
 
         # compute the expected Q values (expected_state_action_values)
         target = rewards + self.gamma * max_q_prime * dones
 
+        # calc losses
         losses = F.smooth_l1_loss(q_a, target)
 
         # update the weights.
@@ -136,7 +140,7 @@ class BaseAgent(ABC, pl.LightningModule):
         self.optimizer.zero_grad()
         losses.backward()
         # clip gradients to prevent explosion
-        nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=1.0)
+        nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=1.0)  # type: ignore
         self.optimizer.step()
 
     def remember(self: Self, transition: Transition) -> None:

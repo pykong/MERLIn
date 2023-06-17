@@ -6,6 +6,7 @@ from typing import Final
 
 import cv2 as cv
 import numpy as np
+import torch
 from gym.wrappers.monitoring import video_recorder as vr
 
 from .agents import BaseAgent, agent_registry
@@ -104,6 +105,9 @@ def loop(config: Config, result_dir: Path):
         config.input_dim * config.num_stacked_frames,
         config.input_dim,
     )
+
+    # configure torch
+    torch.autograd.profiler.emit_nvtx(enabled=False)
 
     # create environment
     env = make_env(

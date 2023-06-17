@@ -32,6 +32,9 @@ def train():
         result_dir = RESULTS_DIR / str(i)  # TODO: Make file name more speaking
         save_experiment(experiment, result_dir / "experiment.json")  # save parameters
         loop(experiment, result_dir)
+        break
+    else:
+        raise ValueError("No experiments given. Exiting.")
 
 
 if __name__ == "__main__":

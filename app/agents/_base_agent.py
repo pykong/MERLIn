@@ -131,6 +131,7 @@ class BaseAgent(ABC, pl.LightningModule):
         )
 
     def _update_weights(self: Self, losses) -> None:
+        self.optimizer.zero_grad(set_to_none=True)
         self.scaler.scale(losses).backward()  # type: ignore
 
         # Unscales the gradients of optimizer's assigned params in-place
@@ -140,7 +141,6 @@ class BaseAgent(ABC, pl.LightningModule):
 
         self.scaler.step(self.optimizer)
         self.scaler.update()
-        self.optimizer.zero_grad(set_to_none=True)
 
     def remember(self: Self, transition: Transition) -> None:
         self.memory.push(transition)

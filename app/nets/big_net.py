@@ -36,12 +36,15 @@ class BigNet(BaseNet):
             nn.Linear(128 * num_flat_features, 1024),
             nn.LeakyReLU(),
             # nn.Dropout(0.5),
-            # fc 2 - additional layer in contrast to NeuroIPS paper
+            # fc 2
             nn.Linear(1024, 256),
             nn.ReLU(),
-            # fc 3 - additional layer in contrast to NeuroIPS paper
-            nn.Linear(256, 32),
+            # fc 3
+            nn.Linear(256, 64),
+            nn.ReLU(),
+            # fc 4
+            nn.Linear(64, 16),
             nn.ReLU(),
             # output
-            nn.Linear(32, num_actions),
+            nn.Linear(16, num_actions),
         )

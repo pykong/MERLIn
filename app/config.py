@@ -60,7 +60,7 @@ class Config:
 
     # agent parameters
     agent_name: str = "double_dqn"
-    net_name: str = "neuroips_net"
+    net_name: str = "nature_net"
     load_agent: bool = False
     alpha: float = 0.001
     epsilon_min: float = 0.1

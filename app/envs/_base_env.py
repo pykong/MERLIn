@@ -56,8 +56,8 @@ class BaseEnvWrapper(gym.Wrapper, ABC):
         self.stack_size = stack_size
         self.state_buffer = deque([], maxlen=self.stack_size)
 
-    def step(self: Self, action_idx: int) -> Step:
-        action = list(self.valid_actions)[action_idx]
+    def step(self: Self, action: int) -> Step:
+        action = list(self.valid_actions)[action]  # map to env action
         total_reward = 0
         next_state = None
         reward = 0

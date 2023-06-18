@@ -16,11 +16,9 @@ EXPERIMENT_DIR: Final[Path] = Path("experiments")
 RESULTS_DIR: Final[Path] = Path("results")
 
 
-def load_experiments() -> Iterable[Config]:
+def load_experiments() -> list[Config]:
     files = EXPERIMENT_DIR.glob("*.json")
-    for file in files:
-        json_dict = json.loads(file.read_text())
-        yield Config(**json_dict)
+    return [Config(**json.loads(f.read_text())) for f in files]
 
 
 def save_experiment(config: Config, file_path: Path) -> None:
@@ -36,7 +34,10 @@ def pretty_print_config(config: Config) -> None:
 
 
 def train():
-    for i, experiment in enumerate(load_experiments()):
+    experiments = load_experiments()
+    if not experiments:
+        raise ValueError("No experiments given. Exiting.")
+    for i, experiment in enumerate(experiments):
         pretty_print_config(experiment)
 
         # create reult dir and persist experiment config
@@ -46,9 +47,6 @@ def train():
 
         # start training
         loop(experiment, result_dir)
-        break
-    else:
-        raise ValueError("No experiments given. Exiting.")
 
 
 if __name__ == "__main__":

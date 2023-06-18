@@ -28,13 +28,6 @@ class BaseEnvWrapper(gym.Wrapper, ABC):
     @classmethod
     @property
     @abstractmethod
-    def default_action(cls) -> int:
-        """Default action to chose."""
-        raise NotImplementedError()
-
-    @classmethod
-    @property
-    @abstractmethod
     def valid_actions(cls) -> set[int]:
         """Set of valid actions to chose."""
         raise NotImplementedError()
@@ -63,9 +56,8 @@ class BaseEnvWrapper(gym.Wrapper, ABC):
         self.stack_size = stack_size
         self.state_buffer = deque([], maxlen=self.stack_size)
 
-    def step(self: Self, action: int) -> Step:
-        action = self.default_action if action not in self.valid_actions else action
-
+    def step(self: Self, action_idx: int) -> Step:
+        action = list(self.valid_actions)[action_idx]
         total_reward = 0
         next_state = None
         reward = 0

@@ -18,16 +18,10 @@ class PongEnvWrapper(BaseEnvWrapper):
 
     @classmethod
     @property
-    def default_action(cls) -> int:
-        """Default action to chose."""
-        return 1
-
-    @classmethod
-    @property
     def valid_actions(cls) -> set[int]:
         """Set of valid actions to chose."""
         # https://gymnasium.farama.org/environments/atari/pong/#actions
-        return {0, 1, 2, 3}
+        return {0, 2, 3}
 
     @classmethod
     def _crop_state(cls, state: np.ndarray) -> np.ndarray:

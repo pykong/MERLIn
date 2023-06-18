@@ -64,17 +64,8 @@ class BaseAgent(ABC, pl.LightningModule):
         self.memory = ReplayMemory(capacity=memory_size, batch_size=batch_size)
         self.device_: torch.device = get_torch_device()
         self.model = net.build_net(self.state_shape, self.num_actions, self.device_)
-        self.model = self._parallelize_net(self.model)
         self.optimizer = optim.RMSprop(self.model.parameters(), lr=alpha)
         self.scaler = torch.cuda.amp.GradScaler(enabled=self.use_amp)  # type:ignore
-
-    @staticmethod
-    def _parallelize_net(model):
-        if torch.cuda.device_count() == 1:
-            return model
-        else:
-            logger.log(str(LogLevel.GREEN), "CUDA running on Multi-GPU.")
-            return nn.DataParallel(model)
 
     def replay(self: Self) -> float:
         # sample memory

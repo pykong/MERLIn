@@ -133,12 +133,10 @@ class BaseAgent(ABC, pl.LightningModule):
     def _update_weights(self: Self, losses) -> None:
         self.optimizer.zero_grad(set_to_none=True)
         self.scaler.scale(losses).backward()  # type: ignore
-
         # Unscales the gradients of optimizer's assigned params in-place
         # https://h-huang.github.io/tutorials/recipes/recipes/amp_recipe.html#inspecting-modifying-gradients-e-g-clipping
         self.scaler.unscale_(self.optimizer)
         nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=1.0)  # type: ignore
-
         self.scaler.step(self.optimizer)
         self.scaler.update()
 

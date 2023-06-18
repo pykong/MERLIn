@@ -28,17 +28,17 @@ class BenNet(BaseNet):
             nn.BatchNorm2d(16),
             nn.LeakyReLU(),
             # conv2
-            nn.Conv2d(16, 32, kernel_size=4, stride=2, padding=1, bias=False),
-            nn.BatchNorm2d(32),
+            nn.Conv2d(16, 64, kernel_size=4, stride=2, padding=1, bias=False),
+            nn.BatchNorm2d(64),
             nn.LeakyReLU(),
             # fc 1
             nn.Flatten(),
-            nn.Linear(32 * num_flat_features, 256),
+            nn.Linear(64 * num_flat_features, 384),
             nn.LeakyReLU(),
             # nn.Dropout(0.5),
             # fc 2 - additional layer in contrast to NeuroIPS paper
-            nn.Linear(256, 32),
-            nn.ELU(),
+            nn.Linear(384, 32),
+            nn.ReLU(),
             # fc 3 - additional layer in contrast to NeuroIPS paper
             nn.Linear(32, 16),
             nn.ReLU(),

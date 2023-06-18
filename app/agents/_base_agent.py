@@ -159,7 +159,8 @@ class BaseAgent(ABC, pl.LightningModule):
         return act_values.argmax().item()
 
     def forward(self: Self, x):
-        return self.model(x)
+        with torch.cuda.amp.autocast(enabled=self.use_amp):  # type:ignore
+            return self.model(x)
 
     def update_epsilon(self: Self) -> None:
         if self.epsilon > self.epsilon_min:

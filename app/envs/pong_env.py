@@ -1,6 +1,7 @@
 import numpy as np
 
 from ._base_env import BaseEnvWrapper
+from .action import Action
 
 
 class PongEnvWrapper(BaseEnvWrapper):
@@ -20,8 +21,7 @@ class PongEnvWrapper(BaseEnvWrapper):
     @property
     def valid_actions(cls) -> set[int]:
         """Set of valid actions to chose."""
-        # https://gymnasium.farama.org/environments/atari/pong/#actions
-        return {0, 2, 3}
+        return {Action.NOOP, Action.RIGHT, Action.LEFT}
 
     @classmethod
     def _crop_state(cls, state: np.ndarray) -> np.ndarray:

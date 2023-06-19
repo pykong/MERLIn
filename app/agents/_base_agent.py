@@ -160,7 +160,15 @@ class BaseAgent(ABC, pl.LightningModule):
             self.epsilon *= self.gamma
 
     def load(self: Self, name: Path) -> None:
-        self.load_state_dict(torch.load(name))
+        checkpoint = torch.load(name)
+        self.model.load_state_dict(checkpoint["model"])
+        self.optimizer.load_state_dict(checkpoint["optimizer"])
+        self.scaler.load_state_dict(checkpoint["scaler"])
 
     def save(self: Self, name: Path) -> None:
-        torch.save(self.state_dict(), name)
+        checkpoint = {
+            "model": self.model.state_dict(),
+            "optimizer": self.optimizer.state_dict(),
+            "scaler": self.scaler.state_dict(),
+        }
+        torch.save(checkpoint, name)

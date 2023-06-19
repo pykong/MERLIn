@@ -24,11 +24,11 @@ class NeuroipsNet(BaseNet):
         # adapted from: https://github.com/KaleabTessera/DQN-Atari#dqn-neurips-architecture-implementation
         return nn.Sequential(
             # conv1
-            nn.Conv2d(channel_dim, 16, kernel_size=8, stride=4, padding=1),
+            nn.Conv2d(channel_dim, 16, kernel_size=8, stride=4, padding=1, bias=False),
             nn.BatchNorm2d(16),
             nn.ReLU(),
             # conv2
-            nn.Conv2d(16, 32, kernel_size=4, stride=2, padding=1),
+            nn.Conv2d(16, 32, kernel_size=4, stride=2, padding=1, bias=False),
             nn.BatchNorm2d(32),
             nn.ReLU(),
             # fc 1

@@ -1,4 +1,3 @@
-import torch
 from torch import nn
 
 from ._base_net import BaseNet
@@ -24,23 +23,25 @@ class BenNet(BaseNet):
         # adapted from: https://github.com/KaleabTessera/DQN-Atari#dqn-neurips-architecture-implementation
         return nn.Sequential(
             # conv1
-            nn.Conv2d(channel_dim, 16, kernel_size=8, stride=4, padding=1, bias=False),
-            nn.BatchNorm2d(16),
-            nn.LeakyReLU(),
+            nn.Conv2d(channel_dim, 32, kernel_size=8, stride=4, padding=1, bias=False),
+            nn.BatchNorm2d(32),
+            nn.ReLU(),
             # conv2
-            nn.Conv2d(16, 64, kernel_size=4, stride=2, padding=1, bias=False),
+            nn.Conv2d(32, 64, kernel_size=4, stride=2, padding=1, bias=False),
             nn.BatchNorm2d(64),
-            nn.LeakyReLU(),
+            nn.ReLU(),
             # fc 1
             nn.Flatten(),
-            nn.Linear(64 * num_flat_features, 384),
-            nn.LeakyReLU(),
-            # nn.Dropout(0.5),
-            # fc 2 - additional layer in contrast to NeuroIPS paper
-            nn.Linear(384, 32),
+            nn.Linear(64 * num_flat_features, 512),
             nn.ReLU(),
-            # fc 3 - additional layer in contrast to NeuroIPS paper
-            nn.Linear(32, 16),
+            # fc 2
+            nn.Linear(512, 384),
+            nn.ReLU(),
+            # fc 3
+            nn.Linear(384, 64),
+            nn.ReLU(),
+            # fc 4
+            nn.Linear(64, 16),
             nn.ReLU(),
             # output
             nn.Linear(16, num_actions),

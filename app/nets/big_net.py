@@ -41,7 +41,6 @@ class BigNet(BaseNet):
             nn.Flatten(),
             nn.Linear(64 * num_flat_features, 512),
             nn.ReLU(),
-            # nn.Dropout(0.5),
             # fc 2
             nn.Linear(512, 256),
             nn.ReLU(),

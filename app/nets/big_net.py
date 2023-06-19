@@ -19,31 +19,43 @@ class BigNet(BaseNet):
         w_out_1 = self._calc_conv_outdim(y_dim, 8, 4, 1)
         h_out_2 = self._calc_conv_outdim(h_out_1, 4, 2, 1)
         w_out_2 = self._calc_conv_outdim(w_out_1, 4, 2, 1)
-        num_flat_features = h_out_2 * w_out_2
+        h_out_3 = self._calc_conv_outdim(h_out_2, 3, 1, 1)
+        w_out_3 = self._calc_conv_outdim(w_out_2, 3, 1, 1)
+        num_flat_features = h_out_3 * w_out_3
 
         # adapted from: https://github.com/KaleabTessera/DQN-Atari#dqn-neurips-architecture-implementation
         return nn.Sequential(
             # conv1
             nn.Conv2d(channel_dim, 32, kernel_size=8, stride=4, padding=1, bias=False),
             nn.BatchNorm2d(32),
-            nn.LeakyReLU(),
+            nn.ReLU(),
             # conv2
-            nn.Conv2d(32, 128, kernel_size=4, stride=2, padding=1, bias=False),
-            nn.BatchNorm2d(128),
-            nn.LeakyReLU(),
+            nn.Conv2d(32, 64, kernel_size=4, stride=2, padding=1, bias=False),
+            nn.BatchNorm2d(64),
+            nn.ReLU(),
+            # conv3
+            nn.Conv2d(64, 64, kernel_size=3, stride=1, padding=1, bias=False),
+            nn.BatchNorm2d(64),
+            nn.ReLU(),
             # fc 1
             nn.Flatten(),
-            nn.Linear(128 * num_flat_features, 1024),
-            nn.LeakyReLU(),
+            nn.Linear(64 * num_flat_features, 512),
+            nn.ReLU(),
             # nn.Dropout(0.5),
             # fc 2
-            nn.Linear(1024, 256),
+            nn.Linear(512, 256),
             nn.ReLU(),
             # fc 3
-            nn.Linear(256, 64),
+            nn.Linear(256, 128),
             nn.ReLU(),
             # fc 4
-            nn.Linear(64, 16),
+            nn.Linear(128, 64),
+            nn.ReLU(),
+            # fc 5
+            nn.Linear(64, 32),
+            nn.ReLU(),
+            # fc 6
+            nn.Linear(32, 16),
             nn.ReLU(),
             # output
             nn.Linear(16, num_actions),

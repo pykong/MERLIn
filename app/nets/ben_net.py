@@ -18,7 +18,9 @@ class BenNet(BaseNet):
         w_out_1 = self._calc_conv_outdim(y_dim, 8, 4, 1)
         h_out_2 = self._calc_conv_outdim(h_out_1, 4, 2, 1)
         w_out_2 = self._calc_conv_outdim(w_out_1, 4, 2, 1)
-        num_flat_features = h_out_2 * w_out_2
+        h_out_3 = self._calc_conv_outdim(h_out_2, 3, 1, 1)
+        w_out_3 = self._calc_conv_outdim(w_out_2, 3, 1, 1)
+        num_flat_features = h_out_3 * w_out_3
 
         # adapted from: https://github.com/KaleabTessera/DQN-Atari#dqn-neurips-architecture-implementation
         return nn.Sequential(
@@ -28,6 +30,10 @@ class BenNet(BaseNet):
             nn.ReLU(),
             # conv2
             nn.Conv2d(32, 64, kernel_size=4, stride=2, padding=1, bias=False),
+            nn.BatchNorm2d(64),
+            nn.ReLU(),
+            # conv3
+            nn.Conv2d(64, 64, kernel_size=3, stride=1, padding=1, bias=False),
             nn.BatchNorm2d(64),
             nn.ReLU(),
             # fc 1

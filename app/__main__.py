@@ -16,9 +16,16 @@ EXPERIMENT_DIR: Final[Path] = Path("experiments")
 RESULTS_DIR: Final[Path] = Path("results")
 
 
+def load_experiments_from_file(file: Path) -> list[Config]:
+    raw_dict = json.loads(file.read_text())
+    variations = raw_dict.pop("variations")
+    merged_dicts = [raw_dict | v for v in variations]
+    return [Config(**d) for d in merged_dicts]
+
+
 def load_experiments() -> list[Config]:
     files = EXPERIMENT_DIR.glob("*.json")
-    return [Config(**json.loads(f.read_text())) for f in files]
+    return [c for f in files for c in load_experiments_from_file(f)]
 
 
 def save_experiment(config: Config, file_path: Path) -> None:
@@ -46,7 +53,7 @@ def train():
         save_experiment(experiment, result_dir / "experiment.json")  # save parameters
 
         # start training
-        loop(experiment, result_dir)
+        # loop(experiment, result_dir)
 
 
 if __name__ == "__main__":

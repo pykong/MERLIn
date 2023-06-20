@@ -55,7 +55,7 @@ def train():
         save_experiment(experiment, result_dir / "experiment.json")  # save parameters
 
         # start training
-        # loop(experiment, result_dir)
+        loop(experiment, result_dir)
 
 
 if __name__ == "__main__":

@@ -16,10 +16,17 @@ EXPERIMENT_DIR: Final[Path] = Path("experiments")
 RESULTS_DIR: Final[Path] = Path("results")
 
 
+def unpack_variations(raw_dict: dict) -> list[dict]:
+    if "variations" not in raw_dict:
+        return [raw_dict]
+    variations = raw_dict.pop("variations")
+    variations = [c for v in variations for c in unpack_variations(v)]
+    return [raw_dict | v for v in variations]
+
+
 def load_experiments_from_file(file: Path) -> list[Config]:
     raw_dict = json.loads(file.read_text())
-    variations = raw_dict.pop("variations")
-    merged_dicts = [raw_dict | v for v in variations]
+    merged_dicts = unpack_variations(raw_dict)
     return [Config(**d) for d in merged_dicts]
 
 

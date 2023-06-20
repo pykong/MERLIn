@@ -6,7 +6,7 @@ from dataclasses import asdict
 sys.dont_write_bytecode = True
 
 from pathlib import Path
-from typing import Final, Iterable
+from typing import Final
 
 from .config import Config
 from .loop import loop

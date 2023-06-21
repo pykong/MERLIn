@@ -1,6 +1,5 @@
 import shutil
 from pathlib import Path
-from typing import Collection
 
 __all__ = ["ensure_empty_dirs"]
 

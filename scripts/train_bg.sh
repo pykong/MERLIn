@@ -9,7 +9,7 @@ mkdir -p results
 
 # start the long running process
 # replace 'long-running-command' with your actual command
-nohup long-running-command > results/nohup.log 2>&1 &
+nohup poetry run train > results/nohup.log 2>&1 &
 
 # get the process id of the long-running command
 pid=$!

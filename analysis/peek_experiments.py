@@ -14,18 +14,16 @@ def analyze(log_file: Path) -> None:
 
 
 def peek(dir: Path) -> None:
-    # exp_dirs = [
-    #     d for d in dir.iterdir() if d.is_dir() and d.name.startswith("experiment_")
-    # ]
-    # exp_dirs.sort()
     log_files = [f for f in dir.rglob("*.csv") if f.is_file()]
     log_files.sort()
-    print(log_files)
 
     all_data: list[pd.DataFrame] = []
     for i, f in enumerate(log_files):
         df = pd.read_csv(f)
-        df["experiment"] = f"experiment_{i}"
+        exp_name = f"experiment_{i}"
+        df["experiment"] = exp_name
+        reward_descr = df["reward"].describe()
+        Path(dir, "reward_" + exp_name + ".txt").write_text(str(reward_descr))
         all_data.append(df)
 
     # combine all dataframes

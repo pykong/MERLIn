@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
+SMOOTH_WINDOW = 20
+
 
 def analyze(log_file: Path) -> None:
     df = pd.read_csv(log_file)
@@ -22,6 +24,7 @@ def peek(dir: Path) -> None:
         df = pd.read_csv(f)
         exp_name = f"experiment_{i}"
         df["experiment"] = exp_name
+        df["reward_smooth"] = df["reward"].rolling(SMOOTH_WINDOW).mean()
         reward_descr = df["reward"].describe()
         Path(dir, "reward_" + exp_name + ".txt").write_text(str(reward_descr))
         all_data.append(df)
@@ -33,7 +36,9 @@ def peek(dir: Path) -> None:
     fig, ax1 = plt.subplots()
 
     # plot the mean reward and confidence intervals on the first y-axis
-    sns.lineplot(data=all_data, x="episode", y="reward", hue="experiment", ax=ax1)
+    sns.lineplot(
+        data=all_data, x="episode", y="reward_smooth", hue="experiment", ax=ax1
+    )
 
     # add a horizontal line at y=0
     ax1.axhline(0, color="grey", linestyle="--", linewidth=0.5)
@@ -59,7 +64,7 @@ def peek(dir: Path) -> None:
     # create a new legend with all lines
     ax1.legend(handles=handles, labels=labels)
 
-    plt.title("Reward and Epsilon over time")
+    plt.title("Smoothed Reward and Epsilon over time")
     plt.savefig(dir / "reward_plot.svg")
 
 

@@ -35,6 +35,16 @@ start training by simply invoking the following command:
 
 `poetry run train`
 
+#### Training in the background
+
+To start training in the background, to allow train to proceed beyond shell session,
+run the following script:
+
+`./scripts/traing_bg.sh`
+
+The script will also watch the generated log statements to provide continous console
+output.
+
 ### 3. Results
 
 #### Console output

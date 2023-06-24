@@ -8,10 +8,11 @@ sys.dont_write_bytecode = True
 from pathlib import Path
 from typing import Final
 
+from analysis.peek_experiments import peek
+
 from .config import Config
 from .loop import loop
 from .utils.file_utils import ensure_empty_dirs
-from analysis.peek_experiments import peek
 
 EXPERIMENT_DIR: Final[Path] = Path("experiments")
 RESULTS_DIR: Final[Path] = Path("results")
@@ -47,17 +48,17 @@ def train():
     experiments = load_experiments()
     if not experiments:
         raise ValueError("No experiments given. Exiting.")
-    
-    for i, experiment in enumerate(experiments):
-        pretty_print_config(experiment)
 
-        # create reult dir and persist experiment config
-        result_dir = RESULTS_DIR / f"experiment_{i}"
-        ensure_empty_dirs(result_dir)
-        save_experiment(experiment, result_dir / "experiment.json")  # save parameters
+    # for i, experiment in enumerate(experiments):
+    #     pretty_print_config(experiment)
 
-        # start training
-        loop(experiment, result_dir)
+    #     # create reult dir and persist experiment config
+    #     result_dir = RESULTS_DIR / f"experiment_{i}"
+    #     ensure_empty_dirs(result_dir)
+    #     save_experiment(experiment, result_dir / "experiment.json")  # save parameters
+
+    #     # start training
+    #     loop(experiment, result_dir)
 
     # analyze results
     peek(RESULTS_DIR)

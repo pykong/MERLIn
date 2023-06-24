@@ -49,16 +49,16 @@ def train():
     if not experiments:
         raise ValueError("No experiments given. Exiting.")
 
-    # for i, experiment in enumerate(experiments):
-    #     pretty_print_config(experiment)
+    for i, experiment in enumerate(experiments):
+        pretty_print_config(experiment)
 
-    #     # create reult dir and persist experiment config
-    #     result_dir = RESULTS_DIR / f"experiment_{i}"
-    #     ensure_empty_dirs(result_dir)
-    #     save_experiment(experiment, result_dir / "experiment.json")  # save parameters
+        # create reult dir and persist experiment config
+        result_dir = RESULTS_DIR / f"experiment_{i}"
+        ensure_empty_dirs(result_dir)
+        save_experiment(experiment, result_dir / "experiment.json")  # save parameters
 
-    #     # start training
-    #     loop(experiment, result_dir)
+        # start training
+        loop(experiment, result_dir)
 
     # analyze results
     peek(RESULTS_DIR)

@@ -36,6 +36,8 @@ class Config:
 
     batch_size (int): The batch size for learning. Default is 32.
 
+    use_amp (bool): Whether to use automatic mixed precision. Default is False.
+
     target_net_update_interval (int): The number of steps after which the target network should be updated. Default is 1024.
 
     model_save_interval (int): The number of steps after which the model should be saved. Default is 2048.
@@ -64,10 +66,10 @@ class Config:
     load_agent: bool = False
     alpha: float = 0.001
     epsilon_min: float = 0.1
-    gamma: float = 0.999  # discount factor gamma
+    gamma: float = 0.999
     memory_size: int = 5_000
     batch_size: int = 32
-    use_amp: bool = False  # TODO: put in docstr
+    use_amp: bool = False
 
     # extra agent parameters
     target_net_update_interval: int = 1024

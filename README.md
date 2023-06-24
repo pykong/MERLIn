@@ -24,9 +24,43 @@ This will train the agent `duelling_dqn` for 1000 episodes at a learning rate
 alpha of 0.5, while all other parameters will fall back to their default values
 as defined in the `Config` class.
 
-There is a one-to-one relationship between experiment definitions and
-experiments being run. This means each JSON file in the experiment folder will
-only result in a single experiment epoch being run.
+#### Nested element defintions
+
+Using the `variations` array different flavours of the same base configuration can
+be defined, as objects in that array. Deeper nested parameter will overwrite those,
+higher up. Variations can be nested.
+
+##### Variations Example
+
+```json
+{
+  "max_episodes": 1000,
+  "variations" : [
+     {},
+     {
+       "alpha": 0.01243
+     },
+     {
+       "max_episodes": 333,
+       "variations" : [
+         {
+           "gamma": 0.5,
+           "memory_size": 99000
+         },
+         {
+           "batch_size": 64
+         }
+       ]
+     }
+  ]
+}
+```
+
+The above configuration define the following experiments:
+1. `max_episodes: 1000`
+2. `max_episodes: 1000`, and `alpha: 0.01243`
+3. `max_episodes: 333`, `gamma: 0.5` and `memory_size: 99000`
+4. `max_episodes: 333`, and `batch_size: 64`
 
 ### 2. Start training
 
@@ -34,6 +68,16 @@ After defining at least one experiment as described in the previous section,
 start training by simply invoking the following command:
 
 `poetry run train`
+
+#### Training in the background
+
+To start training in the background, to allow train to proceed beyond shell session,
+run the following script:
+
+`./scripts/traing_bg.sh`
+
+The script will also watch the generated log statements to provide continous console
+output.
 
 ### 3. Results
 

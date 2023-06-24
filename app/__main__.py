@@ -11,6 +11,7 @@ from typing import Final
 from .config import Config
 from .loop import loop
 from .utils.file_utils import ensure_empty_dirs
+from analysis.peek_experiments import peek
 
 EXPERIMENT_DIR: Final[Path] = Path("experiments")
 RESULTS_DIR: Final[Path] = Path("results")
@@ -46,6 +47,7 @@ def train():
     experiments = load_experiments()
     if not experiments:
         raise ValueError("No experiments given. Exiting.")
+    
     for i, experiment in enumerate(experiments):
         pretty_print_config(experiment)
 
@@ -56,6 +58,9 @@ def train():
 
         # start training
         loop(experiment, result_dir)
+
+    # analyze results
+    peek(RESULTS_DIR)
 
 
 if __name__ == "__main__":

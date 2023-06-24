@@ -25,8 +25,11 @@ def peek(dir: Path) -> None:
         exp_name = f"experiment_{i}"
         df["experiment"] = exp_name
         df["reward_smooth"] = df["reward"].rolling(SMOOTH_WINDOW).mean()
+        df["time_per_step"] = df['time'] / df['steps'] 
         reward_descr = df["reward"].describe()
-        Path(dir, "reward_" + exp_name + ".txt").write_text(str(reward_descr))
+        time_per_step = df["time_per_step"].describe()
+        file_content = reward_descr + "\n" * 2 + time_per_step
+        Path(dir, exp_name + ".txt").write_text(file_content)
         all_data.append(df)
 
     # combine all dataframes

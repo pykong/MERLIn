@@ -32,6 +32,7 @@ logger.level(str(LogLevel.DEFEAT), no=49, icon="💀")
 logger.level(str(LogLevel.VIDEO), no=47, icon="🎥")
 logger.level(str(LogLevel.SAVE), no=46, icon="💾")
 logger.level(str(LogLevel.GREEN), no=36)
+logger.level(str(LogLevel.YELLOW), no=37)
 
 logger.add(
     sys.stderr,

@@ -73,6 +73,7 @@ def peek(dir_: Path) -> None:
         exp_name = f"experiment_{i}"
         df["experiment"] = exp_name
         save_summary(df, Path(dir_, exp_name + ".txt"))
+        plot_reward(df, Path(dir_, exp_name + ".svg"))
         all_data.append(df)
 
     # combine all dataframes

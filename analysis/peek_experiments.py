@@ -55,6 +55,14 @@ def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) ->
     plt.savefig(plot_file)
 
 
+def save_summary(df: pd.DataFrame, sum_file: Path) -> None:
+    df["time_per_step"] = df["time"] / df["steps"]
+    reward_descr = df["reward"].describe()
+    time_per_step = df["time_per_step"].describe()
+    file_content = str(reward_descr) + "\n" * 2 + str(time_per_step)
+    sum_file.write_text(file_content)
+
+
 def peek(dir_: Path) -> None:
     log_files = [f for f in dir_.rglob("*.csv") if f.is_file()]
     log_files.sort()
@@ -64,11 +72,7 @@ def peek(dir_: Path) -> None:
         df = pd.read_csv(f)
         exp_name = f"experiment_{i}"
         df["experiment"] = exp_name
-        df["time_per_step"] = df["time"] / df["steps"]
-        reward_descr = df["reward"].describe()
-        time_per_step = df["time_per_step"].describe()
-        file_content = str(reward_descr) + "\n" * 2 + str(time_per_step)
-        Path(dir_, exp_name + ".txt").write_text(file_content)
+        save_summary(df, Path(dir_, exp_name + ".txt"))
         all_data.append(df)
 
     # combine all dataframes

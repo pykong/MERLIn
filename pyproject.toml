@@ -31,11 +31,9 @@ packages = [
 
     [tool.poetry.scripts]
     train = "app.__main__:train"
-    eval = "analysis.multi_epa:eval"
+    analyze = "analysis.peek_experiments:analyze_results"
 
 [tool.poetry.group.dev.dependencies]
-ipykernel = "^6.23.1"
-
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"

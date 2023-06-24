@@ -1,7 +1,6 @@
 import sys
 from copy import deepcopy
 from pathlib import Path
-from typing import Final
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -83,6 +82,6 @@ def peek(dir_: Path) -> None:
     plot_reward(all_data, dir_ / "reward_plot.svg", SMOOTH_WINDOW)
 
 
-if __name__ == "__main__":
-    result_dir = Path(sys.argv[1]) / "results"
+def analyze_results():
+    result_dir = Path(sys.argv[1])  # point to result dir
     peek(result_dir)

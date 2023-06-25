@@ -178,10 +178,7 @@ def peek(dir_: Path) -> None:
 
     # plot reward
     plot_reward(all_data, dir_ / "reward_plot.svg", SMOOTH_WINDOW)
-    plot_reward_histogram(
-        all_data,
-        dir_ / "reward_hist.svg",
-    )
+    plot_reward_histogram(all_data, dir_ / "reward_hist.svg")
 
 
 def analyze_results():

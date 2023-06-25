@@ -62,6 +62,35 @@ def save_summary(df: pd.DataFrame, sum_file: Path) -> None:
     sum_file.write_text(file_content)
 
 
+def calculate_and_write_win_rate(df: pd.DataFrame, output_file: str) -> None:
+    # Ensure that the 'reward' and 'epsilon' columns exist
+    assert "reward" in df.columns, "DataFrame must have a 'reward' column"
+    assert "epsilon" in df.columns, "DataFrame must have an 'epsilon' column"
+
+    # Calculate min_epsilon
+    min_epsilon = df["epsilon"].min()
+
+    # Filter out the exploration phase
+    df = df[df["epsilon"] <= min_epsilon]
+
+    # Calculate win rate
+    total_episodes = len(df)
+    wins = len(df[df["reward"] > 0])
+    win_rate = wins / total_episodes if total_episodes > 0 else 0
+
+    # Convert win rate to percentage
+    win_rate_percent = win_rate * 100
+
+    # Prepare the output string
+    output_str = f"Total Episodes: {total_episodes}\nWins: {wins}\nWin Rate: {win_rate:.2f} ({win_rate_percent:.2f}%)"
+
+    # Write to the file
+    output_file_path = Path(output_file)
+    output_file_path.write_text(output_str)
+
+    print(f"Win rate has been written to {output_file_path.absolute()}")
+
+
 def peek(dir_: Path) -> None:
     log_files = [f for f in dir_.rglob("*.csv") if f.is_file()]
     log_files.sort()
@@ -72,6 +101,7 @@ def peek(dir_: Path) -> None:
         exp_name = f"experiment_{i}"
         df["experiment"] = exp_name
         save_summary(df, Path(dir_, exp_name + ".txt"))
+        calculate_and_write_win_rate(df, Path(dir_, exp_name + "_winrate" + ".txt"))
         plot_reward(df, Path(dir_, exp_name + ".svg"))
         all_data.append(df)
 

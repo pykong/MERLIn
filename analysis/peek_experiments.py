@@ -54,6 +54,33 @@ def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) ->
     plt.savefig(plot_file)
 
 
+def save_reward_histogram(df: pd.DataFrame, output_file: str) -> None:
+    # Ensure that the 'reward' and 'epsilon' columns exist
+    assert "reward" in df.columns, "DataFrame must have a 'reward' column"
+    assert "epsilon" in df.columns, "DataFrame must have an 'epsilon' column"
+
+    # Calculate min_epsilon
+    min_epsilon = df["epsilon"].min()
+
+    # Filter out the exploration phase
+    df = df[df["epsilon"] <= min_epsilon]
+
+    # Create the histogram
+    plt.hist(df["reward"], bins=20, edgecolor="black")
+    plt.title("Histogram of Rewards")
+    plt.xlabel("Reward")
+    plt.ylabel("Frequency")
+
+    # Save the histogram to a file
+    output_file_path = Path(output_file)
+    plt.savefig(output_file_path)
+
+    print(f"Histogram has been saved to {output_file_path.absolute()}")
+
+    # Clear the current figure
+    plt.clf()
+
+
 def save_summary(df: pd.DataFrame, sum_file: Path) -> None:
     df["time_per_step"] = df["time"] / df["steps"]
     reward_descr = df["reward"].describe()
@@ -108,6 +135,7 @@ def peek(dir_: Path) -> None:
         df["experiment"] = exp_name
         save_summary(df, Path(dir_, exp_name + ".txt"))
         calculate_and_write_win_rate(df, Path(dir_, exp_name + "_winrate" + ".txt"))
+        save_reward_histogram(df, Path(dir_, exp_name + "_distribution" + ".svg"))
         plot_reward(df, Path(dir_, exp_name + ".svg"))
         all_data.append(df)
 

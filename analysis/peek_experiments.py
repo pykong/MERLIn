@@ -54,6 +54,40 @@ def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) ->
     plt.savefig(plot_file)
 
 
+def plot_reward_histogram(df: pd.DataFrame, plot_file: Path) -> None:
+    df = deepcopy(df)
+
+    # Calculate min_epsilon for each experiment
+    min_epsilons = df.groupby("experiment")["epsilon"].min().to_dict()
+
+    # Filter out the exploration phase for each experiment
+    df = df[
+        df.apply(lambda row: row["epsilon"] <= min_epsilons[row["experiment"]], axis=1)
+    ]
+
+    # Create the histogram
+    plt.figure(figsize=(10, 6))
+    sns.histplot(
+        data=df,
+        x="reward",
+        hue="experiment",
+        element="step",
+        stat="density",
+        common_norm=False,
+    )
+    plt.title("Histogram of Rewards")
+    plt.xlabel("Reward")
+    plt.ylabel("Density")
+
+    # Save the histogram to a file
+    plt.savefig(plot_file)
+
+    print(f"Histogram has been saved to {plot_file.absolute()}")
+
+    # Clear the current figure
+    plt.clf()
+
+
 def save_reward_histogram(df: pd.DataFrame, output_file: str) -> None:
     # Ensure that the 'reward' and 'epsilon' columns exist
     assert "reward" in df.columns, "DataFrame must have a 'reward' column"
@@ -144,6 +178,10 @@ def peek(dir_: Path) -> None:
 
     # plot reward
     plot_reward(all_data, dir_ / "reward_plot.svg", SMOOTH_WINDOW)
+    plot_reward_histogram(
+        all_data,
+        dir_ / "reward_hist.svg",
+    )
 
 
 def analyze_results():

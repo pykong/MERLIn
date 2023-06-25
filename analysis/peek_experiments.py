@@ -82,7 +82,13 @@ def calculate_and_write_win_rate(df: pd.DataFrame, output_file: str) -> None:
     win_rate_percent = win_rate * 100
 
     # Prepare the output string
-    output_str = f"Total Episodes: {total_episodes}\nWins: {wins}\nWin Rate: {win_rate:.2f} ({win_rate_percent:.2f}%)"
+    output_str = "\n".join(
+        (
+            f"Total Episodes : {total_episodes}",
+            f"Wins           : {wins}",
+            f"Win Rate       : {win_rate:.2f} ({win_rate_percent:.2f}%)",
+        )
+    )
 
     # Write to the file
     output_file_path = Path(output_file)

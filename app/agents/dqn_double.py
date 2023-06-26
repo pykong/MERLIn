@@ -2,6 +2,7 @@ from copy import deepcopy
 from typing import Self
 
 import torch
+from torch import Tensor
 
 from ._base_agent import BaseAgent
 
@@ -34,9 +35,9 @@ class DoubleDQNAgent(BaseAgent):
 
         return losses
 
-    def _calc_max_q_prime(self: Self, next_states) -> float:
-        with torch.no_grad():
-            return self.target_model(next_states).max(1)[0].unsqueeze(1)
+    @torch.no_grad()
+    def _calc_max_q_prime(self: Self, next_states: Tensor) -> float:
+        return self.target_model(next_states).max(1)[0].unsqueeze(1)
 
     def __update_target(self: Self) -> None:
         """Copies the policy network parameters to the target network"""

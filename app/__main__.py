@@ -52,26 +52,32 @@ def pretty_print_config(config: Config) -> None:
 
 
 def train():
+    # glob experiment files
     experiment_files = [e for e in EXPERIMENT_DIR.glob("*.json")]
-    copy_orginal_files(experiment_files, RESULTS_DIR / "orig_files")
+    if not experiment_files:
+        raise ValueError("No experiment files found. Exiting.")
 
-    experiments = load_experiments(experiment_files)
-    if not experiments:
-        raise ValueError("No experiments given. Exiting.")
+    # run each experiment
+    for experiment_file in experiment_files:
+        exp_result_dir = RESULTS_DIR / experiment_file.stem
+        copy_orginal_files([experiment_file], exp_result_dir)
 
-    for i, experiment in enumerate(experiments):
-        pretty_print_config(experiment)
+        # run training for each variant of experiment
+        variants = load_experiments([experiment_file])
+        for i, variant in enumerate(variants):
+            # print out config to run
+            pretty_print_config(variant)
 
-        # create reult dir and persist experiment config
-        result_dir = RESULTS_DIR / f"experiment_{i}"
-        ensure_empty_dirs(result_dir)
-        save_experiment(experiment, result_dir / "experiment.json")  # save parameters
+            # create reult dir and persist experiment config
+            result_dir = exp_result_dir / f"variant_{i}"
+            ensure_empty_dirs(result_dir)
+            save_experiment(variant, result_dir / "variant.json")
 
-        # start training
-        loop(experiment, result_dir)
+            # start training
+            loop(variant, result_dir)
 
-    # analyze results
-    peek(RESULTS_DIR)
+        # analyze results
+        peek(exp_result_dir)
 
 
 if __name__ == "__main__":

@@ -29,13 +29,9 @@ class DoubleDQNAgent(BaseAgent):
         # target update logic
         self._step_counter += 1
         if self._step_counter % self.target_net_update_interval == 0:
-            self.__update_target()
+            self.target_model = deepcopy(self.model)
         return super().replay()
 
     @torch.no_grad()
     def _calc_max_q_prime(self: Self, next_states: Tensor) -> float:
         return self.target_model(next_states).max(1)[0].unsqueeze(1)
-
-    def __update_target(self: Self) -> None:
-        """Copies the policy network parameters to the target network"""
-        self.target_model = deepcopy(self.model)

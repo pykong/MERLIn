@@ -8,7 +8,7 @@ from ._base_agent import BaseAgent
 
 
 class DoubleDQNAgent(BaseAgent):
-    """An double deep-Q-network agent with a convolutional neural network structure."""
+    """A double deep-Q-network agent."""
 
     def __init__(
         self: Self,

@@ -7,7 +7,7 @@ from ._base_agent import BaseAgent
 
 
 class VanillaDQNAgent(BaseAgent):
-    """An vanilla deep-Q-network agent with a convolutional neural network structure."""
+    """A vanilla deep-Q-network agent."""
 
     @classmethod
     @property

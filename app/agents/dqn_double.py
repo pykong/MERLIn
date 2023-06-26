@@ -26,14 +26,11 @@ class DoubleDQNAgent(BaseAgent):
         return "double_dqn"
 
     def replay(self: Self) -> float:
-        losses = super().replay()
-
         # target update logic
         self._step_counter += 1
         if self._step_counter % self.target_net_update_interval == 0:
             self.__update_target()
-
-        return losses
+        return super().replay()
 
     @torch.no_grad()
     def _calc_max_q_prime(self: Self, next_states: Tensor) -> float:

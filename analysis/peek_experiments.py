@@ -88,7 +88,7 @@ def plot_reward_histogram(df: pd.DataFrame, plot_file: Path) -> None:
     plt.clf()
 
 
-def save_reward_histogram(df: pd.DataFrame, output_file: str) -> None:
+def save_reward_histogram(df: pd.DataFrame, output_file: Path) -> None:
     # Ensure that the 'reward' and 'epsilon' columns exist
     assert "reward" in df.columns, "DataFrame must have a 'reward' column"
     assert "epsilon" in df.columns, "DataFrame must have an 'epsilon' column"
@@ -115,15 +115,7 @@ def save_reward_histogram(df: pd.DataFrame, output_file: str) -> None:
     plt.clf()
 
 
-def save_summary(df: pd.DataFrame, sum_file: Path) -> None:
-    df["time_per_step"] = df["time"] / df["steps"]
-    reward_descr = df["reward"].describe()
-    time_per_step = df["time_per_step"].describe()
-    file_content = str(reward_descr) + "\n" * 2 + str(time_per_step)
-    sum_file.write_text(file_content)
-
-
-def calculate_and_write_win_rate(df: pd.DataFrame, output_file: str) -> None:
+def calculate_and_write_win_rate(df: pd.DataFrame) -> str:
     # Ensure that the 'reward' and 'epsilon' columns exist
     assert "reward" in df.columns, "DataFrame must have a 'reward' column"
     assert "epsilon" in df.columns, "DataFrame must have an 'epsilon' column"
@@ -143,42 +135,45 @@ def calculate_and_write_win_rate(df: pd.DataFrame, output_file: str) -> None:
     win_rate_percent = win_rate * 100
 
     # Prepare the output string
-    output_str = "\n".join(
+    return "\n".join(
         (
+            "-" * 7 + "Win-Rate" + "-" * 7,
             f"Total Episodes : {total_episodes}",
             f"Wins           : {wins}",
             f"Win Rate       : {win_rate:.2f} ({win_rate_percent:.2f}%)",
         )
     )
 
-    # Write to the file
-    output_file_path = Path(output_file)
-    output_file_path.write_text(output_str)
 
-    print(f"Win rate has been written to {output_file_path.absolute()}")
+def save_summary(df: pd.DataFrame, sum_file: Path) -> None:
+    df["time_per_step"] = df["time"] / df["steps"]
+    reward_descr = df["reward"].describe()
+    time_per_step = df["time_per_step"].describe()
+    file_content = str(reward_descr) + "\n" * 2 + str(time_per_step)
+    file_content += calculate_and_write_win_rate(df)
+    sum_file.write_text(file_content)
 
 
 def peek(dir_: Path) -> None:
     log_files = [f for f in dir_.rglob("*.csv") if f.is_file()]
     log_files.sort()
 
-    all_data: list[pd.DataFrame] = []
+    all_frames: list[pd.DataFrame] = []
     for i, f in enumerate(log_files):
         df = pd.read_csv(f)
         exp_name = f"experiment_{i}"
         df["experiment"] = exp_name
         save_summary(df, Path(dir_, exp_name + ".txt"))
-        calculate_and_write_win_rate(df, Path(dir_, exp_name + "_winrate" + ".txt"))
         save_reward_histogram(df, Path(dir_, exp_name + "_distribution" + ".svg"))
         plot_reward(df, Path(dir_, exp_name + ".svg"))
-        all_data.append(df)
+        all_frames.append(df)
 
     # combine all dataframes
-    all_data = pd.concat(all_data, ignore_index=True)
+    merged_frame = pd.concat(all_frames, ignore_index=True)
 
     # plot reward
-    plot_reward(all_data, dir_ / "reward_plot.svg", SMOOTH_WINDOW)
-    plot_reward_histogram(all_data, dir_ / "reward_hist.svg")
+    plot_reward(merged_frame, dir_ / "reward_plot.svg", SMOOTH_WINDOW)
+    plot_reward_histogram(merged_frame, dir_ / "reward_hist.svg")
 
 
 def analyze_results():

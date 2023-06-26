@@ -52,7 +52,7 @@ def pretty_print_config(config: Config) -> None:
 
 
 def train():
-    experiment_files = EXPERIMENT_DIR.glob("*.json")
+    experiment_files = [e for e in EXPERIMENT_DIR.glob("*.json")]
     copy_orginal_files(experiment_files, RESULTS_DIR / "orig_files")
 
     experiments = load_experiments(experiment_files)

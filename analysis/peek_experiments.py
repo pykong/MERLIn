@@ -11,12 +11,6 @@ from app.utils.file_utils import ensure_empty_dirs
 SMOOTH_WINDOW = 1
 
 
-def analyze(log_file: Path) -> None:
-    df = pd.read_csv(log_file)
-    descr = df["reward"].describe()
-    print(descr)
-
-
 def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) -> None:
     df = deepcopy(df)
     if smooth:

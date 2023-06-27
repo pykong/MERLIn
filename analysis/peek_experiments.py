@@ -31,9 +31,13 @@ def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) ->
 
     # plot epsilon on the second y-axis, using the epsilon values of
     #  the first agent's first run as representative
-    agent_df = df[(df["experiment"] == "experiment_0")]
     sns.lineplot(
-        data=agent_df, x="episode", y="epsilon", color="green", ax=ax2, legend=False
+        data=df[(df["experiment"] == "experiment_0")],
+        x="episode",
+        y="epsilon",
+        color="green",
+        ax=ax2,
+        legend=False,  # type:ignore
     )
     ax2.set_ylabel("Epsilon")
 

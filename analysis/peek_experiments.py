@@ -59,13 +59,11 @@ def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) ->
 def plot_reward_histogram(df: pd.DataFrame, plot_file: Path) -> None:
     df = deepcopy(df)
 
-    # Calculate min_epsilon for each experiment
-    min_epsilons = df.groupby("experiment")["epsilon"].min().to_dict()
+    # Calculate min_epsilon
+    min_epsilon = df["epsilon"].min()
 
-    # Filter out the exploration phase for each experiment
-    df = df[
-        df.apply(lambda row: row["epsilon"] <= min_epsilons[row["experiment"]], axis=1)
-    ]
+    # Filter out the exploration phase
+    df = df[df["epsilon"] <= min_epsilon]
 
     # Create the histogram
     plt.figure(figsize=(10, 6))
@@ -85,33 +83,6 @@ def plot_reward_histogram(df: pd.DataFrame, plot_file: Path) -> None:
     plt.savefig(plot_file)
 
     print(f"Histogram has been saved to {plot_file.absolute()}")
-
-    # Clear the current figure
-    plt.clf()
-
-
-def plot_reward_histogram(df: pd.DataFrame, output_file: Path) -> None:
-    # Ensure that the 'reward' and 'epsilon' columns exist
-    assert "reward" in df.columns, "DataFrame must have a 'reward' column"
-    assert "epsilon" in df.columns, "DataFrame must have an 'epsilon' column"
-
-    # Calculate min_epsilon
-    min_epsilon = df["epsilon"].min()
-
-    # Filter out the exploration phase
-    df = df[df["epsilon"] <= min_epsilon]
-
-    # Create the histogram
-    plt.hist(df["reward"], bins=20, edgecolor="black")
-    plt.title("Histogram of Rewards")
-    plt.xlabel("Reward")
-    plt.ylabel("Frequency")
-
-    # Save the histogram to a file
-    output_file_path = Path(output_file)
-    plt.savefig(output_file_path)
-
-    print(f"Histogram has been saved to {output_file_path.absolute()}")
 
     # Clear the current figure
     plt.clf()

@@ -8,7 +8,7 @@ import seaborn as sns
 
 from app.utils.file_utils import ensure_empty_dirs
 
-SMOOTH_WINDOW = 1
+SMOOTH_WINDOW = 20
 
 
 def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) -> None:

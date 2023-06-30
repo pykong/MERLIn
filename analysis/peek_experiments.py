@@ -8,7 +8,8 @@ import seaborn as sns
 
 from app.utils.file_utils import ensure_empty_dirs
 
-SMOOTH_WINDOW = 20
+SMOOTH_WINDOW = 25
+SKIP_FRAMES = 3500  # ignore exploration and expontential phase
 
 
 def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) -> None:
@@ -57,11 +58,8 @@ def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) ->
 def plot_reward_histogram(df: pd.DataFrame, plot_file: Path) -> None:
     df = deepcopy(df)
 
-    # Calculate min_epsilon
-    min_epsilon = df["epsilon"].min()
-
-    # Filter out the exploration phase
-    df = df[df["epsilon"] <= min_epsilon]
+    # Filter out the exploration and exponential phase
+    df = df.iloc[SKIP_FRAMES:]
 
     # Create the histogram
     plt.figure(figsize=(10, 6))
@@ -91,11 +89,8 @@ def calculate_and_write_win_rate(df: pd.DataFrame) -> str:
     assert "reward" in df.columns, "DataFrame must have a 'reward' column"
     assert "epsilon" in df.columns, "DataFrame must have an 'epsilon' column"
 
-    # Calculate min_epsilon
-    min_epsilon = df["epsilon"].min()
-
-    # Filter out the exploration phase
-    df = df[df["epsilon"] <= min_epsilon]
+    # Filter out the exploration and exponential phase
+    df = df.iloc[SKIP_FRAMES:]
 
     # Calculate win rate
     total_episodes = len(df)

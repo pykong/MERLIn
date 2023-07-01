@@ -111,13 +111,68 @@ def calculate_and_write_win_rate(df: pd.DataFrame) -> str:
     )
 
 
-def save_summary(df: pd.DataFrame, sum_file: Path) -> None:
-    df["time_per_step"] = df["time"] / df["steps"]
-    reward_descr = df["reward"].describe()
-    time_per_step = df["time_per_step"].describe()
-    file_content = str(reward_descr) + "\n" * 2 + str(time_per_step)
-    file_content += calculate_and_write_win_rate(df)
-    sum_file.write_text(file_content)
+def summarize_rl_data(df: pd.DataFrame, output_path: Path):
+    df = df.iloc[SKIP_FRAMES:]
+    summary_df = (
+        df.groupby("experiment")
+        .agg(
+            {
+                "reward": ["count", "mean", "std", "max"],
+                "steps": ["mean", "std", "max"],
+                "time": "sum",
+            }
+        )
+        .reset_index()
+    )
+
+    # rename columns
+    summary_df.columns = [
+        "experiment",
+        "episodes",
+        "mean_reward",
+        "std_reward",
+        "max_reward",
+        "mean_steps",
+        "std_steps",
+        "max_steps",
+        "total_time",
+    ]
+
+    # compute wins
+    wins = (
+        df[df["reward"] > 0]
+        .groupby("experiment")["reward"]
+        .count()
+        .reset_index()
+        .rename(columns={"reward": "wins"})
+    )
+    summary_df = summary_df.merge(wins, on="experiment", how="left")
+
+    # fill NaN values in 'wins' with 0 and calculate 'win_rate'
+    summary_df["wins"] = summary_df["wins"].fillna(0)
+    summary_df["win_rate"] = (summary_df["wins"] / summary_df["episodes"]) * 100
+
+    # compute mean_time_per_step
+    summary_df["mean_time_per_step"] = (
+        summary_df["total_time"] / df.groupby("experiment")["steps"].sum()
+    )
+
+    # round numerical columns to 2 decimal places for better readability
+    numerical_cols = [
+        "mean_reward",
+        "std_reward",
+        "max_reward",
+        "mean_steps",
+        "std_steps",
+        "max_steps",
+        "total_time",
+        "win_rate",
+        "mean_time_per_step",
+    ]
+    summary_df[numerical_cols] = summary_df[numerical_cols].round(2)
+
+    # write summary dataframe to CSV file
+    summary_df.to_csv(output_path, index=False)
 
 
 def peek(dir_: Path) -> None:
@@ -126,10 +181,9 @@ def peek(dir_: Path) -> None:
 
     # create sub-dirs
     analysis_dir = dir_ / "analysis"
-    summary_dir = analysis_dir / "summaries"
     reward_dir = analysis_dir / "reward"
     reward_dist_dir = analysis_dir / "reward_dist"
-    ensure_empty_dirs(analysis_dir, summary_dir, reward_dir, reward_dist_dir)
+    ensure_empty_dirs(analysis_dir, reward_dir, reward_dist_dir)
 
     # analyse individual variants
     all_frames: list[pd.DataFrame] = []
@@ -137,7 +191,7 @@ def peek(dir_: Path) -> None:
         df = pd.read_csv(f)
         exp_name = f"experiment_{i}"
         df["experiment"] = exp_name
-        save_summary(df, Path(summary_dir, exp_name + ".txt"))
+        # save_summary(df, Path(summary_dir, exp_name + ".txt"))
         plot_reward_histogram(df, Path(reward_dist_dir, exp_name + "_dist" + ".svg"))
         plot_reward(df, Path(reward_dir, exp_name + ".svg"))
         all_frames.append(df)
@@ -146,8 +200,9 @@ def peek(dir_: Path) -> None:
     merged_frame = pd.concat(all_frames, ignore_index=True)
 
     # plot reward
-    plot_reward(merged_frame, reward_dir / "all_rewards.svg", SMOOTH_WINDOW)
-    plot_reward_histogram(merged_frame, reward_dist_dir / "all_dist.svg")
+    plot_reward(merged_frame, analysis_dir / "all_rewards.svg", SMOOTH_WINDOW)
+    plot_reward_histogram(merged_frame, analysis_dir / "all_dist.svg")
+    summarize_rl_data(merged_frame, analysis_dir / "summary.csv")
 
 
 def analyze_results():

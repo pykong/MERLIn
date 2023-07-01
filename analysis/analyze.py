@@ -163,6 +163,23 @@ def summarize_rl_data(df: pd.DataFrame, output_path: Path):
         summary_df["total_time"] / df.groupby("experiment")["steps"].sum().values
     )
 
+    # reorder columns
+    cols = [
+        "experiment",
+        "episodes",
+        "mean_reward",
+        "std_reward",
+        "max_reward",
+        "wins",
+        "win_rate",
+        "mean_steps",
+        "std_steps",
+        "max_steps",
+        "total_time",
+        "mean_time_per_step",
+    ]
+    summary_df = summary_df[cols]
+
     # round numerical columns for better readability
     numerical_cols = [
         "mean_reward",

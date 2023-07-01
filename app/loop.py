@@ -165,7 +165,8 @@ def loop(config: Config, result_dir: Path):
 
         # save model
         if episode > 0 and (
-            episode % config.model_save_interval == 0 or episode == config.max_episodes
+            (config.model_save_interval and episode % config.model_save_interval == 0)
+            or episode == config.max_episodes  # always save at end of epoch
         ):
             model_name = f"{env.name}__{agent.name}__{config.net_name}__{episode}.pth"
             model_file = model_dir / model_name

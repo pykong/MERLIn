@@ -40,7 +40,7 @@ class Config:
 
     target_net_update_interval (int): The number of steps after which the target network should be updated. Default is 1024.
 
-    model_save_interval (int): The number of steps after which the model should be saved. Default is 2048.
+    model_save_interval (int?): The number of steps after which the model should be saved. If None model will be saved at the end of epoch only. Default is None.
 
     video_record_interval (int): The number of steps after which a video recording should be made. Default is 2500.
 
@@ -75,7 +75,7 @@ class Config:
     target_net_update_interval: int = 1024
 
     # save parameter
-    model_save_interval: int = 8192
+    model_save_interval: int | None = None
     video_record_interval: int = 2500
 
     # debugging

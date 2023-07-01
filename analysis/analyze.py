@@ -154,7 +154,7 @@ def summarize_rl_data(df: pd.DataFrame, output_path: Path):
 
     # compute mean_time_per_step
     summary_df["mean_time_per_step"] = (
-        summary_df["total_time"] / df.groupby("experiment")["steps"].sum()
+        summary_df["total_time"] / df.groupby("experiment")["steps"].sum().values
     )
 
     # round numerical columns to 2 decimal places for better readability

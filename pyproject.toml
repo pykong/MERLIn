@@ -24,7 +24,7 @@ packages = [
     [tool.poetry.dev-dependencies]
     black = "*"
     ruff = "*"
-    mypy = "*"
+    mypy = "*"gi
     deptry = "*"
     vulture = "*"
     pytest = "*"

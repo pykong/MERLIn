@@ -8,4 +8,4 @@ class DoubleDuelingDQNAgent(DuelingDQNAgent, DoubleDQNAgent):
     @classmethod
     @property
     def name(cls) -> str:
-        return " double_dueling_dqn"
+        return "double_dueling_dqn"

@@ -39,7 +39,7 @@ def make_net(name: str) -> BaseNet:
     return net()
 
 
-def make_agent(agent_name: str, net_name: str, load_agent: bool, **kwargs) -> BaseAgent:
+def make_agent(agent_name: str, net_name: str, **kwargs) -> BaseAgent:
     """Factory method to create agent."""
     agent_ = [a for a in agent_registry if a.name == agent_name][0]
     kwargs["net"] = make_net(net_name)  # TODO: This is dirty
@@ -121,7 +121,6 @@ def loop(config: Config, result_dir: Path):
     agent: BaseAgent = make_agent(
         config.agent_name,
         config.net_name,
-        config.load_agent,
         state_shape=input_shape,
         action_space=env.action_space.n,  # type: ignore
         gamma=config.gamma,

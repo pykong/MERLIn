@@ -176,14 +176,17 @@ def summarize_rl_data(df: pd.DataFrame, output_path: Path):
 
 
 def peek(dir_: Path) -> None:
-    log_files = [f for f in dir_.rglob("*.csv") if f.is_file()]
-    log_files.sort()
-
     # create sub-dirs
     analysis_dir = dir_ / "analysis"
     reward_dir = analysis_dir / "reward"
     reward_dist_dir = analysis_dir / "reward_dist"
     ensure_empty_dirs(analysis_dir, reward_dir, reward_dist_dir)
+
+    # glob log files
+    log_files = [
+        f for f in dir_.rglob("*.csv") if f.is_file() and f.parent is not analysis_dir
+    ]
+    log_files.sort()
 
     # analyse individual variants
     all_frames: list[pd.DataFrame] = []
@@ -191,7 +194,6 @@ def peek(dir_: Path) -> None:
         df = pd.read_csv(f)
         exp_name = f"experiment_{i}"
         df["experiment"] = exp_name
-        # save_summary(df, Path(summary_dir, exp_name + ".txt"))
         plot_reward_histogram(df, Path(reward_dist_dir, exp_name + "_dist" + ".svg"))
         plot_reward(df, Path(reward_dir, exp_name + ".svg"))
         all_frames.append(df)

@@ -145,6 +145,7 @@ class DqnBaseAgent(ABC, pl.LightningModule):
 
     @torch.no_grad()
     def act(self: Self, state) -> int:
+        """Take random action with probability epsilon, else take best action."""
         if np.random.rand() <= self.epsilon:
             return random.randrange(self.num_actions)
         state = torch.from_numpy(state).to(self.device_)
@@ -156,16 +157,31 @@ class DqnBaseAgent(ABC, pl.LightningModule):
             return self.model(x)
 
     def update_epsilon(self: Self, epsilon_step: float) -> None:
+        """Decrease epsilon linearly by epsilon step.
+
+        Args:
+            epsilon_step (float): The amount to subtract from epsilon.
+        """
         if self.epsilon > self.epsilon_min:
             self.epsilon -= epsilon_step
 
     def load(self: Self, name: Path) -> None:
+        """Load model from path.
+
+        Args:
+            name (Path): The path to the model file.
+        """
         checkpoint = torch.load(name)
         self.model.load_state_dict(checkpoint["model"])
         self.optimizer.load_state_dict(checkpoint["optimizer"])
         self.scaler.load_state_dict(checkpoint["scaler"])
 
     def save(self: Self, name: Path) -> None:
+        """Save model to path.
+
+        Args:
+            name (Path): The file path to save the model to.
+        """
         checkpoint = {
             "model": self.model.state_dict(),
             "optimizer": self.optimizer.state_dict(),

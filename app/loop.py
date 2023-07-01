@@ -29,18 +29,41 @@ def take_picture_of_state(state: np.ndarray, f_name: Path) -> None:
 
 
 def make_env(name: str, **kwargs) -> BaseEnvWrapper:
+    """Create environment wrapper of provided name.
+
+    Args:
+        name (str): The identifier string of the environment wrapper.
+
+    Returns:
+        BaseEnvWrapper: A wrapper instance of the environment.
+    """
     env_ = [e for e in env_registry if e.name == name][0]
     return env_(**kwargs)
 
 
 def make_net(name: str) -> BaseNet:
-    """Factory method to create neural net."""
+    """Create neural net of provided name.
+
+    Args:
+        name (str): The identifier string of the neural network.
+
+    Returns:
+        BaseNet: The neural network instance.
+    """
     net = [net for net in net_registry if net.name == name][0]
     return net()
 
 
 def make_agent(agent_name: str, net_name: str, **kwargs) -> DqnBaseAgent:
-    """Factory method to create agent."""
+    """Create agent of provided name and inject neural network.
+
+    Args:
+        agent_name (str): The identifier string of the agent.
+        net_name (str): The identifier string of the neural network.
+
+    Returns:
+        DqnBaseAgent: The agent instance.
+    """
     agent_ = [a for a in agent_registry if a.name == agent_name][0]
     kwargs["net"] = make_net(net_name)  # TODO: This is dirty
     return agent_(**kwargs)

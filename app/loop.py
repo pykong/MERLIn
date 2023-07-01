@@ -15,6 +15,7 @@ from .envs import BaseEnvWrapper, env_registry
 from .memory import Transition
 from .nets import BaseNet, net_registry
 from .utils.file_utils import ensure_empty_dirs
+from .utils.log_silencer import LogSilencer
 from .utils.logging import EpisodeLog, EpisodeLogger, LogLevel
 
 # set random seeds for reproducibility
@@ -109,10 +110,6 @@ def run_episode(
 
 
 def loop(config: Config, result_dir: Path):
-    # suppress moviepy output: ultimata ratio :-|
-    if not config.verbose:
-        sys.stdout = open(os.devnull, "w")
-
     # define and prepare result dirs
     model_dir: Final[Path] = result_dir / "model"
     video_dir: Final[Path] = result_dir / "video"
@@ -193,6 +190,8 @@ def loop(config: Config, result_dir: Path):
             logger.log(f"Saving model: {model_file}", LogLevel.SAVE)
             agent.save(model_file)
 
-        # close the video recorder
+        # close the video recorder<
         if recorder:
-            recorder.close()
+            with LogSilencer():
+                # shut the f*ck up moviepy!
+                recorder.close()

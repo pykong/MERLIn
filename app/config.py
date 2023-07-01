@@ -44,8 +44,6 @@ class Config:
 
     video_record_interval (int): The number of steps after which a video recording should be made. Default is 2500.
 
-    verbose (bool): If True, print extra information during training. Default is False.
-
     save_state_img (bool): If True, save images of the states during training. Default is False.
     """
 
@@ -76,8 +74,7 @@ class Config:
 
     # save parameter
     model_save_interval: int | None = None
-    video_record_interval: int = 2500
+    video_record_interval: int = 2
 
     # debugging
-    verbose: bool = False
     save_state_img: bool = False

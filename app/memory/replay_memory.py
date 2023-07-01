@@ -1,16 +1,9 @@
 from collections import deque
-from typing import Deque, NamedTuple, Self
+from typing import Deque, Self
 
 import numpy as np
-from numpy import ndarray
 
-
-class Transition(NamedTuple):
-    state: ndarray
-    action: int
-    reward: float
-    next_state: ndarray
-    done: bool
+from .transition import Transition
 
 
 class ReplayMemory:

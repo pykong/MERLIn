@@ -10,6 +10,11 @@ from ._base_agent import BaseAgent
 class DuelingDQNAgent(BaseAgent):
     """A dueling deep-Q-network agent."""
 
+    @classmethod
+    @property
+    def name(cls) -> str:
+        return "dueling_dqn"
+
     def __init__(
         self: Self,
         *args,
@@ -42,11 +47,6 @@ class DuelingDQNAgent(BaseAgent):
             nn.Linear(128, 1),
         )
         self.value.to(self.device_)
-
-    @classmethod
-    @property
-    def name(cls) -> str:
-        return "dueling_dqn"
 
     @torch.no_grad()
     def _calc_max_q_prime(self: Self, next_states: Tensor) -> float:

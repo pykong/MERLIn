@@ -10,6 +10,11 @@ from ._base_agent import BaseAgent
 class DoubleDQNAgent(BaseAgent):
     """A double deep-Q-network agent."""
 
+    @classmethod
+    @property
+    def name(cls) -> str:
+        return "double_dqn"
+
     def __init__(
         self: Self,
         *args,
@@ -19,11 +24,6 @@ class DoubleDQNAgent(BaseAgent):
         self._step_counter: int = 0
         super().__init__(*args, **kwargs)
         self.target_model = deepcopy(self.model)
-
-    @classmethod
-    @property
-    def name(cls) -> str:
-        return "double_dqn"
 
     def replay(self: Self) -> float:
         # target update logic

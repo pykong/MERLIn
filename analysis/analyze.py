@@ -112,7 +112,13 @@ def calculate_and_write_win_rate(df: pd.DataFrame) -> str:
 
 
 def summarize_rl_data(df: pd.DataFrame, output_path: Path):
-    df = df.iloc[SKIP_FRAMES:]
+    df = deepcopy(df)
+
+    def skip_frames(group):
+        return group.iloc[SKIP_FRAMES:]
+
+    df = df.groupby("experiment").apply(skip_frames).reset_index(drop=True)
+
     summary_df = (
         df.groupby("experiment")
         .agg(

@@ -11,7 +11,7 @@ import torch.optim as optim
 from torch import Tensor, nn
 
 from ..memory import ReplayMemory, Transition
-from ..nets._base_net import BaseNet
+from ..nets import BaseNet
 from ..utils.logging import LogLevel, logger
 
 

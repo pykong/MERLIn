@@ -9,7 +9,7 @@ import numpy as np
 import torch
 from gym.wrappers.monitoring import video_recorder as vr
 
-from .agents import BaseAgent, agent_registry
+from .agents import DqnBaseAgent, agent_registry
 from .config import Config
 from .envs import BaseEnvWrapper, env_registry
 from .memory import Transition
@@ -39,7 +39,7 @@ def make_net(name: str) -> BaseNet:
     return net()
 
 
-def make_agent(agent_name: str, net_name: str, **kwargs) -> BaseAgent:
+def make_agent(agent_name: str, net_name: str, **kwargs) -> DqnBaseAgent:
     """Factory method to create agent."""
     agent_ = [a for a in agent_registry if a.name == agent_name][0]
     kwargs["net"] = make_net(net_name)  # TODO: This is dirty
@@ -118,7 +118,7 @@ def loop(config: Config, result_dir: Path):
     )
 
     # create the policy network
-    agent: BaseAgent = make_agent(
+    agent: DqnBaseAgent = make_agent(
         config.agent_name,
         config.net_name,
         state_shape=input_shape,

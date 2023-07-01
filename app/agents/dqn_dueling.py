@@ -4,10 +4,10 @@ from typing import Self
 import torch
 from torch import Tensor, nn
 
-from ._base_agent import BaseAgent
+from ._dqn_base_agent import DqnBaseAgent
 
 
-class DuelingDQNAgent(BaseAgent):
+class DuelingDQNAgent(DqnBaseAgent):
     """A dueling deep-Q-network agent."""
 
     @classmethod

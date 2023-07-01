@@ -77,7 +77,10 @@ def train():
             loop(variant, result_dir)
 
         # analyze results
-        peek(exp_result_dir)
+        try:
+            peek(exp_result_dir)
+        except Exception as e:
+            print(f"Analysis failed:\n{e}")
 
 
 if __name__ == "__main__":

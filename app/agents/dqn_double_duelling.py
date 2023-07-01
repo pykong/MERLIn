@@ -2,7 +2,7 @@ from .dqn_double import DoubleDQNAgent
 from .dqn_dueling import DuelingDQNAgent
 
 
-class DoubleDuelingDQNAgent(DuelingDQNAgent, DoubleDQNAgent):
+class DoubleDuelingDQNAgent(DoubleDQNAgent, DuelingDQNAgent):
     """A chimeric agent combining aspects from double and dueling DQN learning."""
 
     @classmethod

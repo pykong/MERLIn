@@ -8,7 +8,7 @@ sys.dont_write_bytecode = True
 from pathlib import Path
 from typing import Final, Iterable
 
-from analysis.peek_experiments import peek
+from analysis.analyze import peek
 
 from .config import Config
 from .loop import loop

@@ -24,8 +24,6 @@ class Config:
 
     net_name (str): The name of the neural network to be used in the experiment. Default is 'neuroips_net'.
 
-    load_agent (bool): If True, load a pre-trained agent. Default is False.
-
     alpha (float): The learning rate of the agent. Default is 5e-5.
 
     epsilon_min (float): The minimum epsilon value for epsilon-greedy exploration. Default is 0.1.
@@ -63,7 +61,6 @@ class Config:
     # agent parameters
     agent_name: str = "double_dqn"
     net_name: str = "nature_net"
-    load_agent: bool = False
     alpha: float = 5e-5
     epsilon_min: float = 0.1
     gamma: float = 0.999

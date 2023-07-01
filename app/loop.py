@@ -43,10 +43,7 @@ def make_agent(agent_name: str, net_name: str, load_agent: bool, **kwargs) -> Ba
     """Factory method to create agent."""
     agent_ = [a for a in agent_registry if a.name == agent_name][0]
     kwargs["net"] = make_net(net_name)  # TODO: This is dirty
-    agent = agent_(**kwargs)
-    if load_agent:
-        raise NotImplementedError("Loading models currently not implemented.")
-    return agent
+    return agent_(**kwargs)
 
 
 def run_episode(

@@ -157,7 +157,8 @@ def loop(config: Config, result_dir: Path):
         # update epsilon
         if episode >= config.start_epsilon_decay:
             # TODO: Implement some form of logging
-            agent.update_epsilon()
+            # FIXME: The epsilon update is messed up, shared betweem loop and agent
+            agent.update_epsilon(config.epsilon_step)
 
         # save model
         if episode > 0 and (

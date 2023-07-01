@@ -28,7 +28,9 @@ class Config:
 
     epsilon_min (float): The minimum epsilon value for epsilon-greedy exploration. Default is 0.1.
 
-    gamma (float): The discount factor for future rewards. Default is 0.999.
+    epsilon_step (float): The absolute value to decrease epsilon by per episode. Default is 1e-3.
+
+    gamma (float): The discount factor for future rewards. Default is 0.99.
 
     memory_size (int): The size of the replay memory. Default is 50,000.
 
@@ -63,7 +65,8 @@ class Config:
     net_name: str = "nature_net"
     alpha: float = 5e-5
     epsilon_min: float = 0.1
-    gamma: float = 0.999
+    epsilon_step: float = 1e-3
+    gamma: float = 0.99
     memory_size: int = 50_000
     batch_size: int = 32
     use_amp: bool = True

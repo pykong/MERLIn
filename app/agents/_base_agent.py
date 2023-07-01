@@ -47,7 +47,7 @@ class BaseAgent(ABC, pl.LightningModule):
         alpha: float = 0.001,
         epsilon: float = 1.0,
         epsilon_min: float = 0.01,
-        gamma: float = 0.999,
+        gamma: float = 0.99,
         memory_size: int = 10_000,
         batch_size: int = 64,
         use_amp: bool = False,
@@ -155,9 +155,9 @@ class BaseAgent(ABC, pl.LightningModule):
         with torch.cuda.amp.autocast(enabled=self.use_amp):  # type:ignore
             return self.model(x)
 
-    def update_epsilon(self: Self) -> None:
+    def update_epsilon(self: Self, epsilon_step: float) -> None:
         if self.epsilon > self.epsilon_min:
-            self.epsilon *= self.gamma
+            self.epsilon -= epsilon_step
 
     def load(self: Self, name: Path) -> None:
         checkpoint = torch.load(name)

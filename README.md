@@ -26,23 +26,23 @@ as defined in the `Config` class.
 
 #### Nested element defintions
 
-Using the `variations` array different flavours of the same base configuration can
+Using the `variants` array different flavours of the same base configuration can
 be defined, as objects in that array. Deeper nested parameter will overwrite those,
-higher up. Variations can be nested.
+higher up. variants can be nested.
 
-##### Variations Example
+##### variants Example
 
 ```json
 {
   "max_episodes": 1000,
-  "variations" : [
+  "variants" : [
      {},
      {
        "alpha": 0.01243
      },
      {
        "max_episodes": 333,
-       "variations" : [
+       "variants" : [
          {
            "gamma": 0.5,
            "memory_size": 99000

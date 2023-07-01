@@ -26,17 +26,17 @@ def copy_orginal_files(files: Iterable[Path], dest_dir: Path) -> None:
         destination.write_bytes(file.read_bytes())
 
 
-def unpack_variations(raw_dict: dict) -> list[dict]:
-    if "variations" not in raw_dict:
+def unpack_variants(raw_dict: dict) -> list[dict]:
+    if "variants" not in raw_dict:
         return [raw_dict]
-    variations = raw_dict.pop("variations")
-    variations = [c for v in variations for c in unpack_variations(v)]
-    return [raw_dict | v for v in variations]
+    variants = raw_dict.pop("variants")
+    variants = [c for v in variants for c in unpack_variants(v)]
+    return [raw_dict | v for v in variants]
 
 
 def load_experiments(files: Iterable[Path]) -> list[Config]:
     raw_dicts = [json.loads(f.read_text()) for f in files]
-    return [Config(**c) for d in raw_dicts for c in unpack_variations(d)]
+    return [Config(**c) for d in raw_dicts for c in unpack_variants(d)]
 
 
 def save_experiment(config: Config, file_path: Path) -> None:

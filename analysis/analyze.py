@@ -157,7 +157,7 @@ def summarize_rl_data(df: pd.DataFrame, output_path: Path):
         summary_df["total_time"] / df.groupby("experiment")["steps"].sum().values
     )
 
-    # round numerical columns to 2 decimal places for better readability
+    # round numerical columns for better readability
     numerical_cols = [
         "mean_reward",
         "std_reward",
@@ -167,9 +167,9 @@ def summarize_rl_data(df: pd.DataFrame, output_path: Path):
         "max_steps",
         "total_time",
         "win_rate",
-        "mean_time_per_step",
     ]
     summary_df[numerical_cols] = summary_df[numerical_cols].round(2)
+    summary_df["mean_time_per_step"] = summary_df["mean_time_per_step"].round(5)
 
     # write summary dataframe to CSV file
     summary_df.to_csv(output_path, index=False)

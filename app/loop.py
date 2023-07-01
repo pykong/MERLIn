@@ -10,7 +10,7 @@ import torch
 from gym.wrappers.monitoring import video_recorder as vr
 
 from .agents import BaseAgent, agent_registry
-from .agents.replay_memory import Transition
+from .memory.replay_memory import Transition
 from .config import Config
 from .envs import BaseEnvWrapper, env_registry
 from .nets import BaseNet, net_registry

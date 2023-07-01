@@ -12,7 +12,7 @@ from torch import Tensor, nn
 
 from ..nets._base_net import BaseNet
 from ..utils.logging import LogLevel, logger
-from .replay_memory import ReplayMemory, Transition
+from ..memory.replay_memory import ReplayMemory, Transition
 
 
 class Minibatch(NamedTuple):

@@ -31,7 +31,7 @@ packages = [
 
     [tool.poetry.scripts]
     train = "app.__main__:train"
-    analyze = "analysis.peek_experiments:analyze_results"
+    analyze = "analysis.analyze:analyze_results"
 
 [tool.poetry.group.dev.dependencies]
 [build-system]

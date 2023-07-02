@@ -15,8 +15,8 @@ from .envs import BaseEnvWrapper, env_registry
 from .memory import Transition
 from .nets import BaseNet, net_registry
 from .utils.file_utils import ensure_empty_dirs
-from .utils.log_silencer import LogSilencer
 from .utils.logging import EpisodeLog, EpisodeLogger, LogLevel
+from .utils.silence_stdout import silence_stdout
 
 # set random seeds for reproducibility
 RANDOM_SEED: Final[int] = 0
@@ -25,7 +25,7 @@ np.random.seed(RANDOM_SEED)
 
 def take_picture_of_state(state: np.ndarray, f_name: Path) -> None:
     state_transposed = np.transpose(state, (1, 2, 0))
-    state_transposed *= 255  # enhance pixel brightness
+    state_transposed *= 255  # increase brightness
     cv.imwrite(str(f_name), state_transposed)
 
 
@@ -177,7 +177,7 @@ def loop(config: Config, result_dir: Path):
         # update epsilon
         if episode >= config.start_epsilon_decay:
             # TODO: Implement some form of logging
-            # FIXME: The epsilon update is messed up, shared betweem loop and agent
+            # FIXME: The epsilon update is messed up, shared between loop and agent
             agent.update_epsilon(config.epsilon_step)
 
         # save model
@@ -190,8 +190,8 @@ def loop(config: Config, result_dir: Path):
             logger.log(f"Saving model: {model_file}", LogLevel.SAVE)
             agent.save(model_file)
 
-        # close the video recorder<
+        # close the video recorder
         if recorder:
-            with LogSilencer():
-                # shut the f*ck up moviepy!
+            # shut the f*ck up, moviepy!
+            with silence_stdout():
                 recorder.close()

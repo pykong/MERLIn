@@ -8,7 +8,7 @@ class Config:
     Attributes:
     max_episodes (int): Maximum number of episodes to train on. Default is 5000.
 
-    start_epsilon_decay (int): The episode at which epsilon decay should start. Default is 1000.
+    epsilon_decay_start (int): The episode at which epsilon decay should start. Default is 1000.
 
     env_name (str): The name of the environment to be used in the experiment. Default is 'pong'.
 
@@ -47,10 +47,6 @@ class Config:
     save_state_img (bool): If True, save images of the states during training. Default is False.
     """
 
-    # training parameters
-    max_episodes: int = 5_000
-    start_epsilon_decay: int = 1_000
-
     # environment parameters
     env_name: str = "pong"
     frame_skip: int = 4
@@ -61,16 +57,17 @@ class Config:
     # agent parameters
     agent_name: str = "double_dqn"
     net_name: str = "nature_net"
+    target_net_update_interval: int = 1024
+
+    # training parameters
+    max_episodes: int = 5_000
     alpha: float = 5e-5
-    epsilon_min: float = 0.1
+    epsilon_decay_start: int = 1_000
     epsilon_step: float = 1e-3
+    epsilon_min: float = 0.1
     gamma: float = 0.99
     memory_size: int = 50_000
     batch_size: int = 32
-    use_amp: bool = True
-
-    # extra agent parameters
-    target_net_update_interval: int = 1024
 
     # save parameter
     model_save_interval: int | None = None
@@ -78,3 +75,6 @@ class Config:
 
     # debugging
     save_state_img: bool = False
+
+    # automatic mixed precision
+    use_amp: bool = True

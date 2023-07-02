@@ -175,7 +175,7 @@ def loop(config: Config, result_dir: Path):
         logger.log(episode_log)
 
         # update epsilon
-        if episode >= config.start_epsilon_decay:
+        if episode >= config.epsilon_decay_start:
             # TODO: Implement some form of logging
             # FIXME: The epsilon update is messed up, shared between loop and agent
             agent.update_epsilon(config.epsilon_step)

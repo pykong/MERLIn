@@ -16,6 +16,8 @@ class ReplayMemory:
         self.buffer.append(transition)
 
     def sample(self: Self) -> list[Transition]:
+        if len(self.buffer) == 0:
+            raise ValueError("Attempt to sample empty replay memory.")
         sample_size = min(len(self.buffer), self.batch_size)
         indices = np.random.choice(len(self.buffer), sample_size - 1, replace=False)
         batch = [self.buffer[i] for i in indices]

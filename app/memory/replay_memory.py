@@ -22,6 +22,11 @@ class ReplayMemory:
         indices = np.random.choice(len(self.buffer), sample_size - 1, replace=False)
         batch = [self.buffer[i] for i in indices]
         batch.append(self.buffer[-1])
+
+        # ensure correct batch size via padding
+        pad = [self.buffer[-1]] * (self.batch_size - len(batch))
+        batch.extend(pad)
+
         return batch
 
     def __len__(self: Self) -> int:

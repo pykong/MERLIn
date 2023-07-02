@@ -78,37 +78,8 @@ def plot_reward_histogram(df: pd.DataFrame, plot_file: Path) -> None:
     # Save the histogram to a file
     plt.savefig(plot_file)
 
-    print(f"Histogram has been saved to {plot_file.absolute()}")
-
     # Clear the current figure
     plt.clf()
-
-
-def calculate_and_write_win_rate(df: pd.DataFrame) -> str:
-    # Ensure that the 'reward' and 'epsilon' columns exist
-    assert "reward" in df.columns, "DataFrame must have a 'reward' column"
-    assert "epsilon" in df.columns, "DataFrame must have an 'epsilon' column"
-
-    # Filter out the exploration and exponential phase
-    df = df.iloc[SKIP_FRAMES:]
-
-    # Calculate win rate
-    total_episodes = len(df)
-    wins = len(df[df["reward"] > 0])
-    win_rate = wins / total_episodes if total_episodes > 0 else 0
-
-    # Convert win rate to percentage
-    win_rate_percent = win_rate * 100
-
-    # Prepare the output string
-    return "\n".join(
-        (
-            "\n\n" + "-" * 7 + "Win-Rate" + "-" * 7,
-            f"Total Episodes : {total_episodes}",
-            f"Wins           : {wins}",
-            f"Win Rate       : {win_rate:.2f} ({win_rate_percent:.2f}%)",
-        )
-    )
 
 
 def summarize_rl_data(df: pd.DataFrame, output_path: Path):
@@ -230,6 +201,8 @@ def peek(dir_: Path) -> None:
     plot_reward(merged_frame, analysis_dir / "all_rewards.svg", SMOOTH_WINDOW)
     plot_reward_histogram(merged_frame, analysis_dir / "all_dist.svg")
     summarize_rl_data(merged_frame, analysis_dir / "summary.csv")
+
+    print(f"Analysis saved to: {analysis_dir}")
 
 
 def analyze_results():

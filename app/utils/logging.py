@@ -88,7 +88,7 @@ class EpisodeLog:
             f"{self.episode:05d}",
             f"{self.epsilon:.3f}",
             f"{self.reward:06.2f}",
-            f"{self.loss:05.2f}",
+            f"{self.loss / self.steps :05.5f}",
             f"{self.steps:04d}",
             f"{self.time:05.2f}",
         )

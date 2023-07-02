@@ -74,7 +74,7 @@ class Config:
 
     # save parameter
     model_save_interval: int | None = None
-    video_record_interval: int = 2
+    video_record_interval: int = 2500
 
     # debugging
     save_state_img: bool = False

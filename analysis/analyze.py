@@ -55,6 +55,50 @@ def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) ->
     plt.savefig(plot_file)
 
 
+def plot_loss(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) -> None:
+    df = deepcopy(df)
+    df["loss_per_step"] = df["loss"] / df["steps"]
+    if smooth:
+        df["loss_per_step"] = df["loss_per_step"].rolling(smooth).mean()
+
+    # create a figure and a first axis for the reward
+    _, ax1 = plt.subplots()
+
+    # plot the mean reward and confidence intervals on the first y-axis
+    sns.lineplot(data=df, x="episode", y="loss_per_step", hue="experiment", ax=ax1)
+
+    # add a horizontal line at y=0
+    ax1.axhline(0, color="grey", linestyle="--", linewidth=0.5)
+    ax1.set_ylabel("Loss per step")
+
+    # create a second y-axis fr epsilon, sharing the x-axis with the first one
+    ax2 = ax1.twinx()
+
+    # plot epsilon on the second y-axis, using the epsilon values of
+    #  the first agent's first run as representative
+    sns.lineplot(
+        data=df[(df["experiment"] == "experiment_0")],
+        x="episode",
+        y="epsilon",
+        color="green",
+        ax=ax2,
+        legend=False,  # type:ignore
+    )
+    ax2.set_ylabel("Epsilon")
+
+    # get the handles and labels for all lines
+    handles, labels = ax1.get_legend_handles_labels()
+
+    # manually add the Epsilon label
+    labels += ["Epsilon"]
+
+    # create a new legend with all lines
+    ax1.legend(handles=handles, labels=labels)
+
+    plt.title(f"{'Smoothed' if smooth else ''} Loss and Epsilon over time")
+    plt.savefig(plot_file)
+
+
 def plot_reward_histogram(df: pd.DataFrame, plot_file: Path) -> None:
     df = deepcopy(df)
 
@@ -176,7 +220,8 @@ def peek(dir_: Path) -> None:
     analysis_dir = dir_ / "analysis"
     reward_dir = analysis_dir / "reward"
     reward_dist_dir = analysis_dir / "reward_dist"
-    ensure_empty_dirs(analysis_dir, reward_dir, reward_dist_dir)
+    loss_dir = analysis_dir / "loss"
+    ensure_empty_dirs(analysis_dir, reward_dir, reward_dist_dir, loss_dir)
 
     # glob log files
     log_files = [
@@ -192,6 +237,7 @@ def peek(dir_: Path) -> None:
         df["experiment"] = exp_name
         plot_reward_histogram(df, Path(reward_dist_dir, exp_name + "_dist" + ".svg"))
         plot_reward(df, Path(reward_dir, exp_name + ".svg"))
+        plot_loss(df, Path(loss_dir, exp_name + ".svg"))
         all_frames.append(df)
 
     # combine all dataframes
@@ -200,6 +246,7 @@ def peek(dir_: Path) -> None:
     # plot reward
     plot_reward(merged_frame, analysis_dir / "all_rewards.svg", SMOOTH_WINDOW)
     plot_reward_histogram(merged_frame, analysis_dir / "all_dist.svg")
+    plot_loss(merged_frame, analysis_dir / "all_losses.svg", SMOOTH_WINDOW)
     summarize_rl_data(merged_frame, analysis_dir / "summary.csv")
 
     print(f"Analysis saved to: {analysis_dir}")

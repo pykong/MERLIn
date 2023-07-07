@@ -22,7 +22,7 @@ class Config:
 
     agent_name (str): The name of the agent to be used in the experiment. Default is 'double_dqn'.
 
-    net_name (str): The name of the neural network to be used in the experiment. Default is 'neuroips_net'.
+    net_name (str): The name of the neural network to be used in the experiment. Default is 'conv_net'.
 
     alpha (float): The learning rate of the agent. Default is 5e-6.
 
@@ -56,7 +56,7 @@ class Config:
 
     # agent parameters
     agent_name: str = "double_dqn"
-    net_name: str = "nature_net"
+    net_name: str = "conv_net"
     target_net_update_interval: int = 1_024
 
     # training parameters

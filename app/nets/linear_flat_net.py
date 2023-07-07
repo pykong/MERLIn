@@ -3,11 +3,11 @@ from torch import nn
 from ._base_net import BaseNet
 
 
-class LinearMiniNet(BaseNet):
+class LinearFlatNet(BaseNet):
     @classmethod
     @property
     def name(cls) -> str:
-        return "linear_mini_net"
+        return "linear_flat_net"
 
     def _define_net(
         self, state_shape: tuple[int, int, int], num_actions: int

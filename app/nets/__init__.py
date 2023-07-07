@@ -1,11 +1,11 @@
 from ._base_net import BaseNet
-from .linear_mini_net import LinearMiniNet
-from .linear_net import LinearNet
+from .linear_flat_net import LinearFlatNet
+from .linear_deep_net import LinearDeepNet
 from .nature_net import NatureNet
 
 net_registry = [
-    LinearMiniNet,
-    LinearNet,
+    LinearFlatNet,
+    LinearDeepNet,
     NatureNet,
 ]
 

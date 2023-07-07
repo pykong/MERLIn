@@ -24,7 +24,7 @@ class Config:
 
     net_name (str): The name of the neural network to be used in the experiment. Default is 'neuroips_net'.
 
-    alpha (float): The learning rate of the agent. Default is 5e-5.
+    alpha (float): The learning rate of the agent. Default is 5e-6.
 
     epsilon_min (float): The minimum epsilon value for epsilon-greedy exploration. Default is 0.1.
 
@@ -32,7 +32,7 @@ class Config:
 
     gamma (float): The discount factor for future rewards. Default is 0.99.
 
-    memory_size (int): The size of the replay memory. Default is 50,000.
+    memory_size (int): The size of the replay memory. Default is 500,000.
 
     batch_size (int): The batch size for learning. Default is 32.
 
@@ -57,21 +57,21 @@ class Config:
     # agent parameters
     agent_name: str = "double_dqn"
     net_name: str = "nature_net"
-    target_net_update_interval: int = 1024
+    target_net_update_interval: int = 1_024
 
     # training parameters
     max_episodes: int = 5_000
-    alpha: float = 5e-5
+    alpha: float = 5e-6
     epsilon_decay_start: int = 1_000
     epsilon_step: float = 1e-3
     epsilon_min: float = 0.1
     gamma: float = 0.99
-    memory_size: int = 50_000
+    memory_size: int = 500_000
     batch_size: int = 32
 
     # save parameter
     model_save_interval: int | None = None
-    video_record_interval: int = 2500
+    video_record_interval: int = 2_500
 
     # debugging
     save_state_img: bool = False

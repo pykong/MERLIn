@@ -4,11 +4,12 @@ from torch import nn
 from ._base_net import BaseNet
 
 
-class NatureNet(BaseNet):
+class ConvNet(BaseNet):
+    """Convolutional neural network based on nature paper."""
     @classmethod
     @property
     def name(cls) -> str:
-        return "nature_net"
+        return "conv_net"
 
     def _define_net(
         self, state_shape: tuple[int, int, int], num_actions: int

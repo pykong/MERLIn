@@ -56,7 +56,7 @@ class Config:
 
     # agent parameters
     agent_name: str = "double_dqn"
-    net_name: str = "conv_net"
+    net_name: str = "linear_deep_net"
     target_net_update_interval: int = 1_024
 
     # training parameters

@@ -17,10 +17,10 @@ class LinearFlatNet(BaseNet):
         return nn.Sequential(
             # fc 1
             nn.Flatten(),
-            nn.Linear(input_dims, 1024),
+            nn.Linear(input_dims, 512),
             nn.ReLU(),
             # fc 2
-            nn.Linear(1024, 128),
+            nn.Linear(512, 128),
             nn.ReLU(),
             # output
             nn.Linear(128, num_actions),

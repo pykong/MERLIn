@@ -14,7 +14,7 @@ class Config:
 
     frame_skip (int): Number of frames to skip in the environment per action. Default is 4.
 
-    input_dim (int): The input dimension of the model. Default is 84.
+    input_dim (int): The input dimension of the model. Default is 64.
 
     num_stacked_frames (int): Number of frames to stack together as input for the model. Default is 4.
 
@@ -50,7 +50,7 @@ class Config:
     # environment parameters
     env_name: str = "pong"
     frame_skip: int = 4
-    input_dim: int = 84
+    input_dim: int = 64
     num_stacked_frames: int = 4
     step_penalty: float = 0.0
 

@@ -15,11 +15,12 @@ packages = [
     autorom = {extras = ["accept-rom-license"], version = "*"}
     opencv-python = "*"
     torch = "2.0.0"  # update once solved: https://github.com/pytorch/pytorch/issues/100974
-    lightning = {extras = ["extra"], version = "*"}
+    lightning = "2.0.1"
     moviepy = "^1.0.3"
     loguru = "^0.7.0"
     seaborn = "^0.12.2"
     scipy = "^1.10.1"
+    fastapi = ">=0.80"
 
     [tool.poetry.dev-dependencies]
     black = "*"
@@ -29,11 +30,13 @@ packages = [
     vulture = "*"
     pytest = "*"
 
+    [tool.poetry.group.dev.dependencies]
+    memray = "^1.8.1"
+
     [tool.poetry.scripts]
     train = "app.__main__:train"
     analyze = "analysis.analyze:analyze_results"
 
-[tool.poetry.group.dev.dependencies]
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"

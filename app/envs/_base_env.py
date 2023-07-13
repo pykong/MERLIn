@@ -43,7 +43,7 @@ class BaseEnvWrapper(gym.Wrapper, ABC):
         self: Self,
         state_dims: tuple[int, int],
         skip: int = 1,
-        step_penalty: float = 0,
+        step_penalty: float = 0.0,
         stack_size: int = 1,
     ):
         env = gym.make(self.env_name, render_mode="rgb_array")
@@ -54,11 +54,11 @@ class BaseEnvWrapper(gym.Wrapper, ABC):
         self.skip = skip
         self.step_penalty = step_penalty
         self.stack_size = stack_size
-        self.state_buffer = deque([], maxlen=self.stack_size)
+        self.state_buffer: deque[np.ndarray] = deque([], maxlen=self.stack_size)
 
-    def step(self: Self, action: int) -> Step:
+    def step(self: Self, action: int) -> Step:  # type:ignore
         action = list(self.valid_actions)[action]  # map to env action
-        total_reward = 0
+        total_reward = 0.0
         next_state = None
         reward = 0
         done = False
@@ -75,17 +75,19 @@ class BaseEnvWrapper(gym.Wrapper, ABC):
         stacked_state = self.__stack_frames(self.state_buffer)
         return Step(stacked_state, total_reward, done)
 
-    def reset(self: Self) -> np.ndarray:
+    def reset(self: Self) -> np.ndarray:  # type:ignore
         state = self.__preprocess_state(self.env.reset()[0], self.state_dims)
         self.state_buffer = deque([state] * self.stack_size, maxlen=self.stack_size)
         return self.__stack_frames(self.state_buffer)
 
     @staticmethod
-    def __stack_frames(state_buffer: deque) -> np.ndarray:
+    def __stack_frames(state_buffer: deque[np.ndarray]) -> np.ndarray:
         return np.concatenate(state_buffer, axis=1)
 
     @classmethod
-    def __preprocess_state(cls, state, state_dims: tuple[int, int]) -> np.ndarray:
+    def __preprocess_state(
+        cls, state: np.ndarray, state_dims: tuple[int, int]
+    ) -> np.ndarray:
         """Shapes the observation space."""
         state = cls._crop_state(state)
         state = cv.resize(state, state_dims, interpolation=cv.INTER_AREA)  # downsample
@@ -98,7 +100,7 @@ class BaseEnvWrapper(gym.Wrapper, ABC):
             alpha=0,
             beta=1,
             norm_type=cv.NORM_MINMAX,
-            dtype=cv.CV_32F,
+            dtype=cv.CV_32F,  # type:ignore
         )
         state = np.expand_dims(state, axis=0)  # prepend channel dimension
         return state

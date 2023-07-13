@@ -225,7 +225,9 @@ def peek(dir_: Path) -> None:
 
     # glob log files
     log_files = [
-        f for f in dir_.rglob("*.csv") if f.is_file() and f.parent is not analysis_dir
+        f
+        for f in dir_.rglob("train_log.csv")
+        if f.is_file() and f.parent is not analysis_dir
     ]
     log_files.sort()
 
@@ -233,7 +235,7 @@ def peek(dir_: Path) -> None:
     all_frames: list[pd.DataFrame] = []
     for i, f in enumerate(log_files):
         df = pd.read_csv(f)
-        exp_name = f"experiment_{i}"
+        exp_name = f.parent.name.split("_", 1)[1]
         df["experiment"] = exp_name
         plot_reward_histogram(df, Path(reward_dist_dir, exp_name + "_dist" + ".svg"))
         plot_reward(df, Path(reward_dir, exp_name + ".svg"))

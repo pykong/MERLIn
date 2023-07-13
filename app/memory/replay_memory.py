@@ -23,7 +23,7 @@ class ReplayMemory:
         return indices
 
     def sample(self: Self) -> list[Transition]:
-        if len(self.buffer) == 0:
+        if len(self) == 0:
             raise ValueError("Attempt to sample empty replay memory.")
 
         # sample batch

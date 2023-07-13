@@ -6,7 +6,7 @@ class Config:
     """A configuration object holding all parameters for an experiment.
 
     Attributes:
-    max_episodes (int): Maximum number of episodes to train on. Default is 5000.
+    episodes (int): Number of episodes to train on. Default is 5000.
 
     epsilon_decay_start (int): The episode at which epsilon decay should start. Default is 1000.
 
@@ -60,7 +60,7 @@ class Config:
     target_net_update_interval: int = 1_024
 
     # training parameters
-    max_episodes: int = 5_000
+    episodes: int = 5_000
     alpha: float = 5e-6
     epsilon_decay_start: int = 1_000
     epsilon_step: float = 1e-3

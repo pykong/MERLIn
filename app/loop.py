@@ -155,7 +155,7 @@ def loop(config: Config, result_dir: Path):
     logger = EpisodeLogger(log_file=result_dir / f"{env.name}_{agent.name}.csv")
 
     # run main loop
-    for episode in range(1, config.max_episodes + 1):
+    for episode in range(1, config.episodes + 1):
         # init episode logger
         episode_log = EpisodeLog(episode=episode, epsilon=agent.epsilon)
         episode_log.start_timer()
@@ -183,7 +183,7 @@ def loop(config: Config, result_dir: Path):
         # save model
         if episode > 0 and (
             (config.model_save_interval and episode % config.model_save_interval == 0)
-            or episode == config.max_episodes  # always save at end of epoch
+            or episode == config.episodes  # always save at end of epoch
         ):
             model_name = f"{env.name}__{agent.name}__{config.net_name}__{episode}.pth"
             model_file = model_dir / model_name

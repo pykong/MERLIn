@@ -150,7 +150,7 @@ def loop(config: Config, result_dir: Path) -> None:
     )
 
     # init logger
-    logger = EpisodeLogger(log_file=result_dir / f"{env.name}_{agent.name}.csv")
+    logger = EpisodeLogger(log_file=result_dir / f"train_log.csv")
 
     # run main loop
     for episode in range(1, config.episodes + 1):

@@ -6,6 +6,17 @@ import numpy as np
 from .transition import Transition
 
 
+def ensure_transitions(func):
+    """Ensure buffer has at least one transition, else raise ValueError."""
+
+    def _decorator(self, *args, **kwargs):
+        if len(self) == 0:
+            raise ValueError("Attempt to sample empty replay memory.")
+        return func(self, *args, **kwargs)
+
+    return _decorator
+
+
 class ReplayMemory:
     def __init__(self: Self, capacity: int, batch_size: int):
         self.capacity = capacity
@@ -15,6 +26,7 @@ class ReplayMemory:
     def push(self: Self, transition: Transition) -> None:
         self.buffer.append(transition)
 
+    @ensure_transitions
     def __draw_random_indices(self: Self) -> list[int]:
         """Draw random indices, always include most recent transition."""
         sample_size = min(len(self.buffer), self.batch_size) - 1
@@ -22,10 +34,8 @@ class ReplayMemory:
         indices.append(-1)
         return indices
 
+    @ensure_transitions
     def sample(self: Self) -> list[Transition]:
-        if len(self) == 0:
-            raise ValueError("Attempt to sample empty replay memory.")
-
         # sample batch
         indices = self.__draw_random_indices()
         batch = [self.buffer[i] for i in indices]

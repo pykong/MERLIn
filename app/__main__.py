@@ -6,7 +6,7 @@ from dataclasses import asdict
 sys.dont_write_bytecode = True
 
 from pathlib import Path
-from typing import Final, Iterable
+from typing import Any, Final, Iterable
 
 from analysis.analyze import peek
 
@@ -26,7 +26,7 @@ def copy_orginal_files(files: Iterable[Path], dest_dir: Path) -> None:
         destination.write_bytes(file.read_bytes())
 
 
-def unpack_variants(raw_dict: dict) -> list[dict]:
+def unpack_variants(raw_dict: dict[str, Any]) -> list[dict[str, Any]]:
     if "variants" not in raw_dict:
         return [raw_dict]
     variants = raw_dict.pop("variants")

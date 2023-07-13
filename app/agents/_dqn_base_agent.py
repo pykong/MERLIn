@@ -1,7 +1,7 @@
 import random
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import NamedTuple, Self
+from typing import Any, NamedTuple, Optional, Self
 
 import lightning.pytorch as pl
 import numpy as np
@@ -51,7 +51,7 @@ class DqnBaseAgent(ABC, pl.LightningModule):
         memory_size: int = 10_000,
         batch_size: int = 64,
         use_amp: bool = False,
-        **kwargs,
+        **kwargs: Optional[Any],
     ):
         super().__init__()
         self.state_shape = state_shape
@@ -110,10 +110,10 @@ class DqnBaseAgent(ABC, pl.LightningModule):
         raise NotImplementedError()
 
     def _encode_minibatch(self: Self, transitions: list[Transition]) -> Minibatch:
-        def encode_array(states) -> Tensor:
+        def encode_array(states: list[np.ndarray]) -> Tensor:
             return torch.from_numpy(np.array(states)).to(self.device_).float()
 
-        def encode_number(number) -> Tensor:
+        def encode_number(number: list[float] | list[int]) -> Tensor:
             return torch.tensor(number, device=self.device_).unsqueeze(-1)
 
         states = [t.state for t in transitions]
@@ -130,7 +130,7 @@ class DqnBaseAgent(ABC, pl.LightningModule):
             dones=encode_number(dones),
         )
 
-    def _update_weights(self: Self, losses) -> None:
+    def _update_weights(self: Self, losses: Tensor) -> None:
         self.optimizer.zero_grad(set_to_none=True)
         self.scaler.scale(losses).backward()  # type: ignore
         # Unscales the gradients of optimizer's assigned params in-place
@@ -144,7 +144,7 @@ class DqnBaseAgent(ABC, pl.LightningModule):
         self.memory.push(transition)
 
     @torch.no_grad()
-    def act(self: Self, state) -> int:
+    def act(self: Self, state: np.ndarray) -> int:
         """Take random action with probability epsilon, else take best action."""
         if np.random.rand() <= self.epsilon:
             return random.randrange(self.num_actions)
@@ -152,9 +152,9 @@ class DqnBaseAgent(ABC, pl.LightningModule):
         act_values = self.forward(state.unsqueeze(0))
         return act_values.argmax().item()
 
-    def forward(self: Self, x):
+    def forward(self: Self, x: Tensor) -> Tensor:
         with torch.cuda.amp.autocast(enabled=self.use_amp):  # type:ignore
-            return self.model(x)
+            return self.model(x)  # type:ignore
 
     def update_epsilon(self: Self, epsilon_step: float) -> None:
         """Decrease epsilon linearly by epsilon step.

@@ -1,8 +1,6 @@
-import os
 import random
-import sys
 from pathlib import Path
-from typing import Final
+from typing import Any, Final
 
 import cv2 as cv
 import numpy as np
@@ -29,7 +27,7 @@ def take_picture_of_state(state: np.ndarray, f_name: Path) -> None:
     cv.imwrite(str(f_name), state_transposed)
 
 
-def make_env(name: str, **kwargs) -> BaseEnvWrapper:
+def make_env(name: str, **kwargs: Any) -> BaseEnvWrapper:
     """Create environment wrapper of provided name.
 
     Args:
@@ -55,7 +53,7 @@ def make_net(name: str) -> BaseNet:
     return net()
 
 
-def make_agent(agent_name: str, net_name: str, **kwargs) -> DqnBaseAgent:
+def make_agent(agent_name: str, net_name: str, **kwargs: Any) -> DqnBaseAgent:
     """Create agent of provided name and inject neural network.
 
     Args:
@@ -71,7 +69,7 @@ def make_agent(agent_name: str, net_name: str, **kwargs) -> DqnBaseAgent:
 
 
 def run_episode(
-    agent,
+    agent: DqnBaseAgent,
     env: BaseEnvWrapper,
     episode_log: EpisodeLog,
     recorder: vr.VideoRecorder | None,
@@ -109,7 +107,7 @@ def run_episode(
             take_picture_of_state(state, img_file)
 
 
-def loop(config: Config, result_dir: Path):
+def loop(config: Config, result_dir: Path) -> None:
     # define and prepare result dirs
     model_dir: Final[Path] = result_dir / "model"
     video_dir: Final[Path] = result_dir / "video"

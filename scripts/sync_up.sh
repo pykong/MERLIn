@@ -11,7 +11,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
 # Load configurations
-source sync.cfg
+source ../sync.cfg
 
 # Configure list of files to be transferred
 include_file=$(mktemp)

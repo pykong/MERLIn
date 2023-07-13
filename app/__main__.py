@@ -45,7 +45,6 @@ def save_experiment(config: Config, file_path: Path) -> None:
 
 
 def pretty_print_config(config: Config) -> None:
-    # Note: Will likely not print upon repeated test runs due to sys.stdout deactivated
     print(f"Conducting experiment with:")
     pprint.pprint(asdict(config), sort_dicts=False, indent=2)
     print("\n")

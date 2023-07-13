@@ -6,6 +6,8 @@ class Config:
     """A configuration object holding all parameters for an experiment.
 
     Attributes:
+    id (str): Unique id of the experiment.
+
     episodes (int): Number of episodes to train on. Default is 5000.
 
     epsilon_decay_start (int): The episode at which epsilon decay should start. Default is 1000.
@@ -46,6 +48,9 @@ class Config:
 
     save_state_img (bool): If True, save images of the states during training. Default is False.
     """
+
+    # id
+    id: str
 
     # environment parameters
     env_name: str = "pong"

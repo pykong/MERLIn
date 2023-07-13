@@ -68,7 +68,7 @@ def train():
             pretty_print_config(variant)
 
             # create reult dir and persist experiment config
-            result_dir = exp_result_dir / f"variant_{i}"
+            result_dir = exp_result_dir / f"{i}_{variant.id}"
             ensure_empty_dirs(result_dir)
             save_experiment(variant, result_dir / "variant.json")
 

@@ -22,15 +22,13 @@ packages = [
     scipy = "^1.10.1"
     fastapi = ">=0.80"
 
-    [tool.poetry.dev-dependencies]
+    [tool.poetry.group.dev.dependencies]
     black = "*"
     ruff = "*"
     mypy = "*"
     deptry = "*"
     vulture = "*"
     pytest = "*"
-
-    [tool.poetry.group.dev.dependencies]
     memray = "^1.8.1"
 
     [tool.poetry.scripts]

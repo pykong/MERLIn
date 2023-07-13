@@ -35,15 +35,18 @@ class ReplayMemory:
         return indices
 
     @ensure_transitions
-    def sample(self: Self) -> list[Transition]:
-        # sample batch
-        indices = self.__draw_random_indices()
-        batch = [self.buffer[i] for i in indices]
-
-        # ensure correct batch size via padding
+    def __pad_batch(self: Self, batch: list[Transition]) -> list[Transition]:
+        """Pad batch if it is smaller than configured size."""
         pad = [self.buffer[-1]] * (self.batch_size - len(batch))
         batch.extend(pad)
+        return batch
 
+    @ensure_transitions
+    def sample(self: Self) -> list[Transition]:
+        """Sample batch of pre-configured size."""
+        indices = self.__draw_random_indices()
+        batch = [self.buffer[i] for i in indices]
+        batch = self.__pad_batch(batch)
         return batch
 
     def __len__(self: Self) -> int:

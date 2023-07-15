@@ -37,12 +37,9 @@ class ReplayMemory:
         return indices
 
     @ensure_transitions
-    def __pad_batch(self: Self, batch: list[Transition]) -> list[Transition]:
+    def __pad_indices(self: Self, batch: list[int]) -> list[int]:
         """Pad batch if it is smaller than configured size."""
-
-        pad = [pickle.loads(zlib.decompress(self.buffer[-1]))] * (
-            self.batch_size - len(batch)
-        )
+        pad = [-1] * (self.batch_size - len(batch))
         batch.extend(pad)
         return batch
 
@@ -50,8 +47,8 @@ class ReplayMemory:
     def sample(self: Self) -> list[Transition]:
         """Sample batch of pre-configured size."""
         indices = self.__draw_random_indices()
+        indices = self.__pad_indices(indices)
         batch = [pickle.loads(zlib.decompress(self.buffer[i])) for i in indices]
-        batch = self.__pad_batch(batch)
         return batch
 
     def __len__(self: Self) -> int:

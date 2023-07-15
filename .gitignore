@@ -159,3 +159,5 @@ experiments/
 *.h5
 *.pth
 analysis/out/
+profile.html
+profile.json

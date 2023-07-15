@@ -10,7 +10,7 @@ packages = [
 ]
 
     [tool.poetry.dependencies]
-    python = ">=3.11,<3.12"
+    python = ">3.11.0,<3.12"
     gym = {extras = ["atari"], version = "*"}
     autorom = {extras = ["accept-rom-license"], version = "*"}
     opencv-python = "*"
@@ -29,7 +29,10 @@ packages = [
     deptry = "*"
     vulture = "*"
     pytest = "*"
-    memray = "^1.8.1"
+    absolufy-imports = "^0.3.1"
+
+    [tool.poetry.group.profiling.dependencies]
+    scalene = "^1.5.21.4"
 
     [tool.poetry.scripts]
     train = "app.__main__:train"

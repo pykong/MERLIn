@@ -1,3 +1,5 @@
+import pickle
+import zlib
 from collections import deque
 from typing import Deque, Self
 
@@ -24,7 +26,7 @@ class ReplayMemory:
         self.buffer: Deque[Transition] = deque(maxlen=capacity)
 
     def push(self: Self, transition: Transition) -> None:
-        self.buffer.append(transition)
+        self.buffer.append(zlib.compress(pickle.dumps(transition)))
 
     @ensure_transitions
     def __draw_random_indices(self: Self) -> list[int]:
@@ -37,7 +39,10 @@ class ReplayMemory:
     @ensure_transitions
     def __pad_batch(self: Self, batch: list[Transition]) -> list[Transition]:
         """Pad batch if it is smaller than configured size."""
-        pad = [self.buffer[-1]] * (self.batch_size - len(batch))
+
+        pad = [pickle.loads(zlib.decompress(self.buffer[-1]))] * (
+            self.batch_size - len(batch)
+        )
         batch.extend(pad)
         return batch
 
@@ -45,7 +50,7 @@ class ReplayMemory:
     def sample(self: Self) -> list[Transition]:
         """Sample batch of pre-configured size."""
         indices = self.__draw_random_indices()
-        batch = [self.buffer[i] for i in indices]
+        batch = [pickle.loads(zlib.decompress(self.buffer[i])) for i in indices]
         batch = self.__pad_batch(batch)
         return batch
 

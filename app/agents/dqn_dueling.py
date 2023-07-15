@@ -4,7 +4,7 @@ from typing import Self
 import torch
 from torch import Tensor, nn
 
-from ._dqn_base_agent import DqnBaseAgent
+from app.agents._dqn_base_agent import DqnBaseAgent
 
 
 class DuelingDQNAgent(DqnBaseAgent):

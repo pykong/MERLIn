@@ -7,14 +7,14 @@ import numpy as np
 import torch
 from gym.wrappers.monitoring import video_recorder as vr
 
-from .agents import DqnBaseAgent, agent_registry
-from .config import Config
-from .envs import BaseEnvWrapper, env_registry
-from .memory import Transition
-from .nets import BaseNet, net_registry
-from .utils.file_utils import ensure_empty_dirs
-from .utils.logging import EpisodeLog, EpisodeLogger, LogLevel
-from .utils.silence_stdout import silence_stdout
+from app.agents import DqnBaseAgent, agent_registry
+from app.config import Config
+from app.envs import BaseEnvWrapper, env_registry
+from app.memory import Transition
+from app.nets import BaseNet, net_registry
+from app.utils.file_utils import ensure_empty_dirs
+from app.utils.logging import EpisodeLog, EpisodeLogger, LogLevel
+from app.utils.silence_stdout import silence_stdout
 
 # set random seeds for reproducibility
 RANDOM_SEED: Final[int] = 0

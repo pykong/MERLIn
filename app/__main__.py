@@ -10,9 +10,9 @@ from typing import Any, Final, Iterable
 
 from analysis.analyze import peek
 
-from .config import Config
-from .loop import loop
-from .utils.file_utils import ensure_empty_dirs
+from app.config import Config
+from app.loop import loop
+from app.utils.file_utils import ensure_empty_dirs
 
 EXPERIMENT_DIR: Final[Path] = Path("experiments")
 RESULTS_DIR: Final[Path] = Path("results")

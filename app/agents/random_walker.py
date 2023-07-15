@@ -4,8 +4,8 @@ from typing import Self
 
 from torch import Tensor
 
-from ..memory import Transition
-from ._dqn_base_agent import DqnBaseAgent
+from app.memory import Transition
+from app.agents._dqn_base_agent import DqnBaseAgent
 
 
 class RandomWalkerAgent(DqnBaseAgent):

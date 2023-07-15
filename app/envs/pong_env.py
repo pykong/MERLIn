@@ -1,7 +1,7 @@
 import numpy as np
 
-from ._base_env import BaseEnvWrapper
-from .action import Action
+from app.envs._base_env import BaseEnvWrapper
+from app.envs.action import Action
 
 
 class PongEnvWrapper(BaseEnvWrapper):

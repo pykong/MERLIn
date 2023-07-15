@@ -10,9 +10,9 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torch import Tensor, nn
 
-from ..memory import ReplayMemory, Transition
-from ..nets import BaseNet
-from ..utils.logging import LogLevel, logger
+from app.memory import ReplayMemory, Transition
+from app.nets import BaseNet
+from app.utils.logging import LogLevel, logger
 
 
 class Minibatch(NamedTuple):

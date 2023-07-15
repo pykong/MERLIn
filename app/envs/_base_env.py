@@ -7,7 +7,7 @@ import gym
 import numpy as np
 from gym.spaces import Discrete
 
-from .step import Step
+from app.envs.step import Step
 
 
 class BaseEnvWrapper(gym.Wrapper, ABC):

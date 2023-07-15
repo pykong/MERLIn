@@ -1,5 +1,5 @@
-from .dqn_double import DoubleDQNAgent
-from .dqn_dueling import DuelingDQNAgent
+from app.agents.dqn_double import DoubleDQNAgent
+from app.agents.dqn_dueling import DuelingDQNAgent
 
 
 class DoubleDuelingDQNAgent(DoubleDQNAgent, DuelingDQNAgent):

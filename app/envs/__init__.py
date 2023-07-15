@@ -1,5 +1,5 @@
-from ._base_env import BaseEnvWrapper
-from .pong_env import PongEnvWrapper
+from app.envs._base_env import BaseEnvWrapper
+from app.envs.pong_env import PongEnvWrapper
 
 env_registry = [PongEnvWrapper]
 

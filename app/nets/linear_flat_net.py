@@ -1,6 +1,6 @@
 from torch import nn
 
-from ._base_net import BaseNet
+from app.nets._base_net import BaseNet
 
 
 class LinearFlatNet(BaseNet):

@@ -3,7 +3,7 @@ from typing import Deque, Self
 
 import numpy as np
 
-from .transition import Transition
+from app.memory.transition import Transition
 
 
 def ensure_transitions(func):

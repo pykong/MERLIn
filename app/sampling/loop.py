@@ -95,10 +95,17 @@ def run_multiprocess_loop(config: SamplingConfig, output_dir: Path) -> None:
 
     # while processes are running, print the size of the dumps
     while any(p.is_alive() for p in processes):
-        print(f"Unbiased dump size: {len(unbiased_dump)}")
-        print(f"Negative dump size: {len(negative_dump)}")
-        print(f"Positive dump size: {len(positive_dump)}")
-        time.sleep(1)  # sleep for a while to not overload the console output
+        print(
+            "Dump sizes: "
+            + " | ".join(
+                (
+                    f"unbiased: {len(unbiased_dump):06d}",
+                    f"negative: {len(negative_dump):06d}",
+                    f"positive: {len(positive_dump):06d}",
+                )
+            )
+        )
+        time.sleep(5)  # sleep for a while to not overload the console output
 
     # wait for all processes to finish
     for p in processes:

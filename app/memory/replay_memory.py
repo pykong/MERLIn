@@ -1,6 +1,7 @@
 import pickle
 import zlib
 from collections import deque
+from pathlib import Path
 from typing import Deque, Self
 
 import numpy as np
@@ -20,14 +21,22 @@ def ensure_transitions(func):
 
 
 class ReplayMemory:
-    def __init__(self: Self, capacity: int, batch_size: int):
+    def __init__(self: Self, capacity: int, batch_size: int, preload_memory: Path):
         self.capacity = capacity
         self.batch_size = batch_size
         self.buffer: Deque[bytes] = deque(maxlen=capacity)
+        if preload_memory:
+            self.__fill_buffer_from_file(preload_memory)
 
     def push(self: Self, transition: Transition) -> None:
         bytes_ = zlib.compress(pickle.dumps(transition))
         self.buffer.append(bytes_)
+
+    def __fill_buffer_from_file(self: Self, memory_file: Path) -> None:
+        with open(memory_file, "+rb") as mf:
+            all_bytes_ = pickle.load(mf)
+            self.buffer.extend(all_bytes_[: self.capacity])
+            print(f"Preloaded {len(all_bytes_)} transitions from {memory_file}")
 
     def __getitem__(self: Self, index: int) -> Transition:
         bytes_ = self.buffer[index]

@@ -49,6 +49,7 @@ class DqnBaseAgent(ABC, pl.LightningModule):
         epsilon_min: float = 0.01,
         gamma: float = 0.99,
         memory_size: int = 10_000,
+        preload_memory: Path = None,
         batch_size: int = 64,
         use_amp: bool = False,
         **kwargs: Optional[Any],
@@ -61,7 +62,7 @@ class DqnBaseAgent(ABC, pl.LightningModule):
         self.epsilon_min = epsilon_min
         self.gamma = gamma
         self.use_amp = use_amp
-        self.memory = ReplayMemory(capacity=memory_size, batch_size=batch_size)
+        self.memory = ReplayMemory(memory_size, batch_size, preload_memory)
         self.device_: torch.device = get_torch_device()
         self.model = net.build_net(self.state_shape, self.num_actions, self.device_)
         self.optimizer = optim.RMSprop(self.model.parameters(), lr=alpha)

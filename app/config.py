@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from pathlib import Path
 
 
 @dataclass
@@ -34,9 +35,11 @@ class Config:
 
     gamma (float): The discount factor for future rewards. Default is 0.99.
 
+    batch_size (int): The batch size for learning. Default is 32.
+
     memory_size (int): The size of the replay memory. Default is 500,000.
 
-    batch_size (int): The batch size for learning. Default is 32.
+    preload_memory (Path?): Path to load presampled memory from if given. Default is None.
 
     use_amp (bool): Whether to use automatic mixed precision. Default is True.
 
@@ -71,8 +74,9 @@ class Config:
     epsilon_step: float = 1e-3
     epsilon_min: float = 0.1
     gamma: float = 0.99
-    memory_size: int = 500_000
     batch_size: int = 32
+    memory_size: int = 500_000
+    preload_memory: Path | None = None
 
     # save parameter
     model_save_interval: int | None = None

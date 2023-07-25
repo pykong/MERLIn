@@ -145,6 +145,7 @@ def loop(config: Config, result_dir: Path) -> None:
         alpha=config.alpha,
         epsilon_min=config.epsilon_min,
         memory_size=config.memory_size,
+        preload_memory=config.preload_memory,
         batch_size=config.batch_size,
         target_net_update_interval=config.target_net_update_interval,
     )

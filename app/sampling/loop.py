@@ -34,8 +34,8 @@ class TransitionDump:
     def is_full(self: Self) -> bool:
         return len(self) >= self.capacity
 
-    def save_buffer(self: Self) -> None:  # new method to save the buffer to a file
-        path = Path(f"{self.name}.pkl")
+    def save_buffer(self: Self, output_dir: Path) -> None:
+        path = output_dir / f"{self.name}.pickle"
         with path.open("wb") as f:
             pickle.dump(self.buffer[:], f)  # write the buffer to a file
 
@@ -72,7 +72,7 @@ def loop(config: SamplingConfig, dumps: tuple) -> None:
             dumps[2].push(transition)
 
 
-def run_multiprocess_loop(config: SamplingConfig):
+def run_multiprocess_loop(config: SamplingConfig, output_dir: Path) -> None:
     # init dumps
     unbiased_dump = TransitionDump(config.sample_count, "unbiased_dump")
     negative_dump = TransitionDump(config.sample_count, "negative_dump")
@@ -106,4 +106,4 @@ def run_multiprocess_loop(config: SamplingConfig):
 
     # after all processes are done, save the buffers
     for dump in dumps:
-        dump.save_buffer()
+        dump.save_buffer(output_dir)

@@ -15,7 +15,8 @@ def load_sampling_config() -> SamplingConfig:
 def sample():
     print("Sample called.")
     config = load_sampling_config()
-    run_multiprocess_loop(config)
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    run_multiprocess_loop(config, DATA_DIR)
 
 
 if __name__ == "__main__":

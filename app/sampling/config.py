@@ -4,7 +4,7 @@ from dataclasses import dataclass
 @dataclass
 class SamplingConfig:
     # sampling parameters
-    sample_count: int = 1_000
+    sample_count: int = 100
 
     # environment parameters
     env_name: str = "pong"

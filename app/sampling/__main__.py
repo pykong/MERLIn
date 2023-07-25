@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 from typing import Final
 
@@ -9,7 +10,8 @@ SAMPLE_CONFIG_PATH: Final[Path] = DATA_DIR / "sampling.json"
 
 
 def load_sampling_config() -> SamplingConfig:
-    return SamplingConfig()
+    raw_dict = json.loads(SAMPLE_CONFIG_PATH.read_text())
+    return SamplingConfig(**raw_dict)
 
 
 def sample():

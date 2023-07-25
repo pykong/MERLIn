@@ -1,4 +1,5 @@
 import json
+from dataclasses import asdict
 from pathlib import Path
 from typing import Final
 
@@ -11,7 +12,13 @@ SAMPLE_CONFIG_PATH: Final[Path] = DATA_DIR / "sampling.json"
 
 def load_sampling_config() -> SamplingConfig:
     raw_dict = json.loads(SAMPLE_CONFIG_PATH.read_text())
-    return SamplingConfig(**raw_dict)
+    config = SamplingConfig(**raw_dict)
+
+    # back sync sampling config file
+    json_str = json.dumps(asdict(config), indent=4)
+    SAMPLE_CONFIG_PATH.write_text(json_str)
+
+    return config
 
 
 def sample():

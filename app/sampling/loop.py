@@ -1,4 +1,3 @@
-import logging
 import logging.handlers
 import multiprocessing
 import pickle
@@ -6,7 +5,6 @@ import random
 import time
 import zlib
 from pathlib import Path
-from queue import Empty
 from typing import Self
 
 from app.loop import make_env

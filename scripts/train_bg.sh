@@ -7,13 +7,19 @@
 # ensure the 'results' directory exists
 mkdir -p results
 
+# get the directory of the current script
+dir=$(dirname "$0")
+
+# start the monitoring script in the background
+# replace 'monitor.sh' with your actual script name
+nohup "$dir/monitor.sh" > results/monitor.log 2>&1 &
+monitor_pid=$!
+echo "Started monitoring with pid $monitor_pid"
+
 # start the long running process
 # replace 'long-running-command' with your actual command
 nohup poetry run train > results/nohup.log 2>&1 &
-
-# get the process id of the long-running command
 pid=$!
-
 echo "Started long running process with pid $pid"
 
 # start a loop in the background that waits for the long running process
@@ -23,8 +29,9 @@ echo "Started long running process with pid $pid"
 # wait for the long-running process to finish
 wait $pid
 
-# once it finishes, kill the tail process
+# once it finishes, kill the tail process and the monitoring script
 kill $(cat tail.pid)
+kill $monitor_pid
 
 # cleanup
 rm tail.pid

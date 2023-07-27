@@ -1,4 +1,3 @@
-import logging.handlers
 import multiprocessing
 import pickle
 import random
@@ -66,19 +65,15 @@ def loop(config: SamplingConfig, dumps: tuple) -> None:
         dumps[0].push(transition)
         if reward < 0.0:
             dumps[1].push(transition)
-        if reward > 0.0:
-            dumps[2].push(transition)
 
 
 def run_multiprocess_loop(config: SamplingConfig, output_dir: Path) -> None:
     # init dumps
     unbiased_dump = TransitionDump(config.sample_count, "unbiased_dump")
     negative_dump = TransitionDump(config.sample_count, "negative_dump")
-    positive_dump = TransitionDump(config.sample_count, "positive_dump")
     dumps = (
         unbiased_dump,
         negative_dump,
-        positive_dump,
     )
 
     # create processes
@@ -99,7 +94,6 @@ def run_multiprocess_loop(config: SamplingConfig, output_dir: Path) -> None:
                 (
                     f"unbiased: {len(unbiased_dump):06d}",
                     f"negative: {len(negative_dump):06d}",
-                    f"positive: {len(positive_dump):06d}",
                 )
             )
         )

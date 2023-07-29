@@ -1,5 +1,13 @@
 #!/bin/sh
 
+shutdown=false
+
+# Check if the first argument is --shutdown
+if [ "$1" = "--shutdown" ]
+then
+  shutdown=true
+fi
+
 # This scripts starts training in the background.
 # The output will be directed to a log file in results/.
 # That log file is going to be watched until the training ends.
@@ -35,3 +43,10 @@ kill $monitor_pid
 
 # cleanup
 rm tail.pid
+
+# If the shutdown argument was passed, shutdown the system
+if $shutdown
+then
+  echo "Shutting down..."
+  sudo shutdown -h now
+fi

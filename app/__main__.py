@@ -73,7 +73,7 @@ def pretty_print_config(config: Config) -> None:
 def train_variant(variant):
     # ensure result dirs
     exp_result_dir = RESULTS_DIR / variant.experiment_id
-    result_dir = exp_result_dir / f"{variant.run_id}_{variant.variant_id}"
+    result_dir = exp_result_dir / f"{variant.variant_id}_{variant.run_id}"
     ensure_dirs(exp_result_dir, result_dir)
 
     # persist config for reproducibility

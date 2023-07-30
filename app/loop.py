@@ -16,10 +16,6 @@ from app.utils.file_utils import ensure_empty_dirs
 from app.utils.logging import EpisodeLog, EpisodeLogger, LogLevel
 from app.utils.silence_stdout import silence_stdout
 
-# set random seeds for reproducibility
-RANDOM_SEED: Final[int] = 0
-np.random.seed(RANDOM_SEED)
-
 
 def take_picture_of_state(state: np.ndarray, f_name: Path) -> None:
     state_transposed = np.transpose(state, (1, 2, 0))
@@ -126,6 +122,9 @@ def loop(config: Config, result_dir: Path) -> None:
     torch.autograd.profiler.emit_nvtx(enabled=False)
     torch.autograd.profiler.profile(enabled=False)
 
+    # set seed for reproducibility
+    np.random.seed(config.run_id)
+
     # create environment
     env = make_env(
         config.env_name,
@@ -155,7 +154,13 @@ def loop(config: Config, result_dir: Path) -> None:
     # run main loop
     for episode in range(1, config.episodes + 1):
         # init episode logger
-        episode_log = EpisodeLog(episode=episode, epsilon=agent.epsilon)
+        episode_log = EpisodeLog(
+            episode=episode,
+            epsilon=agent.epsilon,
+            experiment_id=config.experiment_id,
+            variant_id=config.variant_id,
+            run_id=config.run_id,
+        )
         episode_log.start_timer()
 
         # set up the video recorder

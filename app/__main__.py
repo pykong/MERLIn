@@ -1,21 +1,24 @@
 import json
 import pprint
 import sys
+from copy import deepcopy
 from dataclasses import asdict
 
 sys.dont_write_bytecode = True
 
+from multiprocessing import Pool, cpu_count
 from pathlib import Path
 from typing import Any, Final, Iterable
 
 from analysis.analyze import peek
-
 from app.config import Config
 from app.loop import loop
-from app.utils.file_utils import ensure_empty_dirs
+from app.utils.file_utils import ensure_dirs
 
 EXPERIMENT_DIR: Final[Path] = Path("experiments")
 RESULTS_DIR: Final[Path] = Path("results")
+NUM_WORKERS: Final[int] = cpu_count() - 1
+NUM_RUNS: Final[int] = 3
 
 
 def copy_orginal_files(files: Iterable[Path], dest_dir: Path) -> None:
@@ -39,6 +42,23 @@ def load_experiments(files: Iterable[Path]) -> list[Config]:
     return [Config(**c) for d in raw_dicts for c in unpack_variants(d)]
 
 
+def validate_variants(variants: list[Config]) -> None:
+    if not variants:
+        raise ValueError("No experiment files found. Exiting.")
+    if len(variants) != len(set(variants)):
+        raise ValueError("Variants found not to be unique.")
+
+
+def multiply_variants(variants: list[Config]) -> list[Config]:
+    multiplied_variants: list[Config] = []
+    for v in variants:
+        for i in range(1, NUM_RUNS):
+            run_config = deepcopy(v)
+            run_config.run_id = i
+            multiplied_variants.append(run_config)
+    return multiplied_variants
+
+
 def save_experiment(config: Config, file_path: Path) -> None:
     with open(file_path, "w") as f:
         json.dump(asdict(config), f, indent=4)
@@ -50,36 +70,40 @@ def pretty_print_config(config: Config) -> None:
     print("\n")
 
 
+def train_variant(variant):
+    # ensure result dirs
+    exp_result_dir = RESULTS_DIR / variant.experiment_id
+    result_dir = exp_result_dir / f"{variant.variant_id}_{variant.run_id}"
+    ensure_dirs(exp_result_dir, result_dir)
+
+    # persist config for reproducibility
+    save_experiment(variant, result_dir / "variant.json")
+
+    # start training
+    loop(variant, result_dir)
+
+
 def train():
     # glob experiment files
     experiment_files = [e for e in EXPERIMENT_DIR.glob("*.json")]
-    if not experiment_files:
-        raise ValueError("No experiment files found. Exiting.")
+    variants = load_experiments(experiment_files)
 
-    # run each experiment
-    for experiment_file in experiment_files:
-        exp_result_dir = RESULTS_DIR / experiment_file.stem
-        copy_orginal_files([experiment_file], exp_result_dir)
+    # some validation
+    validate_variants(variants)
 
-        # run training for each variant of experiment
-        variants = load_experiments([experiment_file])
-        for i, variant in enumerate(variants):
-            # print out config to run
-            pretty_print_config(variant)
+    # clone config for each run
+    variants = multiply_variants(variants)
 
-            # create reult dir and persist experiment config
-            result_dir = exp_result_dir / f"{i}_{variant.id}"
-            ensure_empty_dirs(result_dir)
-            save_experiment(variant, result_dir / "variant.json")
+    # train in parallel
+    with Pool(NUM_WORKERS) as p:
+        p.map(train_variant, variants)
 
-            # start training
-            loop(variant, result_dir)
-
-        # analyze results
+    # analyze results
+    for result_dir in RESULTS_DIR.glob("*"):
         try:
-            peek(exp_result_dir)
-        except Exception as e:
-            print(f"Analysis failed:\n{e}")
+            peek(result_dir)
+        except:
+            print(f"Analysis failed for: {result_dir}")
 
 
 if __name__ == "__main__":

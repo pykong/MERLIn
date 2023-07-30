@@ -69,6 +69,9 @@ logger.add(
 @dataclass
 class EpisodeLog:
     episode: int
+    experiment_id: str
+    variant_id: str
+    run_id: int
     epsilon: float
     reward: float = 0.0
     loss: float = 0.0
@@ -80,12 +83,14 @@ class EpisodeLog:
 
     def stop_timer(self: Self) -> None:
         if self.__start_time is None:
-            raise ValueError("Timer has not been started.")
+            raise ValueError("Timer has not been started.") 
         self.time = time.time() - self.__start_time
 
     def __str__(self: Self) -> str:
         fields = (
             f"{self.episode:05d}",
+            f"{self.experiment_id:<12}",
+            f"{str(self.run_id) + '@' + self.variant_id :<15}",
             f"{self.epsilon:.3f}",
             f"{self.reward:06.2f}",
             f"{self.loss / self.steps :05.5f}",

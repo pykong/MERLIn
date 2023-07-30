@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Self
 
 
 @dataclass
@@ -6,7 +7,11 @@ class Config:
     """A configuration object holding all parameters for an experiment.
 
     Attributes:
-    id (str): Unique id of the experiment.
+    experiment_id (str): Unique id of the experiment.
+
+    variant_id (str): Unique id of the variant of an experiment.
+
+    run_id (int): Unique id of the run of a variant. Default 0.
 
     episodes (int): Number of episodes to train on. Default is 5000.
 
@@ -50,7 +55,9 @@ class Config:
     """
 
     # id
-    id: str
+    experiment_id: str
+    variant_id: str
+    run_id: int = 0
 
     # environment parameters
     env_name: str = "pong"
@@ -83,3 +90,7 @@ class Config:
 
     # automatic mixed precision
     use_amp: bool = True
+
+    def __hash__(self: Self) -> int:
+        """Define hash based on compositition of the three ids."""
+        return hash((self.experiment_id, self.variant_id, self.run_id))

@@ -1,6 +1,7 @@
 import json
 import pprint
 import sys
+from copy import deepcopy
 from dataclasses import asdict
 
 sys.dont_write_bytecode = True
@@ -17,6 +18,7 @@ from app.utils.file_utils import ensure_dirs
 EXPERIMENT_DIR: Final[Path] = Path("experiments")
 RESULTS_DIR: Final[Path] = Path("results")
 NUM_WORKERS: Final[int] = 2
+NUM_RUNS: Final[int] = 3
 
 
 def copy_orginal_files(files: Iterable[Path], dest_dir: Path) -> None:
@@ -45,6 +47,16 @@ def validate_variants(variants: list[Config]) -> None:
         raise ValueError("No experiment files found. Exiting.")
     if len(variants) != len(set(variants)):
         raise ValueError("Variants found not to be unique.")
+
+
+def multiply_variants(variants: list[Config]) -> list[Config]:
+    multiplied_variants: list[Config] = []
+    for v in variants:
+        for i in range(1, NUM_RUNS):
+            run_config = deepcopy(v)
+            run_config.run_id = i
+            multiplied_variants.append(run_config)
+    return multiplied_variants
 
 
 def save_experiment(config: Config, file_path: Path) -> None:
@@ -79,7 +91,10 @@ def train():
     # some validation
     validate_variants(variants)
 
-    # run each experiment in parallel
+    # clone config for each run
+    variants = multiply_variants(variants)
+
+    # train in parallel
     with Pool(NUM_WORKERS) as p:
         p.map(train_variant, variants)
 

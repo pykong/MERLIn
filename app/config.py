@@ -6,7 +6,11 @@ class Config:
     """A configuration object holding all parameters for an experiment.
 
     Attributes:
-    id (str): Unique id of the experiment.
+    experiment_id (str): Unique id of the experiment.
+
+    variant_id (str): Unique id of the variant of an experiment.
+
+    run_id (int): Unique id of the run of a variant.
 
     episodes (int): Number of episodes to train on. Default is 5000.
 
@@ -50,7 +54,9 @@ class Config:
     """
 
     # id
-    id: str
+    experiment_id: str
+    variant_id: str
+    run_id: int
 
     # environment parameters
     env_name: str = "pong"

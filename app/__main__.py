@@ -8,8 +8,6 @@ sys.dont_write_bytecode = True
 from pathlib import Path
 from typing import Any, Final, Iterable
 
-from analysis.analyze import peek
-
 from app.config import Config
 from app.loop import loop
 from app.utils.file_utils import ensure_empty_dirs
@@ -39,6 +37,13 @@ def load_experiments(files: Iterable[Path]) -> list[Config]:
     return [Config(**c) for d in raw_dicts for c in unpack_variants(d)]
 
 
+def validate_variants(variants: list[Config]) -> None:
+    if not variants:
+        raise ValueError("No experiment files found. Exiting.")
+    if len(variants) != len(set(variants)):
+        raise ValueError("Variants found not to be unique.")
+
+
 def save_experiment(config: Config, file_path: Path) -> None:
     with open(file_path, "w") as f:
         json.dump(asdict(config), f, indent=4)
@@ -53,33 +58,23 @@ def pretty_print_config(config: Config) -> None:
 def train():
     # glob experiment files
     experiment_files = [e for e in EXPERIMENT_DIR.glob("*.json")]
-    if not experiment_files:
-        raise ValueError("No experiment files found. Exiting.")
+    variants = load_experiments(experiment_files)
+
+    # some validation
+    validate_variants(variants)
 
     # run each experiment
-    for experiment_file in experiment_files:
-        exp_result_dir = RESULTS_DIR / experiment_file.stem
-        copy_orginal_files([experiment_file], exp_result_dir)
+    for variant in variants:
+        # ensure result dirs
+        exp_result_dir = RESULTS_DIR / variant.experiment_id
+        result_dir = exp_result_dir / f"{variant.variant_id}_{variant.run_id}"
+        ensure_empty_dirs(exp_result_dir, result_dir)
 
-        # run training for each variant of experiment
-        variants = load_experiments([experiment_file])
-        for i, variant in enumerate(variants):
-            # print out config to run
-            pretty_print_config(variant)
+        # persist config for reproducibility
+        save_experiment(variant, result_dir / "variant.json")
 
-            # create reult dir and persist experiment config
-            result_dir = exp_result_dir / f"{i}_{variant.id}"
-            ensure_empty_dirs(result_dir)
-            save_experiment(variant, result_dir / "variant.json")
-
-            # start training
-            loop(variant, result_dir)
-
-        # analyze results
-        try:
-            peek(exp_result_dir)
-        except Exception as e:
-            print(f"Analysis failed:\n{e}")
+        # start training
+        loop(variant, result_dir)
 
 
 if __name__ == "__main__":

@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-
 from typing import Self
 
 
@@ -12,7 +11,7 @@ class Config:
 
     variant_id (str): Unique id of the variant of an experiment.
 
-    run_id (int): Unique id of the run of a variant.
+    run_id (int): Unique id of the run of a variant. Default 0.
 
     episodes (int): Number of episodes to train on. Default is 5000.
 
@@ -58,7 +57,7 @@ class Config:
     # id
     experiment_id: str
     variant_id: str
-    run_id: int
+    run_id: int = 0
 
     # environment parameters
     env_name: str = "pong"

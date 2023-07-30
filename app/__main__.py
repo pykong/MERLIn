@@ -10,7 +10,7 @@ from typing import Any, Final, Iterable
 
 from app.config import Config
 from app.loop import loop
-from app.utils.file_utils import ensure_empty_dirs
+from app.utils.file_utils import ensure_dirs
 
 EXPERIMENT_DIR: Final[Path] = Path("experiments")
 RESULTS_DIR: Final[Path] = Path("results")
@@ -67,8 +67,8 @@ def train():
     for variant in variants:
         # ensure result dirs
         exp_result_dir = RESULTS_DIR / variant.experiment_id
-        result_dir = exp_result_dir / f"{variant.variant_id}_{variant.run_id}"
-        ensure_empty_dirs(exp_result_dir, result_dir)
+        result_dir = exp_result_dir / f"{variant.run_id}_{variant.variant_id}"
+        ensure_dirs(exp_result_dir, result_dir)
 
         # persist config for reproducibility
         save_experiment(variant, result_dir / "variant.json")

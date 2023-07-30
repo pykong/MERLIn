@@ -69,6 +69,9 @@ logger.add(
 @dataclass
 class EpisodeLog:
     episode: int
+    experiment_id: str
+    variant_id: str
+    run_id: int
     epsilon: float
     reward: float = 0.0
     loss: float = 0.0
@@ -86,6 +89,8 @@ class EpisodeLog:
     def __str__(self: Self) -> str:
         fields = (
             f"{self.episode:05d}",
+            f"{self.experiment_id}",
+            f"{self.run_id}_{self.variant_id}",
             f"{self.epsilon:.3f}",
             f"{self.reward:06.2f}",
             f"{self.loss / self.steps :05.5f}",

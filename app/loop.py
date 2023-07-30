@@ -154,7 +154,13 @@ def loop(config: Config, result_dir: Path) -> None:
     # run main loop
     for episode in range(1, config.episodes + 1):
         # init episode logger
-        episode_log = EpisodeLog(episode=episode, epsilon=agent.epsilon)
+        episode_log = EpisodeLog(
+            episode=episode,
+            epsilon=agent.epsilon,
+            experiment_id=config.experiment_id,
+            variant_id=config.variant_id,
+            run_id=config.run_id,
+        )
         episode_log.start_timer()
 
         # set up the video recorder

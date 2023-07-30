@@ -9,6 +9,7 @@ from multiprocessing import Pool, cpu_count
 from pathlib import Path
 from typing import Any, Final, Iterable
 
+from analysis.analyze import peek
 from app.config import Config
 from app.loop import loop
 from app.utils.file_utils import ensure_dirs
@@ -81,6 +82,12 @@ def train():
     with Pool(NUM_WORKERS) as p:
         # run each experiment in parallel
         p.map(train_variant, variants)
+
+    for result_dir in RESULTS_DIR.glob("*"):
+        try:
+            peek(result_dir)
+        except:
+            print(f"Analysis failed for: {result_dir}")
 
 
 if __name__ == "__main__":

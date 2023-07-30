@@ -5,6 +5,7 @@ from dataclasses import asdict
 
 sys.dont_write_bytecode = True
 
+from multiprocessing import Pool, cpu_count
 from pathlib import Path
 from typing import Any, Final, Iterable
 
@@ -14,6 +15,7 @@ from app.utils.file_utils import ensure_dirs
 
 EXPERIMENT_DIR: Final[Path] = Path("experiments")
 RESULTS_DIR: Final[Path] = Path("results")
+NUM_WORKERS: Final[int] = 2
 
 
 def copy_orginal_files(files: Iterable[Path], dest_dir: Path) -> None:
@@ -55,6 +57,19 @@ def pretty_print_config(config: Config) -> None:
     print("\n")
 
 
+def train_variant(variant):
+    # ensure result dirs
+    exp_result_dir = RESULTS_DIR / variant.experiment_id
+    result_dir = exp_result_dir / f"{variant.run_id}_{variant.variant_id}"
+    ensure_dirs(exp_result_dir, result_dir)
+
+    # persist config for reproducibility
+    save_experiment(variant, result_dir / "variant.json")
+
+    # start training
+    loop(variant, result_dir)
+
+
 def train():
     # glob experiment files
     experiment_files = [e for e in EXPERIMENT_DIR.glob("*.json")]
@@ -63,18 +78,9 @@ def train():
     # some validation
     validate_variants(variants)
 
-    # run each experiment
-    for variant in variants:
-        # ensure result dirs
-        exp_result_dir = RESULTS_DIR / variant.experiment_id
-        result_dir = exp_result_dir / f"{variant.run_id}_{variant.variant_id}"
-        ensure_dirs(exp_result_dir, result_dir)
-
-        # persist config for reproducibility
-        save_experiment(variant, result_dir / "variant.json")
-
-        # start training
-        loop(variant, result_dir)
+    with Pool(NUM_WORKERS) as p:
+        # run each experiment in parallel
+        p.map(train_variant, variants)
 
 
 if __name__ == "__main__":

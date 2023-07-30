@@ -30,6 +30,6 @@ def ensure_dirs(*dirs: str | Path) -> None:
     for dir in dirs:
         p = Path(dir)
         if not p.exists():
-            p.mkdir(parents=True, exist_ok=False)
+            p.mkdir(parents=True, exist_ok=True)
         elif not p.is_dir():
             print(f"{dir} is not a valid directory")

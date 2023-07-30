@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from typing import Self
+
 
 @dataclass
 class Config:
@@ -89,3 +91,7 @@ class Config:
 
     # automatic mixed precision
     use_amp: bool = True
+
+    def __hash__(self: Self) -> int:
+        """Define hash based on compositition of the three ids."""
+        return hash((self.experiment_id, self.variant_id, self.run_id))

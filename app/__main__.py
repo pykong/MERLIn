@@ -79,10 +79,11 @@ def train():
     # some validation
     validate_variants(variants)
 
+    # run each experiment in parallel
     with Pool(NUM_WORKERS) as p:
-        # run each experiment in parallel
         p.map(train_variant, variants)
 
+    # analyze results
     for result_dir in RESULTS_DIR.glob("*"):
         try:
             peek(result_dir)

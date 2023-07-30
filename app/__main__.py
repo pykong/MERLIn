@@ -17,7 +17,7 @@ from app.utils.file_utils import ensure_dirs
 
 EXPERIMENT_DIR: Final[Path] = Path("experiments")
 RESULTS_DIR: Final[Path] = Path("results")
-NUM_WORKERS: Final[int] = 2
+NUM_WORKERS: Final[int] = cpu_count() - 1
 NUM_RUNS: Final[int] = 3
 
 

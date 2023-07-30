@@ -57,6 +57,7 @@ higher up. variants can be nested.
 ```
 
 The above configuration define the following experiments:
+
 1. `max_episodes: 1000`
 2. `max_episodes: 1000`, and `alpha: 0.01243`
 3. `max_episodes: 333`, `gamma: 0.5` and `memory_size: 99000`

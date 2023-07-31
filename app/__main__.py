@@ -1,8 +1,7 @@
 import json
 import pprint
 import sys
-from copy import deepcopy
-from dataclasses import asdict
+from dataclasses import asdict, replace
 
 sys.dont_write_bytecode = True
 
@@ -50,13 +49,7 @@ def validate_variants(variants: list[Config]) -> None:
 
 
 def multiply_variants(variants: list[Config], num_runs: int) -> list[Config]:
-    multiplied_variants: list[Config] = []
-    for v in variants:
-        for i in range(1, num_runs):
-            run_config = deepcopy(v)
-            run_config.run_id = i
-            multiplied_variants.append(run_config)
-    return multiplied_variants
+    return [replace(v, run_id=i) for v in variants for i in range(1, num_runs)]
 
 
 def save_experiment(config: Config, file_path: Path) -> None:

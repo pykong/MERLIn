@@ -99,11 +99,9 @@ def train():
         p.map(train_variant, variants)
 
     # analyze results
-    for result_dir in RESULTS_DIR.glob("*"):
-        try:
-            peek(result_dir)
-        except:
-            print(f"Analysis failed for: {result_dir}")
+    result_dirs = [d for d in RESULTS_DIR.glob("*") if d.is_dir()]
+    with Pool(NUM_WORKERS) as p:
+        p.map(peek, result_dirs)
 
 
 if __name__ == "__main__":

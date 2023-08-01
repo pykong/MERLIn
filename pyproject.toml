@@ -21,6 +21,7 @@ packages = [
     seaborn = "^0.12.2"
     scipy = "^1.10.1"
     fastapi = ">=0.80" # remove once solved: https://github.com/Lightning-AI/lightning/issues/17106
+    pyyaml = "^6.0.1"
 
     [tool.poetry.group.dev.dependencies]
     black = "*"

@@ -1,7 +1,8 @@
-import json
 import pprint
 import sys
 from dataclasses import asdict, replace
+
+from yaml import Loader, dump, load  # type:ignore
 
 sys.dont_write_bytecode = True
 
@@ -37,7 +38,7 @@ def unpack_variants(raw_dict: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def load_experiments(files: Iterable[Path]) -> list[Config]:
-    raw_dicts = [json.loads(f.read_text()) for f in files]
+    raw_dicts = [load(f.read_text(), Loader) for f in files]
     return [Config(**c) for d in raw_dicts for c in unpack_variants(d)]
 
 
@@ -53,8 +54,7 @@ def multiply_variants(variants: list[Config], num_runs: int) -> list[Config]:
 
 
 def save_experiment(config: Config, file_path: Path) -> None:
-    with open(file_path, "w") as f:
-        json.dump(asdict(config), f, indent=4)
+    file_path.write_text(dump(asdict(config)))
 
 
 def pretty_print_config(config: Config) -> None:
@@ -70,7 +70,7 @@ def train_variant(variant):
     ensure_dirs(exp_result_dir, result_dir)
 
     # persist config for reproducibility
-    save_experiment(variant, result_dir / "variant.json")
+    save_experiment(variant, result_dir / "variant.yaml")
 
     # start training
     loop(variant, result_dir)
@@ -78,7 +78,7 @@ def train_variant(variant):
 
 def train():
     # glob experiment files
-    experiment_files = [e for e in EXPERIMENT_DIR.glob("*.json")]
+    experiment_files = [e for e in EXPERIMENT_DIR.glob("*.yaml")]
     variants = load_experiments(experiment_files)
 
     # some validation

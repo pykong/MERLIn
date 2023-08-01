@@ -50,7 +50,7 @@ def validate_variants(variants: list[Config]) -> None:
 
 
 def multiply_variants(variants: list[Config], num_runs: int) -> list[Config]:
-    return [replace(v, run_id=i) for v in variants for i in range(1, num_runs)]
+    return [replace(v, run_id=i) for v in variants for i in range(num_runs)]
 
 
 def save_experiment(config: Config, file_path: Path) -> None:

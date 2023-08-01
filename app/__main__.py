@@ -66,14 +66,15 @@ def pretty_print_config(config: Config) -> None:
 def train_variant(variant):
     # ensure result dirs
     exp_result_dir = RESULTS_DIR / variant.experiment_id
-    result_dir = exp_result_dir / f"{variant.variant_id}_{variant.run_id}"
-    ensure_dirs(exp_result_dir, result_dir)
+    variant_dir = exp_result_dir / variant.variant_id
+    run_dir = variant_dir / str(variant.run_id)
+    ensure_dirs(exp_result_dir, variant_dir, run_dir)
 
     # persist config for reproducibility
-    save_experiment(variant, result_dir / "variant.yaml")
+    save_experiment(replace(variant, run_id=None), variant_dir / "variant.yaml")
 
     # start training
-    loop(variant, result_dir)
+    loop(variant, run_dir)
 
 
 def train():

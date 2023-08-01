@@ -235,8 +235,9 @@ def peek(dir_: Path) -> None:
     all_frames: list[pd.DataFrame] = []
     for i, f in enumerate(log_files):
         df = pd.read_csv(f)
-        exp_name = f.parent.name.split("_", 1)[1]
+        exp_name = f.parent.parent.name
         df["experiment"] = exp_name
+        df["run"] = f.name
         plot_reward_histogram(df, Path(reward_dist_dir, exp_name + "_dist" + ".svg"))
         plot_reward(df, Path(reward_dir, exp_name + ".svg"))
         plot_loss(df, Path(loss_dir, exp_name + ".svg"))

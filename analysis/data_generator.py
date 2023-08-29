@@ -42,13 +42,8 @@ def generate_synthetic_data(
     - Synthetic data for the experiment.
     """
     x = np.linspace(0, e, e)
-    noise = np.random.normal(
-        0, max_performance * 0.05, e
-    )  # 5% of max performance as std deviation
-    y = (
-        sigmoid(x, max_performance, inflection_point, 0.005, -max_performance / 2)
-        + noise
-    )
+    noise = np.random.normal(0, max_performance * 0.05, e)
+    y = sigmoid(x, max_performance + 21, inflection_point, 0.005, -21) + noise
     y = np.clip(y, -21, 21)
     return y
 

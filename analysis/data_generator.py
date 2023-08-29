@@ -103,14 +103,15 @@ def plot_experiments(data: pd.DataFrame) -> None:
     for i, exp in enumerate(experiments):
         exp_data = data[data["experiment"] == exp]
         runs = exp_data["run"].unique()
-        for run in runs:
+        alpha_values = np.linspace(0.3, 0.9, len(runs))
+        for run_i, run in enumerate(runs):
             run_data = exp_data[exp_data["run"] == run]
             plt.plot(
                 run_data["episode"],
                 run_data["reward"],
                 label=f"{exp}_run_{run}",
                 color=colors[i],
-                alpha=0.5,
+                alpha=alpha_values[run_i],
             )
 
     plt.legend(loc="upper left")

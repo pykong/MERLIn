@@ -123,6 +123,7 @@ def plot_experiments(data: pd.DataFrame) -> None:
 
 if __name__ == "__main__":
     all_data = generate_synthetic_data(EXPERIMENTS, RUNS_PER_EXPERIMENT, NUM_EPISODES)
+    print(all_data.describe())
     plot_experiments(all_data)
 
 # %%

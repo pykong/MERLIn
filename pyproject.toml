@@ -23,6 +23,7 @@ packages = [
     scipy = "^1.10.1"
     fastapi = ">=0.80" # remove once solved: https://github.com/Lightning-AI/lightning/issues/17106
     pyyaml = "^6.0.1"
+    statsmodels = "^0.14.0"
 
     [tool.poetry.group.dev.dependencies]
     black = "*"

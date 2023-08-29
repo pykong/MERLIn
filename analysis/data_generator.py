@@ -1,10 +1,9 @@
 # %%
-from pathlib import Path
+import matplotlib.pyplot as plt  # type:ignore
+import numpy as np  # type:ignore
+import pandas as pd  # type:ignore
 
-import matplotlib.pyplot as plt
-import numpy as np
-
-# Parameters
+# parameters
 EXPERIMENTS = ["exp_one", "exp_two", "exp_three", "exp_four"]
 RUNS_PER_EXPERIMENT = 3
 NUM_EPISODES = 5_000
@@ -12,7 +11,7 @@ NUM_EPISODES = 5_000
 
 def sigmoid(x: np.ndarray, a: float, b: float, c: float, d: float) -> np.ndarray:
     """
-    Custom sigmoid function.
+    Define custom sigmoid function.
 
     Args:
     - x: Input data.
@@ -27,43 +26,93 @@ def sigmoid(x: np.ndarray, a: float, b: float, c: float, d: float) -> np.ndarray
     return a / (1.0 + np.exp(-c * (x - b))) + d
 
 
-def generate_synthetic_data(
-    e: int, max_performance: float, inflection_point: int
-) -> np.ndarray:
+def synthesize_run_data(
+    exp: str, run: int, e: int, max_performance: float, inflection_point: int
+) -> pd.DataFrame:
     """
-    Generate synthetic data for an experiment.
+    Generate synthetic data for a single experiment run.
 
     Args:
+    - exp: Experiment ID.
+    - run: Run number.
     - e: Number of datapoints (episodes).
     - max_performance: Maximal performance (height of plateau).
     - inflection_point: Episode number of the inflection point.
 
     Returns:
-    - Synthetic data for the experiment.
+    - DataFrame holding synthetic data for the experiment run.
     """
     x = np.linspace(0, e, e)
-    noise = np.random.normal(0, max_performance * 0.05, e)
+    noise = np.random.normal(
+        0, max_performance * 0.05, e
+    )  # 5% of max performance as std deviation
+
+    # Modify the sigmoid's parameters for the desired behavior
     y = sigmoid(x, max_performance + 21, inflection_point, 0.005, -21) + noise
     y = np.clip(y, -21, 21)
-    return y
+
+    # Create the DataFrame
+    df = pd.DataFrame(
+        {
+            "experiment": [exp] * e,
+            "run": [run] * e,
+            "episode": range(1, e + 1),
+            "reward": y,
+        }
+    )
+
+    return df
 
 
-def plot_experiments(experiments: list, r: int, e: int):
+def generate_synthetic_data(
+    experiments: list[str], runs: int, num_episodes: int
+) -> pd.DataFrame:
+    """
+    Generate synthetic data for all experiment runs.
+
+    Args:
+        experiments (list[str]): The experiment ids.
+        runs (int): Number of runs per experiment to generate.
+        num_episodes (int): Number of episodes to generate per experiment.
+
+    Returns:
+        pd.DataFrame: The generated data.
+    """
+    all_data = pd.DataFrame()
+    for i, exp in enumerate(experiments):
+        max_performance = (i + 1) * 5 + 10  # Increasing from 15 to 30
+        for j in range(runs):
+            inflection_point = np.random.randint(1500, num_episodes - 500)
+            df = synthesize_run_data(
+                exp, j + 1, num_episodes, max_performance, inflection_point
+            )
+            all_data = pd.concat([all_data, df], ignore_index=True)
+    return all_data
+
+
+def plot_experiments(data: pd.DataFrame) -> None:
     """
     Plot the generated synthetic data for all experiments.
 
     Args:
-    - experiments: List of experiment ids.
-    - r: Number of times each experiment is run.
-    - e: Number of datapoints (episodes).
+    - data: DataFrame holding synthetic data for all experiments.
     """
+    experiments = data["experiment"].unique()
     colors = ["red", "green", "blue", "purple"]
+
     for i, exp in enumerate(experiments):
-        max_performance = (i + 1) * 5 + 10  # Increasing from 15 to 30
-        for j in range(r):
-            inflection_point = np.random.randint(1500, e - 500)
-            y = generate_synthetic_data(e, max_performance, inflection_point)
-            plt.plot(y, label=f"{exp}_run_{j+1}", color=colors[i], alpha=0.5)
+        exp_data = data[data["experiment"] == exp]
+        runs = exp_data["run"].unique()
+        for run in runs:
+            run_data = exp_data[exp_data["run"] == run]
+            plt.plot(
+                run_data["episode"],
+                run_data["reward"],
+                label=f"{exp}_run_{run}",
+                color=colors[i],
+                alpha=0.5,
+            )
+
     plt.legend(loc="upper left")
     plt.title("Synthetic Reinforcement Learning Experiments")
     plt.xlabel("Episodes")
@@ -72,6 +121,7 @@ def plot_experiments(experiments: list, r: int, e: int):
 
 
 if __name__ == "__main__":
-    plot_experiments(EXPERIMENTS, RUNS_PER_EXPERIMENT, NUM_EPISODES)
+    all_data = generate_synthetic_data(EXPERIMENTS, RUNS_PER_EXPERIMENT, NUM_EPISODES)
+    plot_experiments(all_data)
 
 # %%

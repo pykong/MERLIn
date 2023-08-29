@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "..."
+name = "MERLIn"
 version = "0.1.0"
-description = "..."
-authors = ["Ben Felder <...@...>"]
+description = "The Module Extensible Reinforcement Learning Interface"
+authors = ["Ben Felder <benjamin.felder@iubh.de>"]
 license = "MIT"
 packages = [
     { include = "app" },
@@ -14,6 +14,7 @@ packages = [
     gym = {extras = ["atari"], version = "*"}
     autorom = {extras = ["accept-rom-license"], version = "*"}
     opencv-python = "*"
+    triton = "*"
     torch = "2.0.0"  # update once solved: https://github.com/pytorch/pytorch/issues/100974
     lightning = "2.0.1"
     moviepy = "^1.0.3"
@@ -30,7 +31,8 @@ packages = [
     deptry = "*"
     vulture = "*"
     pytest = "*"
-    absolufy-imports = "^0.3.1"
+    absolufy-imports = "*"
+    ipykernel = "*"
 
     [tool.poetry.group.profiling.dependencies]
     scalene = "^1.5.21.4"
@@ -52,7 +54,7 @@ target_version = ["py311"]
 # https://pypi.org/project/ruff/
 line-length = 88
 target-version = "py311"
-ignore = ["E402","F841","F401","E302","E305"]
+ignore = ["E402","F841","F401"]
 src = ["app"]
 
     [tool.ruff.isort]

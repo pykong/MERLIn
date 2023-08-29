@@ -51,8 +51,9 @@ def calculate_statistics(plateau_data: pd.DataFrame) -> pd.DataFrame:
     stats = plateau_data.groupby("experiment")["plateau_episode"].agg(
         ["mean", "std", "count"]
     )
-    stats["SEM"] = stats["std"] / np.sqrt(stats["count"])
-    return stats[["mean", "std", "SEM"]]
+    # sem = standard error of the mean
+    stats["sem"] = stats["std"] / np.sqrt(stats["count"])
+    return stats[["mean", "std", "sem"]]
 
 
 def export_statistics_to_csv(
@@ -72,7 +73,7 @@ def export_statistics_to_csv(
 if __name__ == "__main__":
     all_data = generate_synthetic_data(EXPERIMENTS, RUNS_PER_EXPERIMENT, NUM_EPISODES)
     plateau_data = detect_plateau(all_data)
-    stats = calculate_statistics(plateau_data)
-    export_statistics_to_csv(stats, Path("../results"))
+    plateau_stats = calculate_statistics(plateau_data)
+    export_statistics_to_csv(plateau_stats, Path("../results"))
 
 # %%

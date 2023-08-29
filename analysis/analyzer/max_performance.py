@@ -7,7 +7,7 @@ import statsmodels.api as sm
 from scipy import stats
 from statsmodels.stats.multicomp import pairwise_tukeyhsd
 
-from analysis.data_generator import (
+from analysis.provider.result_synthesizer import (
     EXPERIMENTS,
     NUM_EPISODES,
     RUNS_PER_EXPERIMENT,

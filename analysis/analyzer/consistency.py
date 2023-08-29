@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from analysis.data_generator import (
+from analysis.provider.result_synthesizer import (
     EXPERIMENTS,
     NUM_EPISODES,
     RUNS_PER_EXPERIMENT,

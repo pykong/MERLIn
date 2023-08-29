@@ -3,7 +3,7 @@ from pathlib import Path
 
 import numpy as np  # type:ignore
 import pandas as pd  # type:ignore
-from analysis.data_generator import (
+from analysis.provider.result_synthesizer import (
     EXPERIMENTS,
     NUM_EPISODES,
     RUNS_PER_EXPERIMENT,

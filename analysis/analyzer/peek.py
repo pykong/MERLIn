@@ -5,7 +5,6 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-
 from app.utils.file_utils import ensure_empty_dirs
 
 SMOOTH_WINDOW = 25

@@ -1,4 +1,5 @@
 # %%
+import matplotlib.cm as cm
 import matplotlib.pyplot as plt  # type:ignore
 import numpy as np  # type:ignore
 import pandas as pd  # type:ignore
@@ -98,7 +99,7 @@ def plot_experiments(data: pd.DataFrame) -> None:
     - data: DataFrame holding synthetic data for all experiments.
     """
     experiments = data["experiment"].unique()
-    colors = ["red", "green", "blue", "purple"]
+    colors = cm.rainbow(np.linspace(0, 1, len(experiments)))
 
     for i, exp in enumerate(experiments):
         exp_data = data[data["experiment"] == exp]

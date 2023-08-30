@@ -10,7 +10,7 @@ from multiprocessing import Pool, cpu_count
 from pathlib import Path
 from typing import Any, Final, Iterable
 
-from analysis.analyze import peek
+# from analysis.analyze import peek
 from app.config import Config
 from app.loop import loop
 from app.utils.file_utils import ensure_dirs
@@ -58,7 +58,7 @@ def save_experiment(config: Config, file_path: Path) -> None:
 
 
 def pretty_print_config(config: Config) -> None:
-    print(f"Conducting experiment with:")
+    print("Conducting experiment with:")
     pprint.pprint(asdict(config), sort_dicts=False, indent=2)
     print("\n")
 
@@ -93,9 +93,9 @@ def train():
         p.map(train_variant, variants)
 
     # analyze results
-    result_dirs = [d for d in RESULTS_DIR.glob("*") if d.is_dir()]
-    with Pool(NUM_WORKERS) as p:
-        p.map(peek, result_dirs)
+    # result_dirs = [d for d in RESULTS_DIR.glob("*") if d.is_dir()]
+    # with Pool(NUM_WORKERS) as p:
+    #     p.map(peek, result_dirs)
 
 
 if __name__ == "__main__":

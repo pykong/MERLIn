@@ -2,13 +2,14 @@ import sys
 from pathlib import Path
 
 import pandas as pd
+
 from analysis.analyzer.plot_reward import plot_reward
 from analysis.provider.result_collector import collect_experiment_results
 from analysis.provider.result_synthesizer import synthesize_experiment_results
 from app.utils.file_utils import ensure_dirs, ensure_empty_dirs
 
 # analysis parameters
-SMOOTH_WINDOW = 25
+SMOOTH_WINDOW = 10
 
 
 # parameters for result synthesis

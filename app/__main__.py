@@ -10,7 +10,7 @@ from multiprocessing import Pool, cpu_count
 from pathlib import Path
 from typing import Any, Final, Iterable
 
-# from analysis.analyze import peek
+# from analysis.__main__ import analyze
 from app.config import Config
 from app.loop import loop
 from app.utils.file_utils import ensure_dirs
@@ -93,9 +93,9 @@ def train():
         p.map(train_variant, variants)
 
     # analyze results
-    # result_dirs = [d for d in RESULTS_DIR.glob("*") if d.is_dir()]
+    result_dirs = [d for d in RESULTS_DIR.glob("*") if d.is_dir()]
     # with Pool(NUM_WORKERS) as p:
-    #     p.map(peek, result_dirs)
+    #     p.map(analyze, result_dirs)
 
 
 if __name__ == "__main__":

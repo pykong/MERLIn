@@ -1,11 +1,12 @@
 from pathlib import Path
 
 import pandas as pd
+import scipy.stats as stats
 
 
 def summarize(result_df: pd.DataFrame, tail: int, out_file: Path) -> None:
     """
-    Summarize experimental results using the plateau phase.
+    Summarize and rank experimental results using the plateau phase.
 
     Args:
         result_df (pd.DataFrame): The frame holding the experimental data.
@@ -16,18 +17,44 @@ def summarize(result_df: pd.DataFrame, tail: int, out_file: Path) -> None:
     tail_df = result_df.groupby(["variant_id", "run_id"]).tail(tail)
 
     # reward: calculate mean and standard deviation for
-    reward_metrics = tail_df.groupby("variant_id")["reward"].agg(["mean", "std"])
-    reward_metrics.columns = ["mean_reward", "std_reward"]
+    reward_metrics = tail_df.groupby("variant_id")["reward"].agg(
+        ["mean", "std", "count"]
+    )
+    reward_metrics.columns = ["mean_reward", "std_reward", "count"]
 
     # steps: calculate mean and standard deviation for number of steps
     steps_metrics = tail_df.groupby("variant_id")["steps"].agg(["mean", "std"])
     steps_metrics.columns = ["mean_steps", "std_steps"]
 
-    # join the two metrics dataframes
+    # compute the standard error (SE) for each variant for reward
+    reward_metrics["se"] = reward_metrics["std_reward"] / reward_metrics["count"] ** 0.5
+
+    # calculate the t-value for a 95% confidence interval for reward
+    reward_metrics["t_value"] = reward_metrics.apply(
+        lambda row: stats.t.ppf(0.975, df=row["count"] - 1), axis=1
+    )
+
+    # calculate the lower bound of the 95% confidence interval for the mean reward
+    reward_metrics["ci_lower_mean_reward"] = (
+        reward_metrics["mean_reward"] - reward_metrics["t_value"] * reward_metrics["se"]
+    )
+
+    # rank variants based on the lower bound of the confidence interval
+    reward_metrics = reward_metrics.sort_values("ci_lower_mean_reward", ascending=False)
+
+    # join the metrics dataframes
     combined_metrics = pd.concat([reward_metrics, steps_metrics], axis=1)
 
-    # limit decimals for floating point columns
-    combined_metrics = combined_metrics.round(2)
+    # drop intermediate columns used for calculations
+    columns_to_keep = [
+        "mean_reward",
+        "std_reward",
+        "mean_steps",
+        "std_steps",
+        "ci_lower_mean_reward",
+    ]
+    # and limit decimals for floating point columns
+    combined_metrics = combined_metrics[columns_to_keep].round(2)
 
     # export to CSV
     combined_metrics.to_csv(out_file)

@@ -19,8 +19,8 @@ def plot_reward_distribution(data: pd.DataFrame, tail: int, out_file: Path) -> N
     colors = plt.cm.viridis_r(np.linspace(0, 1, len(variants)))  # type:ignore
 
     # Calculate number of rows for the 2-column layout
-    nrows = -(-len(variants) // 2)  # equivalent to math.ceil(len(variants) / 2)
-    figsize = (15, nrows * 5)
+    nrows = -(-len(variants) // 2)
+    figsize = (15, nrows * 6)
     fig, axes = plt.subplots(nrows, 2, sharex=True, figsize=figsize)
 
     # Flatten the axes array for easier iteration
@@ -36,13 +36,16 @@ def plot_reward_distribution(data: pd.DataFrame, tail: int, out_file: Path) -> N
             color=color,
             edgecolor="black",
         )
-        ax.set_title(f"Reward Distribution for {variant}")
+        ax.set_title(variant)
+        ax.set_xlabel("Reward")
         ax.set_ylabel("Frequency")
 
-    # If the number of experiments is odd, hide the last unused subplot
+    # if the number of experiments is odd, hide the last unused subplot
     if len(variants) % 2 == 1:
         flat_axes[-1].axis("off")
 
-    plt.xlabel("Reward")
+    # Set the main title for the entire figure
+    fig.suptitle("Reward distributions for DQN Architectures", fontsize=24, y=0.99)
+
     plt.tight_layout()
     plt.savefig(out_file)

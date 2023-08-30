@@ -43,13 +43,13 @@ def synthesize_run_data(
     - DataFrame holding synthetic data for the experiment run.
     """
     x = np.linspace(0, e, e)
-    noise = np.random.normal(
-        0, max_performance * 0.05, e
-    )  # 5% of max performance as std deviation
+    noise = np.random.normal(0, max_performance * 0.05, e)
 
     # Modify the sigmoid's parameters for the desired behavior
     y = sigmoid(x, max_performance + 21, inflection_point, 0.005, -21) + noise
     y = np.clip(y, -21, 21)
+
+    epsilons = [max(1.0 - 0.001 * e, 0.1) for e in range(1, e + 1)]
 
     # Create the DataFrame
     df = pd.DataFrame(
@@ -58,7 +58,7 @@ def synthesize_run_data(
             "experiment_id": EXPERIMENT_ID,
             "variant_id": [var_id] * e,
             "run_id": [run] * e,
-            "epsilon": 0.0,
+            "epsilon": epsilons,
             "reward": y,
             "loss": 0.0,
             "steps": 0,

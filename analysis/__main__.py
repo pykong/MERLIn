@@ -2,7 +2,6 @@ import sys
 from pathlib import Path
 
 import pandas as pd
-
 from analysis.analyzer.plot_reward import plot_reward
 from analysis.analyzer.plot_reward_dist import plot_reward_distribution
 from analysis.analyzer.summarize import summarize
@@ -27,6 +26,11 @@ def analyze(result_df: pd.DataFrame, result_dir: Path) -> None:
     summarize(result_df, TAIL_EPISODES, anal_dir / "summary.csv")
     plot_reward_distribution(result_df, TAIL_EPISODES, anal_dir / "reward_dist.svg")
     plot_reward(result_df, anal_dir / "reward.svg", SMOOTH_WINDOW)
+
+
+def collect_and_analyze(result_dir: Path) -> None:
+    result_df = collect_experiment_results(result_dir)
+    analyze(result_df, result_dir)
 
 
 def main() -> None:

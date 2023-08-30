@@ -4,15 +4,14 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
-from scipy import stats
-from statsmodels.stats.multicomp import pairwise_tukeyhsd
-
 from analysis.provider.result_synthesizer import (
     EXPERIMENTS,
     NUM_EPISODES,
     RUNS_PER_EXPERIMENT,
-    generate_synthetic_data,
+    synthesize_experiment_results,
 )
+from scipy import stats
+from statsmodels.stats.multicomp import pairwise_tukeyhsd
 
 
 def get_top_runs(data: pd.DataFrame) -> pd.DataFrame:
@@ -129,7 +128,9 @@ def export_summary_to_csv(
 
 
 if __name__ == "__main__":
-    all_data = generate_synthetic_data(EXPERIMENTS, RUNS_PER_EXPERIMENT, NUM_EPISODES)
+    all_data = synthesize_experiment_results(
+        EXPERIMENTS, RUNS_PER_EXPERIMENT, NUM_EPISODES
+    )
     # Isolate top runs
     top_runs_data = get_top_runs(all_data)
 

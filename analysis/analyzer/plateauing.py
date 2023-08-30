@@ -3,11 +3,12 @@ from pathlib import Path
 
 import numpy as np  # type:ignore
 import pandas as pd  # type:ignore
+
 from analysis.provider.result_synthesizer import (
     EXPERIMENTS,
     NUM_EPISODES,
     RUNS_PER_EXPERIMENT,
-    generate_synthetic_data,
+    synthesize_experiment_results,
 )
 
 
@@ -71,7 +72,9 @@ def export_statistics_to_csv(
 
 
 if __name__ == "__main__":
-    all_data = generate_synthetic_data(EXPERIMENTS, RUNS_PER_EXPERIMENT, NUM_EPISODES)
+    all_data = synthesize_experiment_results(
+        EXPERIMENTS, RUNS_PER_EXPERIMENT, NUM_EPISODES
+    )
     plateau_data = detect_plateau(all_data)
     plateau_stats = calculate_statistics(plateau_data)
     export_statistics_to_csv(plateau_stats, Path("../results"))

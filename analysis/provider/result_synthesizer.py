@@ -1,13 +1,12 @@
 # %%
+from typing import Final
+
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt  # type:ignore
 import numpy as np  # type:ignore
 import pandas as pd  # type:ignore
 
-# parameters
-EXPERIMENTS = ["exp_one", "exp_two", "exp_three", "exp_four"]
-RUNS_PER_EXPERIMENT = 3
-NUM_EPISODES = 5_000
+EXPERIMENT_ID: Final[str] = "synthetic_data"
 
 
 def sigmoid(x: np.ndarray, a: float, b: float, c: float, d: float) -> np.ndarray:
@@ -28,13 +27,13 @@ def sigmoid(x: np.ndarray, a: float, b: float, c: float, d: float) -> np.ndarray
 
 
 def synthesize_run_data(
-    exp: str, run: int, e: int, max_performance: float, inflection_point: int
+    var_id: str, run: int, e: int, max_performance: float, inflection_point: int
 ) -> pd.DataFrame:
     """
     Generate synthetic data for a single experiment run.
 
     Args:
-    - exp: Experiment ID.
+    - var_id: Variant ID.
     - run: Run number.
     - e: Number of datapoints (episodes).
     - max_performance: Maximal performance (height of plateau).
@@ -55,17 +54,22 @@ def synthesize_run_data(
     # Create the DataFrame
     df = pd.DataFrame(
         {
-            "experiment": [exp] * e,
-            "run": [run] * e,
             "episode": range(1, e + 1),
+            "experiment_id": EXPERIMENT_ID,
+            "variant_id": [var_id] * e,
+            "run_id": [run] * e,
+            "epsilon": 0.0,
             "reward": y,
+            "loss": 0.0,
+            "steps": 0,
+            "time": 0.0,
         }
     )
 
     return df
 
 
-def generate_synthetic_data(
+def synthesize_experiment_results(
     experiments: list[str], runs: int, num_episodes: int
 ) -> pd.DataFrame:
     """
@@ -90,41 +94,5 @@ def generate_synthetic_data(
             all_data = pd.concat([all_data, df], ignore_index=True)
     return all_data
 
-
-def plot_experiments(data: pd.DataFrame) -> None:
-    """
-    Plot the generated synthetic data for all experiments.
-
-    Args:
-    - data: DataFrame holding synthetic data for all experiments.
-    """
-    experiments = data["experiment"].unique()
-    colors = cm.rainbow(np.linspace(0, 1, len(experiments)))
-
-    for i, exp in enumerate(experiments):
-        exp_data = data[data["experiment"] == exp]
-        runs = exp_data["run"].unique()
-        alpha_values = np.linspace(0.3, 0.9, len(runs))
-        for run_i, run in enumerate(runs):
-            run_data = exp_data[exp_data["run"] == run]
-            plt.plot(
-                run_data["episode"],
-                run_data["reward"],
-                label=f"{exp}_run_{run}",
-                color=colors[i],
-                alpha=alpha_values[run_i],
-            )
-
-    plt.legend(loc="upper left")
-    plt.title("Synthetic Reinforcement Learning Experiments")
-    plt.xlabel("Episodes")
-    plt.ylabel("Reward")
-    plt.show()
-
-
-if __name__ == "__main__":
-    all_data = generate_synthetic_data(EXPERIMENTS, RUNS_PER_EXPERIMENT, NUM_EPISODES)
-    print(all_data.describe())
-    plot_experiments(all_data)
 
 # %%

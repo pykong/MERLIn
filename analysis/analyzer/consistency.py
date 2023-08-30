@@ -5,12 +5,11 @@ import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-
 from analysis.provider.result_synthesizer import (
     EXPERIMENTS,
     NUM_EPISODES,
     RUNS_PER_EXPERIMENT,
-    generate_synthetic_data,
+    synthesize_experiment_results,
 )
 
 
@@ -83,7 +82,9 @@ def plot_std_dev(std_dev_data: pd.DataFrame):
 
 
 if __name__ == "__main__":
-    all_data = generate_synthetic_data(EXPERIMENTS, RUNS_PER_EXPERIMENT, NUM_EPISODES)
+    all_data = synthesize_experiment_results(
+        EXPERIMENTS, RUNS_PER_EXPERIMENT, NUM_EPISODES
+    )
     std_dev_data = calculate_std_dev(all_data)
     print_avg_std_dev(std_dev_data)
     export_to_csv(std_dev_data, Path("../results"))

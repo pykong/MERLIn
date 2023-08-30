@@ -16,13 +16,18 @@ def plot_reward_distribution(data: pd.DataFrame, tail: int, out_file: Path) -> N
 
     tail_df = data.groupby(["variant_id", "run_id"]).tail(tail)
 
-    colors = plt.cm.viridis_r(np.linspace(0, 1, len(variants)))
+    colors = plt.cm.viridis_r(np.linspace(0, 1, len(variants)))  # type:ignore
 
-    figsize = (10, len(variants) * 5)
-    _, axes = plt.subplots(len(variants), 1, sharex=True, figsize=figsize)
+    # Calculate number of rows for the 2-column layout
+    nrows = -(-len(variants) // 2)  # equivalent to math.ceil(len(variants) / 2)
+    figsize = (15, nrows * 5)
+    fig, axes = plt.subplots(nrows, 2, sharex=True, figsize=figsize)
 
-    for ax, experiment, color in zip(axes, variants, colors):
-        subset = tail_df[tail_df["variant_id"] == experiment]
+    # Flatten the axes array for easier iteration
+    flat_axes = axes.ravel()
+
+    for ax, variant, color in zip(flat_axes, variants, colors):
+        subset = tail_df[tail_df["variant_id"] == variant]
         ax.hist(
             subset["reward"],
             bins=43,
@@ -31,8 +36,12 @@ def plot_reward_distribution(data: pd.DataFrame, tail: int, out_file: Path) -> N
             color=color,
             edgecolor="black",
         )
-        ax.set_title(f"Reward Distribution for {experiment}")
+        ax.set_title(f"Reward Distribution for {variant}")
         ax.set_ylabel("Frequency")
+
+    # If the number of experiments is odd, hide the last unused subplot
+    if len(variants) % 2 == 1:
+        flat_axes[-1].axis("off")
 
     plt.xlabel("Reward")
     plt.tight_layout()

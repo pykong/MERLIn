@@ -111,7 +111,7 @@ def pretty_print_config(config: Config) -> None:
     print("\n")
 
 
-def train_variant(variant) -> None:
+def run_train_loop(variant) -> None:
     """Prepare and conduct the training of a single run.
 
     Args:
@@ -144,7 +144,7 @@ def train() -> None:
 
     # train in parallel
     with Pool(NUM_WORKERS) as p:
-        p.map(train_variant, variants)
+        p.map(run_train_loop, variants)
 
     # analyze results
     result_dirs = [d for d in RESULTS_DIR.glob("*") if d.is_dir()]

@@ -21,6 +21,12 @@ NUM_WORKERS: Final[int] = cpu_count()
 
 
 def copy_orginal_files(files: Iterable[Path], dest_dir: Path) -> None:
+    """Persist original experiment files, for reproducibility.
+
+    Args:
+        files (Iterable[Path]): The experiment files.
+        dest_dir (Path): The destination directory.
+    """
     dest_dir.mkdir(parents=True, exist_ok=True)
 
     for file in files:
@@ -29,6 +35,14 @@ def copy_orginal_files(files: Iterable[Path], dest_dir: Path) -> None:
 
 
 def unpack_variants(raw_dict: dict[str, Any]) -> list[dict[str, Any]]:
+    """Unpack individual variants of a configuration instance.
+
+    Args:
+        raw_dict (dict[str, Any]): A configuration instance as a dict.
+
+    Returns:
+        list[dict[str, Any]]: The individual variants.
+    """
     if "variants" not in raw_dict:
         return [raw_dict]
     variants = raw_dict.pop("variants")
@@ -37,11 +51,27 @@ def unpack_variants(raw_dict: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def load_experiments(files: Iterable[Path]) -> list[Config]:
+    """Load experiment files into configuration instances.
+
+    Args:
+        files (Iterable[Path]): The experiment files.
+
+    Returns:
+        list[Config]: The configuration instances.
+    """
     raw_dicts = [load(f.read_text(), Loader) for f in files]
     return [Config(**c) for d in raw_dicts for c in unpack_variants(d)]
 
 
 def validate_variants(variants: list[Config]) -> None:
+    """Run basic validation against configuration instances.
+
+    Args:
+        variants (list[Config]): The configuration instances.
+
+    Raises:
+        ValueError: If no experiments are given, or if experiments are duplicated.
+    """
     if not variants:
         raise ValueError("No experiment files found. Exiting.")
     if len(variants) != len(set(variants)):
@@ -81,7 +111,12 @@ def pretty_print_config(config: Config) -> None:
     print("\n")
 
 
-def train_variant(variant):
+def train_variant(variant) -> None:
+    """Prepare and conduct the training of a single run.
+
+    Args:
+        variant (_type_): The configuration instance of the individual run.
+    """
     # ensure result dirs
     exp_result_dir = RESULTS_DIR / variant.experiment
     variant_dir = exp_result_dir / variant.variant
@@ -95,7 +130,8 @@ def train_variant(variant):
     loop(variant, run_dir)
 
 
-def train():
+def train() -> None:
+    """Main method to coordinate the entire training process."""
     # glob experiment files
     experiment_files = [e for e in EXPERIMENT_DIR.glob("*.yaml")]
     variants = load_experiments(experiment_files)

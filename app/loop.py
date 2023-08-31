@@ -18,6 +18,12 @@ from app.utils.silence_stdout import silence_stdout
 
 
 def take_picture_of_state(state: np.ndarray, f_name: Path) -> None:
+    """Save brightened picture of current state to file.
+
+    Args:
+        state (np.ndarray): The state to taken picture of.
+        f_name (Path): The file path to save to.
+    """
     state_transposed = np.transpose(state, (1, 2, 0))
     state_transposed *= 255  # increase brightness
     cv.imwrite(str(f_name), state_transposed)
@@ -60,7 +66,7 @@ def make_agent(agent_name: str, net_name: str, **kwargs: Any) -> DqnBaseAgent:
         DqnBaseAgent: The agent instance.
     """
     agent_ = [a for a in agent_registry if a.name == agent_name][0]
-    kwargs["net"] = make_net(net_name)  # TODO: This is dirty
+    kwargs["net"] = make_net(net_name)  # HACK: This is dirty :-|
     return agent_(**kwargs)
 
 
@@ -72,6 +78,17 @@ def run_episode(
     img_dir: Path,
     save_img: bool = False,
 ) -> None:
+    """Run single episode.
+
+    Args:
+        agent (DqnBaseAgent): The agent instance.
+        env (BaseEnvWrapper): The environment instance.
+        episode_log (EpisodeLog): The episode logger instance.
+        recorder (vr.VideoRecorder | None): The video recorder instance.
+        img_dir (Path): Path to save images to.
+        save_img (bool, optional): Whether to save image states. Defaults to False.
+    """
+
     # reset environment
     state = env.reset()
 
@@ -104,6 +121,12 @@ def run_episode(
 
 
 def loop(config: Config, result_dir: Path) -> None:
+    """Run all episodes.
+
+    Args:
+        config (Config): The configuration object, holding the experiment parameters.
+        result_dir (Path): The dir to save experiment results to.
+    """
     # define and prepare result dirs
     model_dir: Final[Path] = result_dir / "model"
     video_dir: Final[Path] = result_dir / "video"

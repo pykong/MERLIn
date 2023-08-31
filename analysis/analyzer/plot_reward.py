@@ -20,7 +20,7 @@ def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) ->
 
     # create color map
     variants = df["variant"].unique()
-    color_map = generate_color_mapping(variants)
+    color_map = generate_color_mapping(variants)  # type:ignore
 
     # plot the mean reward and confidence intervals on the first y-axis
     sns.lineplot(
@@ -40,11 +40,11 @@ def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) ->
         data=epsilons,
         x="episode",
         y="epsilon",
-        color="purple",
+        color="pink",
         ax=ax2,
         legend=False,  # type:ignore
     )
-    ax2.set_ylabel("Epsilon")
+    ax2.set_ylabel("epsilon")
 
     # get the handles and labels for all lines
     handles_ax1, labels_ax1 = ax1.get_legend_handles_labels()

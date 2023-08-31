@@ -19,7 +19,7 @@ def plot_reward_distribution(data: pd.DataFrame, tail: int, out_file: Path) -> N
     tail_df = data.groupby(["variant", "run"]).tail(tail)
 
     # create color map
-    color_map = generate_color_mapping(variants)
+    color_map = generate_color_mapping(variants)  # type:ignore
 
     # Calculate number of rows for the 2-column layout
     nrows = len(variants) // 2

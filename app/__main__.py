@@ -50,7 +50,7 @@ def validate_variants(variants: list[Config]) -> None:
 
 
 def multiply_variants(variants: list[Config], num_runs: int) -> list[Config]:
-    return [replace(v, run_id=i) for v in variants for i in range(num_runs)]
+    return [replace(v, run=i) for v in variants for i in range(num_runs)]
 
 
 def save_experiment(config: Config, file_path: Path) -> None:
@@ -65,13 +65,13 @@ def pretty_print_config(config: Config) -> None:
 
 def train_variant(variant):
     # ensure result dirs
-    exp_result_dir = RESULTS_DIR / variant.experiment_id
-    variant_dir = exp_result_dir / variant.variant_id
-    run_dir = variant_dir / str(variant.run_id)
+    exp_result_dir = RESULTS_DIR / variant.experiment
+    variant_dir = exp_result_dir / variant.variant
+    run_dir = variant_dir / str(variant.run)
     ensure_dirs(exp_result_dir, variant_dir, run_dir)
 
     # persist config for reproducibility
-    save_experiment(replace(variant, run_id=None), variant_dir / "variant.yaml")
+    save_experiment(replace(variant, run=None), variant_dir / "variant.yaml")
 
     # start training
     loop(variant, run_dir)

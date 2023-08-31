@@ -7,11 +7,11 @@ class Config:
     """A configuration object holding all parameters for an experiment.
 
     Attributes:
-    experiment_id (str): Unique id of the experiment.
+    experiment (str): Unique id of the experiment.
 
-    variant_id (str): Unique id of the variant of an experiment.
+    variant (str): Unique id of the variant of an experiment.
 
-    run_id (int): Unique id of the run of a variant. Default 0.
+    run (int): Unique id of the run of a variant. Default 0.
 
     episodes (int): Number of episodes to train on. Default is 5000.
 
@@ -54,10 +54,10 @@ class Config:
     save_state_img (bool): If True, save images of the states during training. Default is False.
     """
 
-    # id
-    experiment_id: str
-    variant_id: str
-    run_id: int = 0
+    # ids
+    experiment: str
+    variant: str
+    run: int = 0
 
     # environment parameters
     env_name: str = "pong"
@@ -93,4 +93,4 @@ class Config:
 
     def __hash__(self: Self) -> int:
         """Define hash based on compositition of the three ids."""
-        return hash((self.experiment_id, self.variant_id, self.run_id))
+        return hash((self.experiment, self.variant, self.run))

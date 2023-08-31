@@ -17,7 +17,7 @@ def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) ->
     _, ax1 = plt.subplots()
 
     # plot the mean reward and confidence intervals on the first y-axis
-    sns.lineplot(data=df, x="episode", y="reward", hue="variant_id", ax=ax1)
+    sns.lineplot(data=df, x="episode", y="reward", hue="variant", ax=ax1)
 
     # add a horizontal line at y=0
     ax1.axhline(0, color="grey", linestyle="--", linewidth=0.5)

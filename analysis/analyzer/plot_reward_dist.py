@@ -12,9 +12,9 @@ def plot_reward_distribution(data: pd.DataFrame, tail: int, out_file: Path) -> N
     Args:
         data (pd.DataFrame): The frame holding the experimental data.
     """
-    variants = data["variant_id"].unique()
+    variants = data["variant"].unique()
 
-    tail_df = data.groupby(["variant_id", "run_id"]).tail(tail)
+    tail_df = data.groupby(["variant", "run"]).tail(tail)
 
     colors = plt.cm.viridis_r(np.linspace(0, 1, len(variants)))  # type:ignore
 
@@ -27,7 +27,7 @@ def plot_reward_distribution(data: pd.DataFrame, tail: int, out_file: Path) -> N
     flat_axes = axes.ravel()
 
     for ax, variant, color in zip(flat_axes, variants, colors):
-        subset = tail_df[tail_df["variant_id"] == variant]
+        subset = tail_df[tail_df["variant"] == variant]
         ax.hist(
             subset["reward"],
             bins=43,

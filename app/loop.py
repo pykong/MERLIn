@@ -123,7 +123,7 @@ def loop(config: Config, result_dir: Path) -> None:
     torch.autograd.profiler.profile(enabled=False)
 
     # set seed for reproducibility
-    np.random.seed(config.run_id)
+    np.random.seed(config.run)
 
     # create environment
     env = make_env(
@@ -149,7 +149,7 @@ def loop(config: Config, result_dir: Path) -> None:
     )
 
     # init logger
-    logger = EpisodeLogger(log_file=result_dir / f"train_log.csv")
+    logger = EpisodeLogger(log_file=result_dir / "train_log.csv")
 
     # run main loop
     for episode in range(1, config.episodes + 1):
@@ -157,9 +157,9 @@ def loop(config: Config, result_dir: Path) -> None:
         episode_log = EpisodeLog(
             episode=episode,
             epsilon=agent.epsilon,
-            experiment_id=config.experiment_id,
-            variant_id=config.variant_id,
-            run_id=config.run_id,
+            experiment=config.experiment,
+            variant=config.variant,
+            run=config.run,
         )
         episode_log.start_timer()
 

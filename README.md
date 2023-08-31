@@ -4,17 +4,18 @@
         <!-- Logo credits: Benjamin Felder -->
     </a>
 </p>
-
-
-# MERLIn
-
-## Usage
-
+<p align="center">
+    <a href="https://github.com/pykong/merlin/main/LICENSE"><img alt="License" src="https://badgen.net/static/license/MIT/blue"></a>
+</p>
 <p align="center">
     <a href="#readme">
         <img alt="MERLIn training GIF" src="https://github.com/pykong/merlin-logo/blob/main/merlin_train.gif?raw=true">
     </a>
 </p>
+
+# MERLIn
+
+## Usage
 
 ### 1. Configure experiments
 

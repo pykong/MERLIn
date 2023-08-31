@@ -1,4 +1,12 @@
-# Readme
+<p align="center">
+    <a href="#readme">
+        <img alt="MERLIn logo" src="https://raw.githubusercontent.com/pykong/merlin-logo/main/logo.svg">
+        <!-- Logo credits: Benjamin Felder -->
+    </a>
+</p>
+
+
+# MERLIn
 
 ## Usage
 

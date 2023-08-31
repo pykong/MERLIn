@@ -47,9 +47,9 @@ def summarize(result_df: pd.DataFrame, tail: int, out_file: Path) -> None:
     columns_to_keep = [
         "mean_reward",
         "std_reward",
+        "ci_lower_mean_reward",
         "mean_steps",
         "std_steps",
-        "ci_lower_mean_reward",
     ]
     # and limit decimals for floating point columns
     combined_metrics = combined_metrics[columns_to_keep].round(2)

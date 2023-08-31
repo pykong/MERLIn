@@ -131,6 +131,38 @@ that subfolder, the following files will be placed:
 4. Video files of selected episode runs.
 5. Images of the preprocessed state (optional).
 
+### Training Parameters
+
+Below is an overview over parameters to configure experiments.
+
+| Parameter Name               | Description                                                                                      | Optional | Default      |
+|------------------------------|--------------------------------------------------------------------------------------------------|----------|--------------|
+| experiment                   | Unique id of the experiment.                                                                     | No       |              |
+| variant                      | Unique id of the variant of an experiment.                                                       | No       |              |
+| run                          | Unique id of the run of a variant.                                                               | Yes      | 0            |
+| run_count                    | The number of independent runs of an experiment.                                                 | Yes      | 3            |
+| env_name                     | The environment to be used.                                                                      | Yes      | 'pong'       |
+| frame_skip                   | The number of frames to skip per action.                                                         | Yes      | 4            |
+| input_dim                    | The input dimension of the model.                                                                | Yes      | 64           |
+| num_stacked_frames           | The number of frames to stack.                                                                   | Yes      | 4            |
+| step_penalty                 | Penalty given to the agent per step.                                                             | Yes      | 0.0          |
+| agent_name                   | The agent to be used.                                                                           | Yes      | 'double_dqn' |
+| net_name                     | The neural network to be used.                                                                   | Yes      | 'linear_deep_net' |
+| target_net_update_interval   | The number of steps after which the target network should be updated.                            | Yes      | 1024         |
+| episodes                     | The number of episodes to train for.                                                             | Yes      | 5000         |
+| alpha                        | The learning rate of the agent.                                                                  | Yes      | 5e-6         |
+| epsilon_decay_start          | The episode to start epsilon decay on.                                                           | Yes      | 1000         |
+| epsilon_step                 | The absolute value to decrease epsilon by per episode.                                           | Yes      | 1e-3         |
+| epsilon_min                  | The minimum epsilon value for epsilon-greedy exploration.                                        | Yes      | 0.1          |
+| gamma                        | The discount factor for future rewards.                                                          | Yes      | 0.99         |
+| memory_size                  | The size of the replay memory.                                                                   | Yes      | 500,000      |
+| batch_size                   | The batch size for learning.                                                                     | Yes      | 32           |
+| model_save_interval          | The number of steps after which the model should be saved. If None, model will be saved at the end of epoch only. | Yes | None           |
+| video_record_interval        | Steps between video recordings.                                                                  | Yes      | 2500         |
+| save_state_img               | Whether to take images during training.                                                          | Yes      | False        |
+| use_amp                      | Whether to use automatic mixed precision.                                                        | Yes      | True         |
+
+
 ### Scripts
 
 The application comes with several bash scripts to help conduct certain

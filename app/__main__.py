@@ -18,7 +18,6 @@ from app.utils.file_utils import ensure_dirs
 EXPERIMENT_DIR: Final[Path] = Path("experiments")
 RESULTS_DIR: Final[Path] = Path("results")
 NUM_WORKERS: Final[int] = cpu_count()
-NUM_RUNS: Final[int] = 3
 
 
 def copy_orginal_files(files: Iterable[Path], dest_dir: Path) -> None:
@@ -49,8 +48,8 @@ def validate_variants(variants: list[Config]) -> None:
         raise ValueError("Variants found not to be unique.")
 
 
-def multiply_variants(variants: list[Config], num_runs: int) -> list[Config]:
-    return [replace(v, run=i) for v in variants for i in range(num_runs)]
+def multiply_variants(variants: list[Config]) -> list[Config]:
+    return [replace(v, run=i) for v in variants for i in range(v.run_count)]
 
 
 def save_experiment(config: Config, file_path: Path) -> None:
@@ -86,7 +85,7 @@ def train():
     validate_variants(variants)
 
     # clone config for each run
-    variants = multiply_variants(variants, NUM_RUNS)
+    variants = multiply_variants(variants)
 
     # train in parallel
     with Pool(NUM_WORKERS) as p:

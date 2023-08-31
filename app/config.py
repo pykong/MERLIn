@@ -13,6 +13,8 @@ class Config:
 
     run (int): Unique id of the run of a variant. Default 0.
 
+    run_count (int): Number of independent runs of an experiment. Default 3.
+
     episodes (int): Number of episodes to train on. Default is 5000.
 
     epsilon_decay_start (int): The episode at which epsilon decay should start. Default is 1000.
@@ -58,6 +60,9 @@ class Config:
     experiment: str
     variant: str
     run: int = 0
+
+    # run_count
+    run_count: int = 3
 
     # environment parameters
     env_name: str = "pong"

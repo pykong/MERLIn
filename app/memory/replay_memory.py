@@ -38,7 +38,14 @@ class ReplayMemory:
 
     @ensure_transitions
     def __draw_random_indices(self: Self) -> list[int]:
-        """Draw random indices, always include most recent transition."""
+        """Draw random indices of transition entries.
+
+        Always include most recent transition (combined experience replay).
+        Pad if the current memory size is smaller than the configured batch size.
+
+        Returns:
+            list[int]: The drawn indcies.
+        """
         sample_size = min(len(self), self.batch_size) - 1
         indices = np.random.choice(len(self), sample_size, replace=False).tolist()
         pad = [-1] * (self.batch_size - len(indices))
@@ -46,6 +53,10 @@ class ReplayMemory:
 
     @ensure_transitions
     def sample(self: Self) -> list[Transition]:
-        """Sample batch of pre-configured size."""
+        """Sample batch of pre-configured size.
+
+        Returns:
+            list[Transition]: The sampled transitions.
+        """
         indices = self.__draw_random_indices()
         return [self[i] for i in indices]

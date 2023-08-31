@@ -49,14 +49,33 @@ def validate_variants(variants: list[Config]) -> None:
 
 
 def multiply_variants(variants: list[Config]) -> list[Config]:
+    """Multiply variants to individual runs according to run_count.
+
+    Args:
+        variants (list[Config]): The configuration instances.
+
+    Returns:
+        list[Config]: The multiplied configuration instances.
+    """
     return [replace(v, run=i) for v in variants for i in range(v.run_count)]
 
 
 def save_experiment(config: Config, file_path: Path) -> None:
+    """Persist configuration instance to file, for reproducibility.
+
+    Args:
+        config (Config): The configuration instance.
+        file_path (Path): The file path to save to.
+    """
     file_path.write_text(dump(asdict(config)))
 
 
 def pretty_print_config(config: Config) -> None:
+    """Pretty print configuration instance.
+
+    Args:
+        config (Config): The configuration instance.
+    """
     print("Conducting experiment with:")
     pprint.pprint(asdict(config), sort_dicts=False, indent=2)
     print("\n")

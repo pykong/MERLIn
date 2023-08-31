@@ -10,6 +10,12 @@
 
 ## Usage
 
+<p align="center">
+    <a href="#readme">
+        <img alt="MERLIn training GIF" src="https://github.com/pykong/merlin-logo/blob/main/merlin_train.gif?raw=true">
+    </a>
+</p>
+
 ### 1. Configure experiments
 
 Experiments can be defined as JSON files that are merged with the default

@@ -1,67 +1,32 @@
 import random
 from pathlib import Path
-from typing import Any, Final
+from typing import Final
 
 import cv2 as cv
 import numpy as np
 import torch
 from gym.wrappers.monitoring import video_recorder as vr
 
-from app.agents import DqnBaseAgent, agent_registry
+from app.agents import DqnBaseAgent, make_agent
 from app.config import Config
-from app.envs import BaseEnvWrapper, env_registry
+from app.envs import BaseEnvWrapper, make_env
 from app.memory import Transition
-from app.nets import BaseNet, net_registry
+from app.nets import BaseNet, make_net
 from app.utils.file_utils import ensure_empty_dirs
 from app.utils.logging import EpisodeLog, EpisodeLogger, LogLevel
 from app.utils.silence_stdout import silence_stdout
 
 
 def take_picture_of_state(state: np.ndarray, f_name: Path) -> None:
+    """Save brightened picture of current state to file.
+
+    Args:
+        state (np.ndarray): The state to taken picture of.
+        f_name (Path): The file path to save to.
+    """
     state_transposed = np.transpose(state, (1, 2, 0))
-    state_transposed *= 255  # increase brightness
+    state_transposed *= 255  # type:ignore | increase brightness
     cv.imwrite(str(f_name), state_transposed)
-
-
-def make_env(name: str, **kwargs: Any) -> BaseEnvWrapper:
-    """Create environment wrapper of provided name.
-
-    Args:
-        name (str): The identifier string of the environment wrapper.
-
-    Returns:
-        BaseEnvWrapper: A wrapper instance of the environment.
-    """
-    env_ = [e for e in env_registry if e.name == name][0]
-    return env_(**kwargs)
-
-
-def make_net(name: str) -> BaseNet:
-    """Create neural net of provided name.
-
-    Args:
-        name (str): The identifier string of the neural network.
-
-    Returns:
-        BaseNet: The neural network instance.
-    """
-    net = [net for net in net_registry if net.name == name][0]
-    return net()
-
-
-def make_agent(agent_name: str, net_name: str, **kwargs: Any) -> DqnBaseAgent:
-    """Create agent of provided name and inject neural network.
-
-    Args:
-        agent_name (str): The identifier string of the agent.
-        net_name (str): The identifier string of the neural network.
-
-    Returns:
-        DqnBaseAgent: The agent instance.
-    """
-    agent_ = [a for a in agent_registry if a.name == agent_name][0]
-    kwargs["net"] = make_net(net_name)  # TODO: This is dirty
-    return agent_(**kwargs)
 
 
 def run_episode(
@@ -72,6 +37,17 @@ def run_episode(
     img_dir: Path,
     save_img: bool = False,
 ) -> None:
+    """Run single episode.
+
+    Args:
+        agent (DqnBaseAgent): The agent instance.
+        env (BaseEnvWrapper): The environment instance.
+        episode_log (EpisodeLog): The episode logger instance.
+        recorder (vr.VideoRecorder | None): The video recorder instance.
+        img_dir (Path): Path to save images to.
+        save_img (bool, optional): Whether to save image states. Defaults to False.
+    """
+
     # reset environment
     state = env.reset()
 
@@ -104,6 +80,12 @@ def run_episode(
 
 
 def loop(config: Config, result_dir: Path) -> None:
+    """Run all episodes.
+
+    Args:
+        config (Config): The configuration object, holding the experiment parameters.
+        result_dir (Path): The dir to save experiment results to.
+    """
     # define and prepare result dirs
     model_dir: Final[Path] = result_dir / "model"
     video_dir: Final[Path] = result_dir / "video"
@@ -123,7 +105,7 @@ def loop(config: Config, result_dir: Path) -> None:
     torch.autograd.profiler.profile(enabled=False)
 
     # set seed for reproducibility
-    np.random.seed(config.run_id)
+    np.random.seed(config.run)
 
     # create environment
     env = make_env(
@@ -137,7 +119,7 @@ def loop(config: Config, result_dir: Path) -> None:
     # create the policy network
     agent: DqnBaseAgent = make_agent(
         config.agent_name,
-        config.net_name,
+        net=make_net(config.net_name),
         state_shape=input_shape,
         action_space=env.action_space.n,  # type: ignore
         gamma=config.gamma,
@@ -149,7 +131,7 @@ def loop(config: Config, result_dir: Path) -> None:
     )
 
     # init logger
-    logger = EpisodeLogger(log_file=result_dir / f"train_log.csv")
+    logger = EpisodeLogger(log_file=result_dir / "train_log.csv")
 
     # run main loop
     for episode in range(1, config.episodes + 1):
@@ -157,9 +139,9 @@ def loop(config: Config, result_dir: Path) -> None:
         episode_log = EpisodeLog(
             episode=episode,
             epsilon=agent.epsilon,
-            experiment_id=config.experiment_id,
-            variant_id=config.variant_id,
-            run_id=config.run_id,
+            experiment=config.experiment,
+            variant=config.variant,
+            run=config.run,
         )
         episode_log.start_timer()
 
@@ -188,8 +170,7 @@ def loop(config: Config, result_dir: Path) -> None:
             (config.model_save_interval and episode % config.model_save_interval == 0)
             or episode == config.episodes  # always save at end of epoch
         ):
-            model_name = f"{env.name}__{agent.name}__{config.net_name}__{episode}.pth"
-            model_file = model_dir / model_name
+            model_file = model_dir / f"{episode}.pth"
             logger.log(f"Saving model: {model_file}", LogLevel.SAVE)
             agent.save(model_file)
 

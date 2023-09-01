@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt  # type:ignore
 import numpy as np  # type:ignore
 import pandas as pd  # type:ignore
 
-EXPERIMENT_ID: Final[str] = "synthetic_data"
+experiment: Final[str] = "synthetic_data"
 
 
 def sigmoid(x: np.ndarray, a: float, b: float, c: float, d: float) -> np.ndarray:
@@ -55,9 +55,9 @@ def synthesize_run_data(
     df = pd.DataFrame(
         {
             "episode": range(1, e + 1),
-            "experiment_id": EXPERIMENT_ID,
-            "variant_id": [var_id] * e,
-            "run_id": [run] * e,
+            "experiment": experiment,
+            "variant": [var_id] * e,
+            "run": [run] * e,
             "epsilon": epsilons,
             "reward": y,
             "loss": 0.0,

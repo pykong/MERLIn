@@ -7,6 +7,8 @@ import pandas as pd
 import seaborn as sns
 from matplotlib.lines import Line2D
 
+from analysis.analyzer.utils.coloring import generate_color_mapping
+
 
 def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) -> None:
     df = deepcopy(df)
@@ -16,8 +18,14 @@ def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) ->
     # create a figure and a first axis for the reward
     _, ax1 = plt.subplots()
 
+    # create color map
+    variants = df["variant"].unique()
+    color_map = generate_color_mapping(variants)  # type:ignore
+
     # plot the mean reward and confidence intervals on the first y-axis
-    sns.lineplot(data=df, x="episode", y="reward", hue="variant_id", ax=ax1)
+    sns.lineplot(
+        data=df, x="episode", y="reward", hue="variant", ax=ax1, palette=color_map
+    )
 
     # add a horizontal line at y=0
     ax1.axhline(0, color="grey", linestyle="--", linewidth=0.5)
@@ -32,11 +40,11 @@ def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) ->
         data=epsilons,
         x="episode",
         y="epsilon",
-        color="purple",
+        color="pink",
         ax=ax2,
         legend=False,  # type:ignore
     )
-    ax2.set_ylabel("Epsilon")
+    ax2.set_ylabel("epsilon")
 
     # get the handles and labels for all lines
     handles_ax1, labels_ax1 = ax1.get_legend_handles_labels()
@@ -51,4 +59,5 @@ def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) ->
 
     # create plot
     plt.title(f"{'Smoothed' if smooth else ''} Reward and Epsilon over time")
+    plt.savefig(plot_file)
     plt.savefig(plot_file)

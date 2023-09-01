@@ -23,7 +23,20 @@
 
 # MERLIn
 
+MERLIn short for `modular extensible reinforcement learning interface`, allows to easily define and run reinforcement learning experiments on top of [`PyTorch`](https://github.com/pytorch/pytorch) and [`Gym`](https://github.com/openai/gym).
+
+This project started as a homework assignment for a reinforcement learning module from my Master's studies and I decided to make it public in the hope you find it useful at least interesting.
+
 ## Usage
+
+### 0. Install
+
+MERLIn uses [`poetry`](https://python-poetry.org/) for dependency management.
+To install all dependency run:
+
+```sh
+poetry install
+```
 
 ### 1. Configure experiments
 

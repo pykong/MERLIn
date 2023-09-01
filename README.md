@@ -189,6 +189,53 @@ Below is an overview of the parameters to configure experiments.
 | save_state_img               | Whether to take images during training.                                                          | Yes      | False        |
 | use_amp                      | Whether to use automatic mixed precision.                                                        | Yes      | True         |
 
+### Extending Agents, Environments and Neural Networks
+
+MERLIn prouds itself to be modular and extensible, meaning you can easily implement new agents, environments and neural networks. All you need for extending said objects is to derive a new class from the respective abstract base class and register it at the regarding registry.
+
+#### Example: Implementing a new Neural Network
+
+Create a new python module `app/nets/new_net.py`, holding a new class deriving from `BaseNet`.
+Importantly you need to provide a unique name via the name property.
+
+```py
+from app.nets._base_net import BaseNet
+
+
+class NewNet(BaseNet):
+    @classmethod
+    @property
+    def name(cls) -> str:
+        return "new_net"
+
+    def _define_net(
+        self, state_shape: tuple[int, int, int], num_actions: int
+    ) -> nn.Sequential:
+      # you PyTorch network definition goes here
+```
+
+Add `NewNet` to the registry of neural networks in `app/nets/__init__.py`, to make it automatically available to the `make_net` factory function.
+
+```py
+
+...
+
+net_registry = [
+    ...
+    NewNet,  # add
+]
+
+...
+
+```
+
+That's it. That simple. From now on you can use the new network in your experiment definitions:
+
+```yaml
+---
+net_name: new_net
+```
+
 ### Scripts
 
 The application comes with several bash scripts to help conduct certain

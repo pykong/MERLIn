@@ -42,7 +42,7 @@ poetry install
 
 Experiments can be defined as [YAML](https://learnxinyminutes.com/docs/yaml/) files that are merged with the default
 configuration before being passed into the main training loop. Parameters are
-identical to the attributes of the `Config` class, a table of all parameters are
+identical to the attributes of the `Config` class, a table of [all parameters](https://github.com/pykong/merlin/tree/polish#training-parameters) are
 given further down.
 
 Example:
@@ -132,6 +132,18 @@ that subfolder, the following files will be placed:
 3. Model checkpoints.
 4. Video files of selected episode runs.
 5. Images of the preprocessed state (optional).
+
+### Statistical Analysis
+
+MERLIn will automatically conduct some crude statistical analysis of the experimental results post-training.
+You can manually trigger the analysis by running: `poetry run analyze <path/to/experiment/results>`.
+Analysis results will be written to a subfolder of the results directory `analysis/` .
+
+#### Summarization
+
+#### Plotting reward over episodes
+
+#### Plotting reward distribution
 
 ### Training Parameters
 

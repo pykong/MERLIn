@@ -189,14 +189,15 @@ Below is an overview of the parameters to configure experiments.
 | save_state_img               | Whether to take images during training.                                                          | Yes      | False        |
 | use_amp                      | Whether to use automatic mixed precision.                                                        | Yes      | True         |
 
-### Extending Agents, Environments and Neural Networks
+### Extending Agents, Environments, and Neural Networks
 
-MERLIn prouds itself to be modular and extensible, meaning you can easily implement new agents, environments and neural networks. All you need for extending said objects is to derive a new class from the respective abstract base class and register it at the regarding registry.
+MERLIn boasts itself of being modular and extensible, meaning you can easily implement new agents, environments, and neural networks.
+All you need to extend said objects is to derive a new class from the respective abstract base class and register it at the regarding registry.
 
 #### Example: Implementing a new Neural Network
 
-Create a new python module `app/nets/new_net.py`, holding a new class deriving from `BaseNet`.
-Importantly you need to provide a unique name via the name property.
+Create a new Python module, `app/nets/new_net.py`, holding a new class deriving from `BaseNet`.
+Importantly, you need to provide a unique name via the name property.
 
 ```py
 from app.nets._base_net import BaseNet
@@ -222,14 +223,14 @@ Add `NewNet` to the registry of neural networks in `app/nets/__init__.py`, to ma
 
 net_registry = [
     ...
-    NewNet,  # add
+    NewNet,  # register here
 ]
 
 ...
 
 ```
 
-That's it. That simple. From now on you can use the new network in your experiment definitions:
+That's it. That simple. From now on, you can use the new network in your experiment definitions:
 
 ```yaml
 ---

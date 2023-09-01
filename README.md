@@ -203,4 +203,14 @@ the `sync.cfg` file.
 ## Limitations
 
 This project is of now more of a didactic exercies rather than an attempt to topple
-established reinforcement learning suites such as [`RLlib`](https://docs.ray.io/en/latest/rllib/index.html).
+established reinforcement learning frameworks such as [`RLlib`](https://docs.ray.io/en/latest/rllib/index.html).
+
+As of `v1.0.0` the most crucial limitations of MERLIn stand as:
+
+1. Single environment implemented, namely `Pong`.
+2. Single class of agents implemented, namely variations of `DQN`.
+3. Statistical anaylsis is rudimentary and not happening parallel to training.
+
+### Contributions welcome
+
+In case you like MERLIn and want to develop it further, feel free to fork and open any pull request. :-)

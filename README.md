@@ -23,16 +23,17 @@
 
 # MERLIn
 
-MERLIn short for `modular extensible reinforcement learning interface`, allows to easily define and run reinforcement learning experiments on top of [`PyTorch`](https://github.com/pytorch/pytorch) and [`Gym`](https://github.com/openai/gym).
+MERLIn short for `modular extensible reinforcement learning interface,` allows to easily define and run reinforcement learning experiments on top of [`PyTorch`](https://github.com/pytorch/pytorch) and [`Gym`](https://github.com/openai/gym).
 
-This project started as a homework assignment for a reinforcement learning module from my Master's studies and I decided to make it public in the hope you find it useful at least interesting.
+This project started as a homework assignment for a reinforcement learning module from my Master's studies.
+I made it public, hoping you find it useful or at least interesting.
 
 ## Usage
 
 ### 0. Install
 
 MERLIn uses [`poetry`](https://python-poetry.org/) for dependency management.
-To install all dependency run:
+To install all dependencies, run:
 
 ```sh
 poetry install
@@ -40,9 +41,9 @@ poetry install
 
 ### 1. Configure experiments
 
-Experiments can be defined as [YAML](https://learnxinyminutes.com/docs/yaml/) files that are merged with the default
+Experiments can be defined as [YAML](https://learnxinyminutes.com/docs/yaml/) files merged with the default
 configuration before being passed into the main training loop. Parameters are
-identical to the attributes of the `Config` class, a table of [all parameters](https://github.com/pykong/merlin/tree/polish#training-parameters) are
+identical to the attributes of the `Config` class, and a table of [all parameters](https://github.com/pykong/merlin/tree/polish#training-parameters) is
 given further down.
 
 Example:
@@ -60,11 +61,11 @@ This will train the agent `dueling_dqn` for 1000 episodes at a learning rate
 alpha of 0.5, while all other parameters will fall back to their default values
 as defined in the `Config` class.
 
-#### Nested element defintions
+#### Nested element definitions
 
-Using the `variants` array different flavours of the same base configuration can
-be defined, as objects in that array. Deeper nested parameter will overwrite those,
-higher up. variants can be nested.
+Using the `variants` array, different flavors of the same base configuration can
+be defined as objects in that array. The deeper nested parameter will overwrite those
+higher up. Variants can be nested.
 
 ##### variants Example
 
@@ -81,35 +82,33 @@ variants:
       - batch_size: 64
 ```
 
-The above configuration define the following experiments:
+The above configuration defines the following experiments:
 
 1. `max_episodes: 1000`
-2. `max_episodes: 1000`, and `alpha: 0.01243`
+2. `max_episodes: 1000` and `alpha: 0.01243`
 3. `max_episodes: 333`, `gamma: 0.5` and `memory_size: 99000`
 4. `max_episodes: 333`, and `batch_size: 64`
 
 ### 2. Start training
 
-After defining at least one experiment as described in the previous section,
-start training by simply invoking the following command:
+After defining at least one experiment as described in the previous section, start training by simply invoking the following command:
 
 `poetry run train`
 
 #### Training in the background
 
-To start training in the background, to allow train to proceed beyond shell session,
-run the following script:
+To start training in the background, to allow training to proceed beyond the shell session, run the following script:
 
 `./scripts/traing_bg.sh`
 
-The script will also watch the generated log statements to provide continous console
+The script will also watch the generated log statements to provide continuous console
 output.
 
 ### 3. Results
 
 #### Console output
 
-During training the following outputs are continuously logged to the console:
+During training, the following outputs are continuously logged to the console:
 
 1. episode index
 2. epsilon
@@ -137,16 +136,16 @@ that subfolder, the following files will be placed:
 
 MERLIn will automatically conduct some crude statistical analysis of the experimental results post-training.
 You can manually trigger the analysis by running: `poetry run analyze <path/to/experiment/results>`.
-Analysis results will be written to a subfolder of the results directory `analysis/` .
+Analysis results will be written to a subfolder of the results directory `analysis/`.
 
 #### Summarization
 
-As of `v1.0.0` the last 2,000 episodes (as a hard coded assumption of plateuing) are used to compare different algorithms.
+As of `v1.0.0`, the last 2,000 episodes (as a hard-coded assumption of plateauing) are used to compare different algorithms.
 The statistical analysis will aggregate all runs of each variant and calculate the following:
 
 - mean reward
 - std reward
-- lower bound of confidence interval for mean reward
+- lower bound of the confidence interval for mean reward
 - mean steps
 - std steps
 
@@ -160,7 +159,7 @@ The statistical analysis will aggregate all runs of each variant and calculate t
 
 ### Training Parameters
 
-Below is an overview over parameters to configure experiments.
+Below is an overview of the parameters to configure experiments.
 
 | Parameter Name               | Description                                                                                      | Optional | Default      |
 |------------------------------|--------------------------------------------------------------------------------------------------|----------|--------------|
@@ -196,34 +195,32 @@ functions.
 
 #### `check_cuda.sh` & `watch_gpu`
 
-Print out information regarding the current CUDA installation and GPU usage of
-the system. For sanity-checking and troubleshooting purposes.
+Print out information regarding the system's current CUDA installation and GPU usage for sanity-checking and troubleshooting.
 
 #### `install_atari.sh`
 
-Installs the Atari ROMs used by gym into the virtual environment.
+Installs the Atari ROMs used by `Gym` into the virtual environment.
 
 #### Sync scripts
 
-Typically you want to offload the training workload to cloud virtual machine. In
-this regard `sync_up.sh` will upload sources and experiments to that machine.
-Afterwards the training results can be downloaded to your local system using
+Typically, you want to offload the training workload to a cloud virtual machine. In
+In this regard, `sync_up.sh` will upload sources and experiments to that machine.
+Afterward, the training results can be downloaded to your local system using
 `sync_down.sh`.
 
-Configuration such as connection data for both sync scripts are situated within
-the `sync.cfg` file.
+A configuration-like connection data for both sync scripts is within the `sync.cfg` file.
 
 ## Limitations
 
-This project is of now more of a didactic exercies rather than an attempt to topple
+This project is now more of a didactic exercise rather than an attempt to topple
 established reinforcement learning frameworks such as [`RLlib`](https://docs.ray.io/en/latest/rllib/index.html).
 
 As of `v1.0.0` the most crucial limitations of MERLIn stand as:
 
 1. Single environment implemented, namely `Pong`.
 2. Single class of agents implemented, namely variations of `DQN`.
-3. Statistical anaylsis is rudimentary and not happening parallel to training.
+3. Statistical analysis is rudimentary and does not happen parallel to training.
 
 ### Contributions welcome
 
-In case you like MERLIn and want to develop it further, feel free to fork and open any pull request. 🤓
+If you like MERLIn and want to develop it further, feel free to fork and open any pull request. 🤓

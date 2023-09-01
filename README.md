@@ -27,23 +27,23 @@
 
 ### 1. Configure experiments
 
-Experiments can be defined as JSON files that are merged with the default
+Experiments can be defined as [YAML](https://learnxinyminutes.com/docs/yaml/) files that are merged with the default
 configuration before being passed into the main training loop. Parameters are
-identical to the attributes of the `Config` class.
+identical to the attributes of the `Config` class, a table of all parameters are
+given further down.
 
 Example:
 
-`experiments/experiment_one.json`
+`experiments/experiment_one.yaml`
 
-```json
-{
-  "max_episodes": 1000,
-  "agent_name": "duelling_dqn",
-  "alpha": 0.05
-}
+```yaml
+---
+max_episodes: 1000
+agent_name: dueling_dqn
+alpha: 0.05
 ```
 
-This will train the agent `duelling_dqn` for 1000 episodes at a learning rate
+This will train the agent `dueling_dqn` for 1000 episodes at a learning rate
 alpha of 0.5, while all other parameters will fall back to their default values
 as defined in the `Config` class.
 
@@ -55,28 +55,17 @@ higher up. variants can be nested.
 
 ##### variants Example
 
-```json
-{
-  "max_episodes": 1000,
-  "variants" : [
-     {},
-     {
-       "alpha": 0.01243
-     },
-     {
-       "max_episodes": 333,
-       "variants" : [
-         {
-           "gamma": 0.5,
-           "memory_size": 99000
-         },
-         {
-           "batch_size": 64
-         }
-       ]
-     }
-  ]
-}
+```yaml
+---
+max_episodes: 1000
+variants:
+  - {}
+  - alpha: 0.01243
+  - max_episodes: 333
+    variants:
+      - gamma: 0.5
+        memory_size: 99000
+      - batch_size: 64
 ```
 
 The above configuration define the following experiments:
@@ -124,7 +113,7 @@ occur.
 Each experiment will generate a subfolder in the `results/` directory. Within
 that subfolder, the following files will be placed:
 
-1. `experiment.json`: The exact parameters the experiment was run with
+1. `experiment.yaml`: The exact parameters the experiment was run with
 2. A log holding the training logs, as printed out to the console (see section
    before)
 3. Model checkpoints.
@@ -161,7 +150,6 @@ Below is an overview over parameters to configure experiments.
 | video_record_interval        | Steps between video recordings.                                                                  | Yes      | 2500         |
 | save_state_img               | Whether to take images during training.                                                          | Yes      | False        |
 | use_amp                      | Whether to use automatic mixed precision.                                                        | Yes      | True         |
-
 
 ### Scripts
 

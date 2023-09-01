@@ -141,9 +141,22 @@ Analysis results will be written to a subfolder of the results directory `analys
 
 #### Summarization
 
+As of `v1.0.0` the last 2,000 episodes (as a hard coded assumption of plateuing) are used to compare different algorithms.
+The statistical analysis will aggregate all runs of each variant and calculate the following:
+
+- mean reward
+- std reward
+- lower bound of confidence interval for mean reward
+- mean steps
+- std steps
+
 #### Plotting reward over episodes
 
+<img alt="MERLIn logo" src="https://raw.githubusercontent.com/pykong/merlin-logo/main/reward.svg">
+
 #### Plotting reward distribution
+
+<img alt="MERLIn logo" src="https://raw.githubusercontent.com/pykong/merlin-logo/main/reward_dist.svg">
 
 ### Training Parameters
 
@@ -160,7 +173,7 @@ Below is an overview over parameters to configure experiments.
 | input_dim                    | The input dimension of the model.                                                                | Yes      | 64           |
 | num_stacked_frames           | The number of frames to stack.                                                                   | Yes      | 4            |
 | step_penalty                 | Penalty given to the agent per step.                                                             | Yes      | 0.0          |
-| agent_name                   | The agent to be used.                                                                           | Yes      | 'double_dqn' |
+| agent_name                   | The agent to be used.                                                                            | Yes      | 'double_dqn' |
 | net_name                     | The neural network to be used.                                                                   | Yes      | 'linear_deep_net' |
 | target_net_update_interval   | The number of steps after which the target network should be updated.                            | Yes      | 1024         |
 | episodes                     | The number of episodes to train for.                                                             | Yes      | 5000         |

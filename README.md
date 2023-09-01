@@ -199,3 +199,8 @@ Afterwards the training results can be downloaded to your local system using
 
 Configuration such as connection data for both sync scripts are situated within
 the `sync.cfg` file.
+
+## Limitations
+
+This project is of now more of a didactic exercies rather than an attempt to topple
+established reinforcement learning suites such as [`RLlib`](https://docs.ray.io/en/latest/rllib/index.html).

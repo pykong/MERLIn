@@ -213,4 +213,4 @@ As of `v1.0.0` the most crucial limitations of MERLIn stand as:
 
 ### Contributions welcome
 
-In case you like MERLIn and want to develop it further, feel free to fork and open any pull request. :-)
+In case you like MERLIn and want to develop it further, feel free to fork and open any pull request. 🤓

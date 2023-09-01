@@ -26,7 +26,7 @@
 MERLIn short for `modular extensible reinforcement learning interface,` allows to easily define and run reinforcement learning experiments on top of [`PyTorch`](https://github.com/pytorch/pytorch) and [`Gym`](https://github.com/openai/gym).
 
 This project started as a homework assignment for a reinforcement learning module from my Master's studies.
-I made it public, hoping you find it useful or at least interesting.
+I made it public, hoping you find it useful or interesting.
 
 ## Usage
 
@@ -149,13 +149,14 @@ The statistical analysis will aggregate all runs of each variant and calculate t
 - mean steps
 - std steps
 
-#### Plotting reward over episodes
+#### Plottings
 
-<img alt="MERLIn logo" src="https://raw.githubusercontent.com/pykong/merlin-logo/main/reward.svg">
+Line plots of rewards over episodes and histograms showing the reward distribution of all variants are produced.
 
-#### Plotting reward distribution
-
-<img alt="MERLIn logo" src="https://raw.githubusercontent.com/pykong/merlin-logo/main/reward_dist.svg">
+<p float="left">
+  <img alt="MERLIn logo" src="https://raw.githubusercontent.com/pykong/merlin-logo/main/reward.svg" width="49%" />
+  <img alt="MERLIn logo" src="https://raw.githubusercontent.com/pykong/merlin-logo/main/reward_dist.svg"  width="45%"/>
+</p>
 
 ### Training Parameters
 

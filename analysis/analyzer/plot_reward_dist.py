@@ -35,9 +35,9 @@ def plot_reward_distribution(data: pd.DataFrame, tail: int, out_file: Path) -> N
     )
 
     # set title and labels
-    plt.title("Reward Distributions of DQN Architectures")
-    plt.xlabel("architecture")
-    plt.ylabel("reward")
+    plt.title("Reward Distributions of DQN Architectures", fontsize=20)
+    plt.xlabel("architecture", fontweight="bold")
+    plt.ylabel("reward", fontweight="bold")
     plt.xticks(rotation=45)
     plt.ylim(-21, 21)
     plt.axhline(0, color="grey", linestyle="--", linewidth=0.5)

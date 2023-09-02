@@ -5,9 +5,8 @@ from typing import Final
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-from matplotlib.lines import Line2D
-
 from analysis.analyzer.utils.coloring import generate_color_mapping
+from matplotlib.lines import Line2D
 
 EPSILON_COLOR: Final[str] = "#D95F02"
 FIG_SIZE: Final[tuple[int, int]] = (12, 7)
@@ -38,7 +37,8 @@ def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) ->
 
     # add a horizontal line at y=0
     ax1.axhline(0, color="grey", linestyle="--", linewidth=0.5)
-    ax1.set_ylabel("reward")
+    ax1.set_xlabel("episode", fontweight="bold")
+    ax1.set_ylabel("reward", fontweight="bold")
 
     # create a second y-axis for epsilon, sharing the x-axis with the first one
     ax2 = ax1.twinx()
@@ -54,7 +54,7 @@ def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) ->
         legend=False,  # type:ignore
         linewidth=2,
     )
-    ax2.set_ylabel("epsilon")
+    ax2.set_ylabel("epsilon", fontweight="bold")
 
     # get the handles and labels for all lines
     handles_ax1, labels_ax1 = ax1.get_legend_handles_labels()
@@ -68,6 +68,5 @@ def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) ->
     ax1.legend(handles=handles_ax1, labels=labels_ax1)
 
     # create plot
-    # plt.figure(figsize=(9, 5))
-    plt.title(f"{'Smoothed' if smooth else ''} Reward and Epsilon over Episodes")
+    plt.title("Reward and Epsilon over Episodes", fontsize=20)
     plt.savefig(plot_file)

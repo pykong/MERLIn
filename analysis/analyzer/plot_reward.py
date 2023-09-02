@@ -5,10 +5,12 @@ from typing import Final
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-from analysis.analyzer.utils.coloring import generate_color_mapping
 from matplotlib.lines import Line2D
 
+from analysis.analyzer.utils.coloring import generate_color_mapping
+
 EPSILON_COLOR: Final[str] = "#D95F02"
+FIG_SIZE: Final[tuple[int, int]] = (12, 7)
 
 
 def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) -> None:
@@ -17,7 +19,7 @@ def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) ->
         df["reward"] = df["reward"].rolling(smooth).mean()
 
     # create a figure and a first axis for the reward
-    _, ax1 = plt.subplots()
+    _, ax1 = plt.subplots(figsize=FIG_SIZE)
 
     # create color map
     variants = df["variant"].unique()
@@ -67,5 +69,5 @@ def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) ->
 
     # create plot
     # plt.figure(figsize=(9, 5))
-    plt.title(f"{'Smoothed' if smooth else ''} Reward and Epsilon over time")
+    plt.title(f"{'Smoothed' if smooth else ''} Reward and Epsilon over Episodes")
     plt.savefig(plot_file)

@@ -1,10 +1,13 @@
 from pathlib import Path
+from typing import Final
 
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
 from analysis.analyzer.utils.coloring import generate_color_mapping
+
+FIG_SIZE: Final[tuple[int, int]] = (12, 7)
 
 
 def plot_reward_distribution(data: pd.DataFrame, tail: int, out_file: Path) -> None:
@@ -26,15 +29,15 @@ def plot_reward_distribution(data: pd.DataFrame, tail: int, out_file: Path) -> N
     color_map = generate_color_mapping(variants)  # type:ignore
 
     # set up the figure and axes
-    plt.figure(figsize=(12, 8))
+    plt.figure(figsize=FIG_SIZE)
     sns.violinplot(
         x="variant", y="reward", data=tail_df, palette=color_map, inner="quartile"
     )
 
     # set title and labels
-    plt.title("Reward distributions for DQN Architecture")
-    plt.xlabel("Experiment")
-    plt.ylabel("Reward")
+    plt.title("Reward Distributions of DQN Architectures")
+    plt.xlabel("architecture")
+    plt.ylabel("reward")
     plt.xticks(rotation=45)
     plt.ylim(-21, 21)
     plt.axhline(0, color="grey", linestyle="--", linewidth=0.5)

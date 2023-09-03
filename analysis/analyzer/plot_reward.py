@@ -5,8 +5,9 @@ from typing import Final
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-from analysis.analyzer.utils.coloring import generate_color_mapping
 from matplotlib.lines import Line2D
+
+from analysis.analyzer.utils.coloring import generate_color_mapping
 
 EPSILON_COLOR: Final[str] = "#D95F02"
 FIG_SIZE: Final[tuple[int, int]] = (12, 7)
@@ -65,7 +66,12 @@ def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) ->
     labels_ax1.append("epsilon")
 
     # create a new legend with all lines
-    ax1.legend(handles=handles_ax1, labels=labels_ax1)
+    ax1.legend(
+        handles=handles_ax1,
+        labels=labels_ax1,
+        loc="lower right",
+        bbox_to_anchor=(1, 0.05),
+    )
 
     # create plot
     plt.title("Reward and Epsilon over Episodes", fontsize=20)

@@ -17,7 +17,11 @@ def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) ->
     df = deepcopy(df)
     if smooth:
         df.reset_index(drop=True, inplace=True)
-        df["reward"] = df["reward"].rolling(smooth, min_periods=smooth).mean()
+        df["reward"] = (
+            df["reward"].rolling(smooth, center=True, min_periods=smooth).mean()
+        )
+        df["reward"].fillna(method="bfill", inplace=True)
+        df["reward"].fillna(method="ffill", inplace=True)
 
     # create a figure and a first axis for the reward
     _, ax1 = plt.subplots(figsize=FIG_SIZE)
@@ -54,7 +58,7 @@ def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) ->
         color=EPSILON_COLOR,
         ax=ax2,
         legend=False,  # type:ignore
-        linewidth=2,
+        linewidth=3,
         errorbar=None,
     )
     ax2.set_ylabel("epsilon", fontweight="bold")
@@ -63,7 +67,7 @@ def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) ->
     handles_ax1, labels_ax1 = ax1.get_legend_handles_labels()
 
     # manually add the Epsilon label (workaround)
-    epsilon_line = Line2D([0], [0], color=EPSILON_COLOR, lw=1)
+    epsilon_line = Line2D([0], [0], color=EPSILON_COLOR, lw=3)
     handles_ax1.append(epsilon_line)
     labels_ax1.append("epsilon")
 
@@ -71,8 +75,9 @@ def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) ->
     ax1.legend(
         handles=handles_ax1,
         labels=labels_ax1,
+        prop={"size": 15},
         loc="lower left",
-        bbox_to_anchor=(0, 0.2),
+        bbox_to_anchor=(0, 0.1),
     )
 
     # create plot

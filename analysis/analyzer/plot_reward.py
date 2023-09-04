@@ -16,7 +16,8 @@ FIG_SIZE: Final[tuple[int, int]] = (12, 7)
 def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) -> None:
     df = deepcopy(df)
     if smooth:
-        df["reward"] = df["reward"].rolling(smooth).mean()
+        df.reset_index(drop=True, inplace=True)
+        df["reward"] = df["reward"].rolling(smooth, min_periods=smooth).mean()
 
     # create a figure and a first axis for the reward
     _, ax1 = plt.subplots(figsize=FIG_SIZE)
@@ -54,6 +55,7 @@ def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) ->
         ax=ax2,
         legend=False,  # type:ignore
         linewidth=2,
+        errorbar=None,
     )
     ax2.set_ylabel("epsilon", fontweight="bold")
 
@@ -69,10 +71,12 @@ def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) ->
     ax1.legend(
         handles=handles_ax1,
         labels=labels_ax1,
-        loc="lower right",
-        bbox_to_anchor=(1, 0.05),
+        loc="lower left",
+        bbox_to_anchor=(0, 0.2),
     )
 
     # create plot
     plt.title("Reward and Epsilon over Episodes", fontsize=20)
+    if smooth:
+        plt.suptitle(f"(Reward smoothed with window size {smooth})", fontsize=14)
     plt.savefig(plot_file)

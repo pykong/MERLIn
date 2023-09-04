@@ -2,6 +2,7 @@ import sys
 from pathlib import Path
 
 import pandas as pd
+
 from analysis.analyzer.plot_reward import plot_reward
 from analysis.analyzer.plot_reward_dist import plot_reward_distribution
 from analysis.analyzer.summarize import summarize
@@ -10,7 +11,7 @@ from analysis.provider.result_synthesizer import synthesize_experiment_results
 from app.utils.file_utils import ensure_dirs, ensure_empty_dirs
 
 # analysis parameters
-SMOOTH_WINDOW = None
+SMOOTH_WINDOW = 10
 TAIL_EPISODES: int = 2000
 
 # parameters for result synthesis

@@ -4,7 +4,6 @@ from typing import Final
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-
 from analysis.analyzer.utils.coloring import generate_color_mapping
 
 FIG_SIZE: Final[tuple[int, int]] = (12, 7)
@@ -31,7 +30,12 @@ def plot_reward_distribution(data: pd.DataFrame, tail: int, out_file: Path) -> N
     # set up the figure and axes
     plt.figure(figsize=FIG_SIZE)
     sns.violinplot(
-        x="variant", y="reward", data=tail_df, palette=color_map, inner="quartile"
+        x="variant",
+        y="reward",
+        data=tail_df,
+        palette=color_map,
+        inner="quartile",
+        width=8,
     )
 
     # set title and labels

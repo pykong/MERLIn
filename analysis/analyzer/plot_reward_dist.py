@@ -4,20 +4,21 @@ from typing import Final
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+
 from analysis.analyzer.utils.coloring import generate_color_mapping
 
 FIG_SIZE: Final[tuple[int, int]] = (12, 7)
 plt.rcParams.update({"font.size": 17})
 
 
-def plot_reward_distribution(data: pd.DataFrame, tail: int, out_file: Path) -> None:
+def plot_reward_distribution(data: pd.DataFrame, tail: int, out_dir: Path) -> None:
     """
     Plot the reward distribution of each experiment as violin plots.
 
     Args:
         data (pd.DataFrame): The frame holding the experimental data.
         tail (int): The number of episodes from the end to consider.
-        out_file (Path): The file path to save the figure.
+        out_dir (Path): The dir path to save the figure to.
     """
     # get the last X episodes
     tail_df = data.groupby(["variant", "run"]).tail(tail)
@@ -52,4 +53,4 @@ def plot_reward_distribution(data: pd.DataFrame, tail: int, out_file: Path) -> N
     plt.tight_layout()
 
     # save the figure
-    plt.savefig(out_file)
+    plt.savefig(out_dir / "reward_dist.svg")

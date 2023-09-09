@@ -14,7 +14,7 @@ FIG_SIZE: Final[tuple[int, int]] = (12, 7)
 plt.rcParams.update({"font.size": 17})
 
 
-def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) -> None:
+def plot_reward(df: pd.DataFrame, out_dir: Path, smooth: int | None = None) -> None:
     df = deepcopy(df)
     if smooth:
         df.reset_index(drop=True, inplace=True)
@@ -88,4 +88,4 @@ def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) ->
     plt.title("Reward and Epsilon over Episodes", fontsize=22)
     if smooth:
         plt.suptitle(f"(Reward smoothed with window size {smooth})", fontsize=16)
-    plt.savefig(plot_file)
+    plt.savefig(out_dir / "reward.svg")

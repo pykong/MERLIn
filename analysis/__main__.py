@@ -11,7 +11,7 @@ from analysis.provider.result_synthesizer import synthesize_experiment_results
 from app.utils.file_utils import ensure_dirs, ensure_empty_dirs
 
 # analysis parameters
-SMOOTH_WINDOW = 10
+SMOOTH_WINDOW = 5
 TAIL_EPISODES: int = 2000
 
 # parameters for result synthesis

@@ -11,6 +11,7 @@ from analysis.analyzer.utils.coloring import generate_color_mapping
 
 EPSILON_COLOR: Final[str] = "#D95F02"
 FIG_SIZE: Final[tuple[int, int]] = (12, 7)
+plt.rcParams.update({"font.size": 17})
 
 
 def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) -> None:
@@ -81,7 +82,7 @@ def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) ->
     )
 
     # create plot
-    plt.title("Reward and Epsilon over Episodes", fontsize=20)
+    plt.title("Reward and Epsilon over Episodes", fontsize=22)
     if smooth:
-        plt.suptitle(f"(Reward smoothed with window size {smooth})", fontsize=14)
+        plt.suptitle(f"(Reward smoothed with window size {smooth})", fontsize=16)
     plt.savefig(plot_file)

@@ -7,6 +7,7 @@ import seaborn as sns
 from analysis.analyzer.utils.coloring import generate_color_mapping
 
 FIG_SIZE: Final[tuple[int, int]] = (12, 7)
+plt.rcParams.update({"font.size": 17})
 
 
 def plot_reward_distribution(data: pd.DataFrame, tail: int, out_file: Path) -> None:
@@ -42,7 +43,7 @@ def plot_reward_distribution(data: pd.DataFrame, tail: int, out_file: Path) -> N
     )
 
     # set title and labels
-    plt.title("Reward Distribution of DQN Architectures", fontsize=20)
+    plt.title("Reward Distribution of DQN Architectures", fontsize=22)
     plt.xlabel("architecture", fontweight="bold")
     plt.ylabel("reward", fontweight="bold")
     plt.xticks(rotation=45)

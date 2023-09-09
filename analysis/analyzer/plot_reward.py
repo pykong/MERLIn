@@ -49,6 +49,7 @@ def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) ->
 
     # create a second y-axis for epsilon, sharing the x-axis with the first one
     ax2 = ax1.twinx()
+    ax2.set_ylabel("epsilon", fontweight="bold")
 
     first_variant = df["variant"].iloc[0]
     eps_df = df[df["variant"] == first_variant]  # assume single epsilon regimen

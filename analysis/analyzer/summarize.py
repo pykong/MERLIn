@@ -4,55 +4,48 @@ import pandas as pd
 import scipy.stats as stats
 
 
-def summarize(result_df: pd.DataFrame, tail: int, out_file: Path) -> None:
+def calculate_ci(
+    df: pd.DataFrame, mean_col: str, std_col: str, count_col: str
+) -> pd.DataFrame:
     """
-    Summarize and rank experimental results using the plateau phase.
+    Calculate the 95% confidence interval.
 
     Args:
-        result_df (pd.DataFrame): The frame holding the experimental data.
-        tail (int): Tail of episodes to use, as an assumption of plateau.
-        out_file (Path): The file path to export to.
+        df (pd.DataFrame): The dataframe holding the data.
+        mean_col (str): Column name for the mean values.
+        std_col (str): Column name for the standard deviation values.
+        count_col (str): Column name for the count values.
+
+    Returns:
+        pd.DataFrame: DataFrame with the bounds of the 95% confidence interval.
     """
-    # filter to get only the last X episodes of each run
+    se = df[std_col] / df[count_col] ** 0.5
+    t_value = stats.t.ppf(0.975, df=df[count_col] - 1)
+    ci_upper = df[mean_col] + t_value * se
+    ci_lower = df[mean_col] - t_value * se
+    return pd.DataFrame({"ci_upper": ci_upper, "ci_lower": ci_lower})
+
+
+def export_reward_statistics(
+    result_df: pd.DataFrame, tail: int, out_file: Path
+) -> None:
+    """
+    Calculate and export statistics on the reward of variants.
+
+    Args:
+        result_df (pd.DataFrame): The input DataFrame containing results.
+        tail (int): The number of last records to consider as an plateau assumption.
+        out_file (Path): The path of the CSV file to export the results to.
+    """
     tail_df = result_df.groupby(["variant", "run"]).tail(tail)
 
-    # reward: calculate mean and standard deviation for
     reward_metrics = tail_df.groupby("variant")["reward"].agg(["mean", "std", "count"])
-    reward_metrics.columns = ["mean_reward", "std_reward", "count"]
 
-    # steps: calculate mean and standard deviation for number of steps
-    steps_metrics = tail_df.groupby("variant")["steps"].agg(["mean", "std"])
-    steps_metrics.columns = ["mean_steps", "std_steps"]
+    ci_df = calculate_ci(reward_metrics, "mean", "std", "count")
+    reward_metrics = pd.concat([reward_metrics, ci_df], axis=1)
 
-    # compute the standard error (SE) for each variant for reward
-    reward_metrics["se"] = reward_metrics["std_reward"] / reward_metrics["count"] ** 0.5
-
-    # calculate the t-value for a 95% confidence interval for reward
-    reward_metrics["t_value"] = reward_metrics.apply(
-        lambda row: stats.t.ppf(0.975, df=row["count"] - 1), axis=1
-    )
-
-    # calculate the lower bound of the 95% confidence interval for the mean reward
-    reward_metrics["ci_lower_mean_reward"] = (
-        reward_metrics["mean_reward"] - reward_metrics["t_value"] * reward_metrics["se"]
-    )
-
-    # rank variants based on the lower bound of the confidence interval
-    reward_metrics = reward_metrics.sort_values("ci_lower_mean_reward", ascending=False)
-
-    # join the metrics dataframes
-    combined_metrics = pd.concat([reward_metrics, steps_metrics], axis=1)
-
-    # drop intermediate columns used for calculations
-    columns_to_keep = [
-        "mean_reward",
-        "std_reward",
-        "ci_lower_mean_reward",
-        "mean_steps",
-        "std_steps",
-    ]
-    # and limit decimals for floating point columns
-    combined_metrics = combined_metrics[columns_to_keep].round(2)
-
-    # export to CSV
-    combined_metrics.to_csv(out_file)
+    # rank based on the lower bound of the confidence interval
+    ranked_results = reward_metrics.sort_values("ci_lower", ascending=False)
+    ranked_results = ranked_results.drop(columns="count")
+    ranked_results = ranked_results.round(2)
+    ranked_results.to_csv(out_file)

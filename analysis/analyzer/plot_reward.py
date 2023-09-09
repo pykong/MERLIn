@@ -50,19 +50,21 @@ def plot_reward(df: pd.DataFrame, plot_file: Path, smooth: int | None = None) ->
     # create a second y-axis for epsilon, sharing the x-axis with the first one
     ax2 = ax1.twinx()
 
-    # plot epsilon on the second y-axis, using the epsilon values of
-    epsilons = df.drop_duplicates(subset=["episode", "epsilon"])
+    first_variant = df["variant"].iloc[0]
+    eps_df = df[df["variant"] == first_variant]  # assume single epsilon regimen
+    eps_df = eps_df[["episode", "epsilon"]]
+    eps_df["epsilon"] = eps_df["epsilon"].round(2)
+
     sns.lineplot(
-        data=epsilons,
+        data=eps_df,
         x="episode",
         y="epsilon",
         color=EPSILON_COLOR,
         ax=ax2,
         legend=False,  # type:ignore
         linewidth=3,
-        errorbar=None,
+        errorbar=None,  # to avoid error bars
     )
-    ax2.set_ylabel("epsilon", fontweight="bold")
 
     # get the handles and labels for all lines
     handles_ax1, labels_ax1 = ax1.get_legend_handles_labels()

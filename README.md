@@ -191,13 +191,13 @@ Below is an overview of the parameters to configure experiments.
 
 ### Extending Agents, Environments, and Neural Networks
 
-MERLIn boasts itself of being modular and extensible, meaning you can easily implement new agents, environments, and neural networks.
-All you need to extend said objects is to derive a new class from the respective abstract base class and register it at the regarding registry.
+MERLIn boasts itself of being modular and extensible, meaning you can quickly implement new agents, environments, and neural networks.
+So that you know, all you need to extend said objects is to derive a new class from the respective abstract base class and register it at the regarding registry.
 
 #### Example: Implementing a new Neural Network
 
 Create a new Python module, `app/nets/new_net.py`, holding a new class deriving from `BaseNet`.
-Importantly, you need to provide a unique name via the name property.
+You must provide a unique name via the name property.
 
 ```py
 from app.nets._base_net import BaseNet
@@ -207,12 +207,12 @@ class NewNet(BaseNet):
     @classmethod
     @property
     def name(cls) -> str:
-        return "new_net"
+        return "new_net"  # give it a unique name here
 
     def _define_net(
         self, state_shape: tuple[int, int, int], num_actions: int
     ) -> nn.Sequential:
-      # you PyTorch network definition goes here
+      # your PyTorch network definition goes here
 ```
 
 Add `NewNet` to the registry of neural networks in `app/nets/__init__.py`, to make it automatically available to the `make_net` factory function.

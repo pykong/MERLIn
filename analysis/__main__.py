@@ -26,7 +26,7 @@ def analyze(result_df: pd.DataFrame, result_dir: Path) -> None:
     # run analyzers
     export_reward_statistics(result_df, TAIL_EPISODES, anal_dir)
     plot_reward_distribution(result_df, TAIL_EPISODES, anal_dir)
-    plot_reward(result_df, anal_dir, SMOOTH_WINDOW)
+    plot_reward(result_df, anal_dir, tail=TAIL_EPISODES, smooth=SMOOTH_WINDOW)
 
 
 def collect_and_analyze(result_dir: Path) -> None:

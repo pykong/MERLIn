@@ -5,16 +5,35 @@ from typing import Final
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-from matplotlib.lines import Line2D
-
 from analysis.analyzer.utils.coloring import generate_color_mapping
+from matplotlib.lines import Line2D
 
 EPSILON_COLOR: Final[str] = "#D95F02"
 FIG_SIZE: Final[tuple[int, int]] = (12, 7)
 plt.rcParams.update({"font.size": 17})
 
 
-def plot_reward(df: pd.DataFrame, out_dir: Path, smooth: int | None = None) -> None:
+def plot_reward(
+    df: pd.DataFrame,
+    out_dir: Path,
+    *,
+    tail: int | None = None,
+    smooth: int | None = None,
+) -> None:
+    """
+    Plot the rewards from reinforcement learning experiments.
+
+    The function plots the rewards over episodes and can also highlight the tail-end episodes used for statistical evaluation. Optionally, the reward values can be smoothed for clarity.
+
+    Args:
+        df (pd.DataFrame): Data containing 'reward' and 'episode' columns.
+        out_dir (Path): The dir path to save the figure to.
+        tail (int?): Number of tail-end episodes used for statistical evaluation.
+                              A gray rectangle will be drawn to indicate this span.
+                              Defaults to None (no rectangle drawn).
+        smooth (int?): Window size for reward smoothing. If provided, rewards
+                                will be smoothed using a rolling centered mean. Defaults to None (no smoothing).
+    """
     df = deepcopy(df)
     if smooth:
         df.reset_index(drop=True, inplace=True)
@@ -41,6 +60,18 @@ def plot_reward(df: pd.DataFrame, out_dir: Path, smooth: int | None = None) -> N
         palette=color_map,
         linewidth=2,
     )
+
+    # add a gray rectangle for evaluation episodes
+    if tail:
+        last_episode = df["episode"].max()
+        ax1.axvspan(
+            last_episode - tail,
+            last_episode,
+            color="grey",
+            alpha=0.2,
+            label="evaluation",
+            zorder=0,
+        )
 
     # add a horizontal line at y=0
     ax1.axhline(0, color="grey", linestyle="--", linewidth=0.5)

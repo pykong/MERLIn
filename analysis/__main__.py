@@ -12,7 +12,7 @@ from app.utils.file_utils import ensure_dirs, ensure_empty_dirs
 
 # analysis parameters
 SMOOTH_WINDOW = 5
-TAIL_EPISODES: int = 2000
+TAIL_EPISODES: int = 1000
 
 # parameters for result synthesis
 VARIANTS = ["var_one", "var_two", "var_three", "var_four"]

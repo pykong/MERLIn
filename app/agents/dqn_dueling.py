@@ -2,12 +2,11 @@ from pathlib import Path
 from typing import Self
 
 import torch
+from app.agents._dqn_abstract_agent import DqnAbstractAgent
 from torch import Tensor, nn
 
-from app.agents._dqn_base_agent import DqnBaseAgent
 
-
-class DuelingDQNAgent(DqnBaseAgent):
+class DuelingDQNAgent(DqnAbstractAgent):
     """A dueling deep-Q-network agent."""
 
     @classmethod

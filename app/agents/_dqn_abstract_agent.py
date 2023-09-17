@@ -38,7 +38,7 @@ def get_torch_device() -> torch.device:
         return torch.device("cpu")
 
 
-class DqnBaseAgent(ABC, pl.LightningModule):
+class DqnAbstractAgent(ABC, pl.LightningModule):
     def __init__(
         self: Self,
         state_shape: tuple[int, int, int],

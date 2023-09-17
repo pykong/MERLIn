@@ -5,9 +5,7 @@ from typing import Final
 import cv2 as cv
 import numpy as np
 import torch
-from gym.wrappers.monitoring import video_recorder as vr
-
-from app.agents import DqnBaseAgent, make_agent
+from app.agents import DqnAbstractAgent, make_agent
 from app.config import Config
 from app.envs import BaseEnvWrapper, make_env
 from app.memory import Transition
@@ -15,6 +13,7 @@ from app.nets import BaseNet, make_net
 from app.utils.file_utils import ensure_empty_dirs
 from app.utils.logging import EpisodeLog, EpisodeLogger, LogLevel
 from app.utils.silence_stdout import silence_stdout
+from gym.wrappers.monitoring import video_recorder as vr
 
 
 def take_picture_of_state(state: np.ndarray, f_name: Path) -> None:
@@ -30,7 +29,7 @@ def take_picture_of_state(state: np.ndarray, f_name: Path) -> None:
 
 
 def run_episode(
-    agent: DqnBaseAgent,
+    agent: DqnAbstractAgent,
     env: BaseEnvWrapper,
     episode_log: EpisodeLog,
     recorder: vr.VideoRecorder | None,
@@ -40,7 +39,7 @@ def run_episode(
     """Run single episode.
 
     Args:
-        agent (DqnBaseAgent): The agent instance.
+        agent (DqnAbstractAgent): The agent instance.
         env (BaseEnvWrapper): The environment instance.
         episode_log (EpisodeLog): The episode logger instance.
         recorder (vr.VideoRecorder | None): The video recorder instance.
@@ -117,7 +116,7 @@ def loop(config: Config, result_dir: Path) -> None:
     )
 
     # create the policy network
-    agent: DqnBaseAgent = make_agent(
+    agent: DqnAbstractAgent = make_agent(
         config.agent_name,
         net=make_net(config.net_name),
         state_shape=input_shape,

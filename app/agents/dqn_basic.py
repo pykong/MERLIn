@@ -3,16 +3,16 @@ from typing import Self
 import torch
 from torch import Tensor
 
-from app.agents._dqn_base_agent import DqnBaseAgent
+from app.agents._dqn_abstract_agent import DqnAbstractAgent
 
 
-class VanillaDQNAgent(DqnBaseAgent):
-    """A vanilla deep-Q-network agent."""
+class BasicDQNAgent(DqnAbstractAgent):
+    """A basic deep-Q-network agent."""
 
     @classmethod
     @property
     def name(cls) -> str:
-        return "vanilla_dqn"
+        return "basic_dqn"
 
     @torch.no_grad()
     def _calc_max_q_prime(self: Self, next_states: Tensor) -> float:

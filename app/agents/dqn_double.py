@@ -2,12 +2,11 @@ from copy import deepcopy
 from typing import Self
 
 import torch
+from app.agents._dqn_abstract_agent import DqnAbstractAgent
 from torch import Tensor
 
-from app.agents._dqn_base_agent import DqnBaseAgent
 
-
-class DoubleDQNAgent(DqnBaseAgent):
+class DoubleDQNAgent(DqnAbstractAgent):
     """A double deep-Q-network agent."""
 
     @classmethod

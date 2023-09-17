@@ -4,12 +4,12 @@ from typing import Self
 
 from torch import Tensor
 
+from app.agents._dqn_abstract_agent import DqnAbstractAgent
 from app.memory import Transition
-from app.agents._dqn_base_agent import DqnBaseAgent
 
 
-class RandomWalkerAgent(DqnBaseAgent):
-    """A vanilla deep-Q-network agent."""
+class RandomWalkerAgent(DqnAbstractAgent):
+    """An agent taking random actions, not learning."""
 
     @classmethod
     @property

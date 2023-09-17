@@ -1,6 +1,6 @@
 <p align="center">
     <a href="#readme">
-        <img alt="MERLIn logo" src="https://raw.githubusercontent.com/pykong/merlin-logo/main/logo.svg">
+        <img alt="MERLIn logo" src="https://raw.githubusercontent.com/pykong/merlin/main/docs/logo.svg">
         <!-- Logo credits: Benjamin Felder -->
     </a>
 </p>
@@ -17,7 +17,7 @@
 </p>
 <p align="center">
     <a href="#readme">
-        <img alt="MERLIn training GIF" src="https://github.com/pykong/merlin-logo/blob/main/merlin_train.gif?raw=true">
+        <img alt="MERLIn training GIF" src="https://github.com/pykong/merlin/blob/main/docs/merlin_train.gif?raw=true">
     </a>
 </p>
 
@@ -154,8 +154,8 @@ The statistical analysis will aggregate all runs of each variant and calculate t
 Line plots of rewards over episodes and histograms showing the reward distribution of all variants are produced.
 
 <p float="left">
-  <img alt="MERLIn logo" src="https://raw.githubusercontent.com/pykong/merlin-logo/main/reward.svg" width="49%" />
-  <img alt="MERLIn logo" src="https://raw.githubusercontent.com/pykong/merlin-logo/main/reward_dist.svg"  width="45%"/>
+  <img alt="MERLIn logo" src="https://raw.githubusercontent.com/pykong/merlin/main/docs/reward.svg" width="49%" />
+  <img alt="MERLIn logo" src="https://raw.githubusercontent.com/pykong/merlin/main/docs/reward_dist.svg" width="45%"/>
 </p>
 
 ### Training Parameters

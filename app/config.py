@@ -25,7 +25,6 @@ class Config:
 
     step_penalty (float): Penalty given to the agent per step. Default is 0.0.
 
-
     agent_name (str): The agent to be used. Default is 'double_dqn'.
 
     net_name (str): The neural network to be used. Default is 'linear_deep_net'.
@@ -51,6 +50,9 @@ class Config:
     memory_size (int): The size of the replay memory. Default is 500,000.
 
     batch_size (int): The batch size for learning. Default is 32.
+
+    spice_memory (bool):
+        Enrich replay memory with max surprise transitions. Default is False.
 
     model_save_interval (int?):
         The number of steps after which the model should be saved.
@@ -92,6 +94,7 @@ class Config:
     gamma: float = 0.99
     memory_size: int = 500_000
     batch_size: int = 32
+    spice_memory: bool = False
 
     # save parameter
     model_save_interval: int | None = None

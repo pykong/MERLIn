@@ -34,7 +34,7 @@ def get_torch_device() -> torch.device:
         torch.backends.cudnn.benchmark = True  # type: ignore
         return torch.device("cuda")
     else:
-        logger.log(str(LogLevel.YELLOW), f"Running PyTorch on CPU.")
+        logger.log(str(LogLevel.YELLOW), "Running PyTorch on CPU.")
         return torch.device("cpu")
 
 
@@ -51,6 +51,7 @@ class DqnAbstractAgent(ABC, pl.LightningModule):
         memory_size: int = 10_000,
         batch_size: int = 64,
         use_amp: bool = False,
+        spice_memory: bool = False,
         **kwargs: Optional[Any],
     ):
         super().__init__()
@@ -61,6 +62,7 @@ class DqnAbstractAgent(ABC, pl.LightningModule):
         self.epsilon_min = epsilon_min
         self.gamma = gamma
         self.use_amp = use_amp
+        self.spice_memory = spice_memory
         self.memory = ReplayMemory(capacity=memory_size, batch_size=batch_size)
         self.device_: torch.device = get_torch_device()
         self.model = net.build_net(self.state_shape, self.num_actions, self.device_)
@@ -89,6 +91,11 @@ class DqnAbstractAgent(ABC, pl.LightningModule):
         # compute the expected Q values (expected_state_action_values)
         target = rewards + self.gamma * max_q_prime * dones
 
+        # spice-up memory
+        if self.spice_memory:
+            max_surprise = self.find_max_surprise(q_a, target, sample)
+            self.memory.push(max_surprise)
+
         # calc losses
         with torch.cuda.amp.autocast(enabled=self.use_amp):  # type:ignore
             losses = F.smooth_l1_loss(q_a, target)
@@ -108,6 +115,14 @@ class DqnAbstractAgent(ABC, pl.LightningModule):
     @abstractmethod
     def name(cls) -> str:
         raise NotImplementedError()
+
+    def find_max_surprise(
+        self: Self, q_a: Tensor, target: Tensor, sample: list[Transition]
+    ) -> Transition:
+        """Return the transition with the highest surprise (absolute TD error)."""
+        abs_td_errors = torch.abs(target - q_a).detach().cpu().numpy()
+        max_surprise_idx = abs_td_errors.argmax()
+        return sample[max_surprise_idx]
 
     def _encode_minibatch(self: Self, transitions: list[Transition]) -> Minibatch:
         def encode_array(states: list[np.ndarray]) -> Tensor:
